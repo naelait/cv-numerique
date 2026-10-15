@@ -11,6 +11,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { ChatService } from '../chat/chat.service';
+import { chatEnabled } from '../features';
 
 interface ConnectLine {
   id: string;
@@ -35,6 +36,8 @@ interface NetworkNode {
   styleUrl: './connect-panel.css',
 })
 export class ConnectPanel {
+  protected readonly chatEnabled = chatEnabled;
+
   readonly email = input.required<string>();
   readonly telephone = input.required<string>();
   readonly telephoneTel = input.required<string>();

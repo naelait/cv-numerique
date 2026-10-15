@@ -52,6 +52,10 @@
 .shell--booting .stage,
 .shell--booting .topbar,
 .shell--booting .progress,
+.shell--no-chat {
+  --chat-fab-clear: 0px;
+}
+
 .shell--booting app-chat-panel {
   visibility: hidden;
   pointer-events: none;

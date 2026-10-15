@@ -9,6 +9,7 @@
     "start": "ng serve",
     "chat": "npm run start --prefix server",
     "build": "ng build",
+    "build:static": "ng build --configuration static",
     "watch": "ng build --watch --configuration development"
   },
   "private": true,

@@ -75,7 +75,8 @@ Variables d’environnement (voir `.env.example`) :
 | --- | --- |
 | `npm start` | Sync PDF + `ng serve` |
 | `npm run chat` | API chat locale |
-| `npm run build` | Sync PDF + build production |
+| `npm run build` | Sync PDF + build production (chat inclus) |
+| `npm run build:static` | Build pour hébergement statique **sans** chat (Pages, Netlify, etc.) |
 | `npm run watch` | Build watch (dev) |
 | `npm run sync:cv` | Copie `knowledge/cv.pdf` → `public/cv.pdf` |
 

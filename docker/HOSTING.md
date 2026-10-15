@@ -186,9 +186,15 @@ Sans HTTPS, tu peux temporairement utiliser **uniquement** le compose local et l
 
 ---
 
-## Alternative plus tard
+## Alternative gratuite (sans chat)
 
-- **Front seul** sur Cloudflare Pages (gratuit) + **API** sur un petit VPS : plus complexe (CORS, URL d’API).
-- **LLM cloud** (OpenAI, etc.) au lieu d’Ollama : moins de RAM, coût à l’usage, changement de code non fait aujourd’hui.
+Build dédié : le panneau **Ask()** et le bouton **/persona** sont retirés (`features.static.ts`).
 
-Pour l’instant, **un VPS + ce compose prod** est le chemin le plus aligné avec ce que tu as déjà testé en local.
+```bash
+npm run build:static
+```
+
+Publie le dossier `dist/cv-numerique/browser/` sur **Cloudflare Pages**, **GitHub Pages**, **Netlify**, etc. (0 € d’hébergement, domaine optionnel).
+
+- **`npm run build`** / Docker `full` → chat **activé** (VPS ou local).
+- **`npm run build:static`** → chat **masqué** (hébergement statique).

@@ -48,6 +48,27 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "static": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "1.5MB",
+                  "maximumError": "2MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "48kB",
+                  "maximumError": "64kB"
+                }
+              ],
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/app/features.ts",
+                  "with": "src/app/features.static.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"

@@ -64,12 +64,14 @@
       </a>
     }
 
-    <button type="button" class="connect__endpoint connect__endpoint--persona" (click)="openPersona()">
-      <span class="connect__endpoint-verb">WS</span>
-      <span class="connect__endpoint-path">/persona</span>
-      <span class="connect__endpoint-val">Chat IA · Ask()</span>
-      <span class="connect__endpoint-cta">Parler →</span>
-    </button>
+    @if (chatEnabled) {
+      <button type="button" class="connect__endpoint connect__endpoint--persona" (click)="openPersona()">
+        <span class="connect__endpoint-verb">WS</span>
+        <span class="connect__endpoint-path">/persona</span>
+        <span class="connect__endpoint-val">Chat IA · Ask()</span>
+        <span class="connect__endpoint-cta">Parler →</span>
+      </button>
+    }
   </div>
 
   <div class="connect__footer" [class.is-visible]="ready()">

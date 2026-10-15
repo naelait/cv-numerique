@@ -22,6 +22,7 @@ import { cv, type Experience, type Formation, type GroupeCompetence, type Projet
 import { ConnectPanel } from './connect/connect-panel';
 import { ChatPanel } from './chat/chat-panel';
 import { ChatService } from './chat/chat.service';
+import { chatEnabled } from './features';
 import { MatrixClicker } from './matrix-clicker/matrix-clicker';
 import { MatrixClickerService } from './matrix-clicker/matrix-clicker.service';
 import { ScrollWordReveal } from './scroll-word-reveal';
@@ -83,6 +84,12 @@ export interface WatchVar {
 })
 
 export class App {
+
+  protected readonly chatEnabled = chatEnabled;
+
+  protected readonly terminalPlaceholder = chatEnabled
+    ? 'help | ask | reset game | goto Connect'
+    : 'help | reset game | goto Connect';
 
   private readonly destroyRef = inject(DestroyRef);
 
@@ -879,10 +886,16 @@ export class App {
     switch (cmd) {
       case 'help':
         this.pushTerminal(
-          'help | ask | goto <fn> | bp <fn> | mail | linkedin | stack | clear | reset game | run',
+          chatEnabled
+            ? 'help | ask | goto <fn> | bp <fn> | mail | linkedin | stack | clear | reset game | run'
+            : 'help | goto <fn> | bp <fn> | mail | linkedin | stack | clear | reset game | run',
         );
         break;
       case 'ask':
+        if (!chatEnabled) {
+          this.pushTerminal('Ask() indisponible sur cette version (hébergement statique).');
+          break;
+        }
         this.chat.openPanel();
         this.pushTerminal('Ask() — persona chat ouvert');
         break;

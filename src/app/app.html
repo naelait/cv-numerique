@@ -2,6 +2,7 @@
   class="shell"
   [class.shell--ready]="introDone()"
   [class.shell--reduced]="reducedMotion()"
+  [class.shell--no-chat]="!chatEnabled"
   [class.runtime--step]="stepPulse()"
   [class.shell--booting]="isBooting()"
   [style.--slide-dir]="sectionDirection()"
@@ -142,7 +143,7 @@
           (input)="onTerminalInput($event)"
           (keydown)="onTerminalKey($event)"
           aria-label="Terminal debugger"
-          placeholder="help | ask | reset game | goto Connect"
+          [placeholder]="terminalPlaceholder"
         />
       </label>
     </div>
@@ -740,5 +741,7 @@
     </p>
   }
 
-  <app-chat-panel />
+  @if (chatEnabled) {
+    <app-chat-panel />
+  }
 </div>

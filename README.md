@@ -59,6 +59,8 @@ docker compose exec ollama ollama pull qwen2.5:14b
 # Si tu utilises un autre tag (ex. qwen2.5:3b), copie .env.example → .env et aligne OLLAMA_MODEL
 ```
 
+**Hébergement en ligne** (VPS + domaine + HTTPS) : [docker/HOSTING.md](docker/HOSTING.md).
+
 Variables d’environnement (voir `.env.example`) :
 
 | Variable | Défaut | Rôle |

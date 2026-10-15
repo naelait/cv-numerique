@@ -1,0 +1,36 @@
+# Production : HTTPS (Caddy), site + chat + Ollama — ports internes seulement.
+#
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml --profile full up -d --build
+#
+# Guide : docker/HOSTING.md
+
+services:
+  ollama:
+    ports: !reset []
+
+  chat:
+    ports: !reset []
+
+  web:
+    ports: !reset []
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      DOMAIN: ${DOMAIN:?Définis DOMAIN dans .env (ex. cv.example.com)}
+      ACME_EMAIL: ${ACME_EMAIL:-}
+    volumes:
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - web
+
+volumes:
+  caddy_data:
+  caddy_config:

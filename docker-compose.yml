@@ -6,7 +6,7 @@
 # Site complet (Angular build + nginx) :
 #   docker compose --profile full up --build
 #
-# Guide détaillé : docker/README.md
+# Guide local : docker/README.md — mise en ligne : docker/HOSTING.md
 
 services:
   ollama:

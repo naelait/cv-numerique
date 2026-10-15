@@ -1,0 +1,25 @@
+# Dépendances et builds locaux (reconstruits dans l’image)
+node_modules
+server/node_modules
+dist
+.angular
+server/dist
+
+# Git et IDE
+.git
+.idea
+.vscode
+.cursor
+.agents
+
+# Secrets et binaires locaux
+.env
+.env.*
+!.env.example
+knowledge/*.pdf
+
+# Logs et cache
+*.log
+coverage
+tmp
+__screenshots__

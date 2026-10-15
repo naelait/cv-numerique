@@ -1,0 +1,46 @@
+# CV numérique — stack Docker pour apprendre / tester le chat + Ollama.
+#
+# Démarrage minimal (chat + LLM) :
+#   docker compose up --build
+#
+# Site complet (Angular build + nginx) :
+#   docker compose --profile full up --build
+#
+# Guide détaillé : docker/README.md
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+
+  chat:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.chat
+    ports:
+      - "3001:3001"
+    environment:
+      PORT: "3001"
+      OLLAMA_URL: http://ollama:11434
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen2.5:14b}
+    depends_on:
+      - ollama
+    restart: unless-stopped
+
+  web:
+    profiles: ["full"]
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.web
+    ports:
+      - "8080:80"
+    depends_on:
+      - chat
+    restart: unless-stopped
+
+volumes:
+  ollama_data:

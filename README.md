@@ -49,6 +49,16 @@ npm run chat
 
 Le dev server Angular proxifie `/api` vers `http://localhost:3001` (`proxy.conf.json`).
 
+### Docker (Ollama + chat)
+
+Tu peux lancer Ollama et l’API chat dans des conteneurs tout en gardant `npm start` sur l’hôte. Guide pas à pas : [docker/README.md](docker/README.md).
+
+```bash
+docker compose up --build
+docker compose exec ollama ollama pull qwen2.5:14b
+# Si tu utilises un autre tag (ex. qwen2.5:3b), copie .env.example → .env et aligne OLLAMA_MODEL
+```
+
 Variables d’environnement (voir `.env.example`) :
 
 | Variable | Défaut | Rôle |

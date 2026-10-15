@@ -1,12 +1,7 @@
-# CV numérique — stack Docker pour apprendre / tester le chat + Ollama.
-#
-# Démarrage minimal (chat + LLM) :
+# Ollama + API chat. Front production : --profile full
 #   docker compose up --build
-#
-# Site complet (Angular build + nginx) :
 #   docker compose --profile full up --build
-#
-# Guide local : docker/README.md — mise en ligne : docker/HOSTING.md
+# Docs : docker/README.md · docker/HOSTING.md
 
 services:
   ollama:

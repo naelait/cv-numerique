@@ -74,14 +74,14 @@ app.post('/api/chat', async (req, res) => {
 
   if (!(await ollamaReachable())) {
     res.status(503).json({
-      error: 'Ollama injoignable. Lance `ollama serve` puis `ollama pull qwen2.5:14b`.',
+      error: 'Persona indisponible pour le moment.',
     });
     return;
   }
 
   if (!(await modelAvailable())) {
     res.status(503).json({
-      error: `Modèle "${OLLAMA_MODEL}" absent. Lance: ollama pull ${OLLAMA_MODEL}`,
+      error: 'Persona indisponible pour le moment.',
     });
     return;
   }

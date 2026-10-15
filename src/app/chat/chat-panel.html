@@ -79,8 +79,7 @@
             </p>
             @if (!health()?.ok) {
               <p class="persona__warn" role="alert">
-                Ollama offline. Lance <code>ollama serve</code>,
-                <code>ollama pull qwen2.5:14b</code>, puis <code>npm run chat</code>.
+                Persona indisponible pour le moment. Le parcours et le PDF restent accessibles.
               </p>
             } @else {
               <ul class="persona__suggestions" aria-label="Questions suggérées">

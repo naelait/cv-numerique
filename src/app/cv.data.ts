@@ -74,11 +74,11 @@ export const cv = {
     href: string;
   }[],
   slogan:
-    'Full-stack Angular et .NET : des apps qui tiennent la charge, du front soigné, et l’envie d’apprendre encore.',
+    'Full-stack Angular et .NET : interfaces soignées, services qui tiennent, veille technique continue.',
   aProposTitre: 'Curieux, rigoureux, motivé par les défis techniques.',
   aPropos: [
-    'Développeur full-stack spécialisé en Angular et .NET, je dispose d’une solide expérience en développement front-end et back-end. Curieux et rigoureux, je m’inscris dans une démarche d’apprentissage continu afin de perfectionner mes compétences et de rester à jour sur les technologies modernes.',
-    'Les défis techniques sont une source de motivation constante, et je souhaite évoluer au sein d’une équipe d’experts pour contribuer à des projets innovants dans un environnement stimulant.',
+    'Développeur full-stack Angular et .NET, du front jusqu’à l’API. Curieux et rigoureux, je creuse les sujets techniques et je garde la stack à jour.',
+    'Je cherche une équipe produit où contribuer sur des interfaces et des services concrets, pas seulement des maquettes.',
   ],
   stats: [
     { valeur: '.NET / Angular', libelle: 'Stack principale en production' },

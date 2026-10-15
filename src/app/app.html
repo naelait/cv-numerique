@@ -167,40 +167,30 @@
     </div>
 
     <div class="runtime__dock">
-      <button
-        type="button"
-        class="runtime__dock-step"
-        aria-label="Section précédente"
-        [disabled]="sectionIndex() === 0"
-        (click)="prevSection($event)"
-      >
-        ‹
-      </button>
+      <p class="runtime__dock-ip" aria-hidden="true">
+        <span class="runtime__dock-ln">{{ activeFrame().line }}</span>
+        <span class="runtime__dock-kw">await</span>
+        <span class="runtime__dock-fn">{{ activeFrame().fn }};</span>
+        <span class="runtime__dock-where">{{ activeFrame().label }}</span>
+      </p>
       <div class="runtime__dock-tabs" role="tablist" aria-label="Sections du CV">
-        @for (item of navItems; track item.id) {
+        @for (item of navItems; track item.id; let i = $index) {
           <button
             type="button"
             class="runtime__dock-tab"
             role="tab"
             [class.is-active]="activeSection() === item.id"
+            [class.is-done]="sectionIndex() > i"
             [class.has-raid]="hasRaidOn(item.id)"
             [attr.aria-selected]="activeSection() === item.id"
-            [attr.aria-label]="item.label + (hasRaidOn(item.id) ? ' — intrusion' : '')"
+            [attr.aria-label]="item.fn + ' — ' + item.label + (hasRaidOn(item.id) ? ' — intrusion' : '')"
             (click)="scrollTo(item.id, $event)"
           >
-            {{ item.shortLabel }}
+            <span class="runtime__dock-num">{{ item.line }}</span>
+            <span class="runtime__dock-name">{{ item.shortLabel }}</span>
           </button>
         }
       </div>
-      <button
-        type="button"
-        class="runtime__dock-step"
-        aria-label="Section suivante"
-        [disabled]="sectionIndex() >= navItems.length - 1"
-        (click)="nextSection($event)"
-      >
-        ›
-      </button>
     </div>
   </nav>
 

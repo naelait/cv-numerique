@@ -71,7 +71,7 @@ export class App {
   protected readonly navItems: NavItem[] = [
     { id: 'intro', label: 'Accueil', shortLabel: 'Accueil', line: '01', fn: 'Init()', log: 'Boot OK — Bruxelles, BE' },
     { id: 'about', label: 'Profil', shortLabel: 'Profil', line: '02', fn: 'LoadProfil()', log: 'Profil développeur chargé' },
-    { id: 'work', label: 'Parcours', shortLabel: 'Jobs', line: '03', fn: 'GetExperiences()', log: '3 expériences retournées' },
+    { id: 'work', label: 'Parcours', shortLabel: 'Parcours', line: '03', fn: 'GetExperiences()', log: '3 expériences retournées' },
     { id: 'craft', label: 'Skills', shortLabel: 'Skills', line: '04', fn: 'ListSkills()', log: 'Angular · .NET · Flutter détectés' },
     { id: 'projects', label: 'Projets', shortLabel: 'Projets', line: '05', fn: 'FetchProjects()', log: '4 projets en cache' },
     { id: 'education', label: 'Formation', shortLabel: 'Études', line: '06', fn: 'GetFormation()', log: 'Ephec + Becode synchronisés' },

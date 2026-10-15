@@ -2472,7 +2472,7 @@
 @media (max-width: 900px) {
   :root {
     --rail-width: 0;
-    --footer-nav: calc(3.85rem + var(--safe-bottom));
+    --footer-nav: calc(5.6rem + var(--safe-bottom));
     --runtime-height: var(--footer-nav);
     --header-height: calc(2.65rem + var(--safe-top));
     --chat-fab-h: 2.55rem;
@@ -2514,7 +2514,7 @@
     left: 0;
   }
 
-  /* Bottom dock: prev | section tabs | next — no terminal / debugger chrome */
+  /* Bottom dock: the nael.run() instruction pointer, not a tab bar */
   .runtime {
     top: auto;
     left: 0;
@@ -2524,12 +2524,12 @@
     height: auto;
     flex-direction: row;
     align-items: stretch;
-    gap: 0.3rem;
-    padding: 0.35rem 0.4rem max(0.35rem, var(--safe-bottom));
+    gap: 0;
+    padding: 0;
     border-right: 0;
-    border-top: 1px solid var(--line);
-    background: color-mix(in oklab, var(--bg-deep) 96%, transparent);
-    box-shadow: 0 -10px 28px rgba(0, 0, 0, 0.28);
+    border-top: 1px solid color-mix(in oklab, var(--runtime-green) 32%, var(--line));
+    background: var(--bg-code);
+    box-shadow: 0 -16px 36px rgba(0, 0, 0, 0.4);
   }
 
   .runtime__titlebar,
@@ -2543,81 +2543,105 @@
 
   .runtime__dock {
     display: flex;
-    align-items: center;
-    gap: 0.3rem;
+    flex-direction: column;
     width: 100%;
     min-width: 0;
   }
 
-  .runtime__dock-step {
-    flex: 0 0 auto;
-    display: grid;
-    place-items: center;
-    width: 2.75rem;
-    height: 2.75rem;
-    min-width: var(--touch-min);
-    min-height: var(--touch-min);
-    border: 1px solid var(--line);
-    border-radius: 0.55rem;
-    background: var(--bg-field);
-    color: var(--ink);
-    font-size: 1.45rem;
+  .runtime__dock-ip {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    min-height: 2.15rem;
+    margin: 0;
+    padding: 0.4rem 0.75rem 0.15rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
     line-height: 1;
-    cursor: pointer;
   }
 
-  .runtime__dock-step:disabled {
-    opacity: 0.28;
-    cursor: default;
+  .runtime__dock-ln {
+    color: var(--runtime-dim);
+    font-variant-numeric: tabular-nums;
   }
 
-  .runtime__dock-step:focus-visible {
-    outline: 2px solid var(--focus);
-    outline-offset: 2px;
+  .runtime__dock-kw {
+    color: var(--syntax-red);
+  }
+
+  .runtime__dock-fn {
+    color: var(--runtime-green);
+    font-weight: 600;
+  }
+
+  .runtime__dock-where {
+    margin-left: auto;
+    color: var(--ink-muted);
+    font-family: var(--font-body);
+    font-size: 0.68rem;
   }
 
   .runtime__dock-tabs {
-    display: flex;
-    flex: 1 1 auto;
-    gap: 0.3rem;
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0;
+    width: 100%;
     min-width: 0;
-    overflow-x: auto;
-    padding: 0.1rem;
-    scroll-snap-type: x proximity;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .runtime__dock-tabs::-webkit-scrollbar {
-    display: none;
+    overflow: visible;
+    padding: 0 0.2rem max(0.2rem, var(--safe-bottom));
   }
 
   .runtime__dock-tab {
-    flex: 0 0 auto;
-    min-height: var(--touch-min);
-    padding: 0.4rem 0.8rem;
-    border: 1px solid transparent;
-    border-radius: 999px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.05rem;
+    min-height: 2.75rem;
+    min-width: 0;
+    padding: 0.15rem 0.05rem 0.3rem;
+    border: 0;
+    border-radius: 0;
     background: transparent;
-    color: var(--ink-muted);
-    font-family: var(--font-body);
-    font-size: 0.82rem;
-    font-weight: 600;
-    letter-spacing: -0.01em;
+    color: var(--runtime-dim);
+    font-family: var(--font-mono);
+    line-height: 1.1;
     white-space: nowrap;
-    scroll-snap-align: center;
     cursor: pointer;
   }
 
-  .runtime__dock-tab.is-active {
-    color: var(--bg-deep);
-    background: var(--runtime-green);
-    border-color: color-mix(in oklab, var(--runtime-green) 70%, transparent);
+  .runtime__dock-num {
+    font-size: 0.56rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--runtime-dim);
   }
 
-  .runtime__dock-tab.has-raid:not(.is-active) {
+  .runtime__dock-name {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 0.58rem;
+    color: var(--syntax-purple);
+  }
+
+  .runtime__dock-tab.is-done .runtime__dock-name {
+    color: color-mix(in oklab, var(--syntax-purple) 42%, var(--runtime-dim));
+  }
+
+  .runtime__dock-tab.is-active {
+    color: var(--runtime-green);
+    background: transparent;
+    box-shadow: inset 0 -2px 0 var(--runtime-green);
+  }
+
+  .runtime__dock-tab.is-active .runtime__dock-num,
+  .runtime__dock-tab.is-active .runtime__dock-name {
+    color: var(--runtime-green);
+  }
+
+  .runtime__dock-tab.has-raid:not(.is-active) .runtime__dock-num,
+  .runtime__dock-tab.has-raid:not(.is-active) .runtime__dock-name {
     color: #ffb4b0;
-    box-shadow: inset 0 -2px 0 #ff6b63;
   }
 
   .runtime__dock-tab:focus-visible {
@@ -2660,8 +2684,10 @@
   .stage__scroll--hero {
     display: flex;
     flex-direction: column;
-    justify-content: stretch;
-    overflow: hidden;
+    justify-content: flex-start;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     container-type: normal;
   }
 
@@ -2678,42 +2704,42 @@
     font-size: 0.92rem;
   }
 
-  /* Hero: identity strip + clicker fills remaining viewport (no page scroll) */
+  /* Hero: identity, then the full clicker. The page scrolls if the phone is short. */
   .hero-layout {
     --phone-zoom: 1;
     display: flex;
     flex-direction: column;
     grid-template-columns: none;
     gap: 0.45rem;
-    flex: 1 1 auto;
-    height: 100%;
-    min-height: 0;
+    flex: 0 0 auto;
+    height: auto;
+    min-height: 100%;
     max-width: none;
     align-items: stretch;
-    justify-content: stretch;
-    padding-bottom: 0;
+    justify-content: flex-start;
+    padding-bottom: 0.35rem;
   }
 
   .hero {
     flex: 0 0 auto;
-    gap: 0.25rem;
+    gap: 0.15rem;
     max-width: none;
   }
 
   .hero__stamp {
     font-size: 0.55rem;
-    padding: 0.18rem 0.45rem;
+    padding: 0.12rem 0.4rem;
   }
 
   .hero__title {
-    font-size: clamp(1.45rem, 6.2vw, 1.85rem);
-    line-height: 1.05;
+    font-size: clamp(1.35rem, 5.6vw, 1.65rem);
+    line-height: 1.02;
     letter-spacing: -0.035em;
   }
 
   .hero__role {
-    font-size: 0.82rem;
-    line-height: 1.25;
+    font-size: 0.78rem;
+    line-height: 1.2;
     color: var(--ink-muted);
   }
 
@@ -2732,20 +2758,19 @@
   .hero__actions .btn {
     flex: 1 1 auto;
     justify-content: center;
-    min-height: 2.45rem;
-    padding-inline: 0.8rem;
-    font-size: 0.82rem;
+    min-height: 2.35rem;
+    padding-inline: 0.7rem;
+    font-size: 0.8rem;
   }
 
   .hero-layout > .hero__play {
     display: flex;
     flex-direction: column;
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     gap: 0.25rem;
     width: 100%;
     max-width: 100%;
     min-width: 0;
-    min-height: 0;
     margin-right: 0;
     padding: 0;
     border: 0;
@@ -2754,46 +2779,52 @@
   }
 
   .hero__play-label {
-    display: block;
-    flex: 0 0 auto;
-    margin: 0;
-    font-family: var(--font-mono);
-    font-size: 0.5rem;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--runtime-dim);
+    display: none;
   }
 
   .hero-layout > .hero__play app-matrix-clicker {
     display: block;
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     width: 100%;
     max-width: 100%;
     min-width: 0;
-    min-height: 0;
-    height: 100%;
+    height: auto;
     zoom: 1;
   }
 
-  /* About: the PDF preview is hidden, so the copy can scroll if it needs to */
+  /* About: a readable record. The PDF viewer is a blank hole on a phone, so the file is a row. */
   #about > .stage__scroll {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
 
+  #about .view-head {
+    display: block;
+    margin-bottom: 0.9rem;
+    padding-bottom: 0.7rem;
+  }
+
+  #about .view-head h2 {
+    font-size: clamp(1.45rem, 6.2vw, 1.8rem);
+    line-height: 1.08;
+  }
+
   .about {
     grid-template-columns: 1fr;
-    gap: 0.55rem;
+    gap: 0.85rem;
+  }
+
+  .about__main {
+    gap: 1rem;
   }
 
   .about__prose {
-    font-size: 0.84rem;
-    line-height: 1.4;
+    font-size: 0.95rem;
+    line-height: 1.55;
   }
 
   .about__prose p {
-    margin: 0 0 0.45rem;
+    margin: 0 0 0.75rem;
   }
 
   .about__prose p:last-child {
@@ -2802,26 +2833,55 @@
 
   .about__facts {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.35rem;
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .fact {
+    padding: 0.7rem 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .fact:last-child {
+    border-bottom: 1px solid var(--line);
   }
 
   .fact__value {
-    font-size: 0.88rem;
+    font-size: 1.05rem;
   }
 
   .fact__label {
-    font-size: 0.68rem;
-    margin-top: 0.05rem;
+    margin-top: 0.15rem;
+    font-size: 0.8rem;
+    line-height: 1.35;
   }
 
   .about__link {
-    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: var(--touch-min);
+    margin: 0;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--line);
+    border-radius: 0.5rem;
+    background: var(--bg-panel);
+    font-size: 0.82rem;
+    text-decoration: none;
   }
 
   .about__cv {
+    width: 100%;
+    height: auto;
+    aspect-ratio: auto;
     max-width: none;
     margin: 0;
+    align-self: stretch;
+    justify-self: stretch;
   }
 
   .about__cv-frame,
@@ -3045,18 +3105,6 @@
 
   .connect__footer {
     margin-top: 0.4rem;
-  }
-
-  .runtime__dock-tab {
-    padding: 0.3rem 0.55rem;
-    font-size: 0.72rem;
-    min-height: var(--touch-min);
-  }
-
-  .runtime__dock-step {
-    width: var(--touch-min);
-    height: var(--touch-min);
-    font-size: 1.2rem;
   }
 
   .raid-toast {
@@ -3308,9 +3356,8 @@
   }
 
   .hero-layout > .hero__play app-matrix-clicker {
-    height: 100%;
-    max-height: 100%;
-    min-height: 0;
+    height: auto;
+    max-height: none;
   }
 }
 
@@ -3318,6 +3365,10 @@
 @media (max-width: 380px) {
   .hero__title {
     font-size: 1.4rem;
+  }
+
+  .runtime__dock-name {
+    font-size: 0.5rem;
   }
 
   .hero__actions {
@@ -3359,8 +3410,7 @@
 
   .hero-layout > .hero__play app-matrix-clicker {
     width: 100%;
-    min-height: 0;
-    height: min(18rem, calc(100dvh - var(--header-height) - var(--footer-nav) - 1.2rem));
+    height: auto;
   }
 
   .stage__view {

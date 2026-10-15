@@ -50,6 +50,7 @@
               "sourceMap": true
             },
             "static": {
+              "baseHref": "/cv-numerique/",
               "budgets": [
                 {
                   "type": "initial",

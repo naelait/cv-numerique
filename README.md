@@ -61,6 +61,15 @@ docker compose exec ollama ollama pull qwen2.5:14b
 
 **Hébergement en ligne** (VPS + domaine + HTTPS) : [docker/HOSTING.md](docker/HOSTING.md).
 
+### GitHub Pages (gratuit, sans chat)
+
+À chaque push sur `main`, le workflow [`.github/workflows/github-pages.yml`](.github/workflows/github-pages.yml) build `npm run build:static` et publie le site.
+
+1. Sur GitHub : **Settings → Pages → Build and deployment → Source : GitHub Actions**.
+2. Après le premier workflow vert : **https://naelait.github.io/cv-numerique/**
+
+Le build static utilise `baseHref: /cv-numerique/` (nom du repo). Domaine perso plus tard : adapter `baseHref` dans `angular.json` (`configuration.static`).
+
 Variables d’environnement (voir `.env.example`) :
 
 | Variable | Défaut | Rôle |

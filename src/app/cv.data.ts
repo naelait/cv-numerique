@@ -67,7 +67,7 @@ export const cv = {
   email: 'nael.ait@gmail.com',
   telephone: '0494 74 96 26',
   telephoneTel: '+32494749626',
-  cvPdf: '/cv.pdf',
+  cvPdf: 'cv.pdf',
   cvPdfLabel: 'CV — Naël Ait.pdf',
   liens: [{ libelle: 'LinkedIn', href: 'https://www.linkedin.com/in/nael-ait' }] as {
     libelle: string;

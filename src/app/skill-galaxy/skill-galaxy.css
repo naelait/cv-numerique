@@ -1,0 +1,535 @@
+﻿:host {
+  display: block;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+}
+
+/* ——— Desktop 3D galaxy ——— */
+.galaxy {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 280px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 0.55rem;
+  background:
+    radial-gradient(ellipse 65% 55% at 50% 45%, color-mix(in oklab, var(--runtime-green) 8%, transparent), transparent 70%),
+    color-mix(in oklab, var(--bg-deep) 94%, var(--bg-field));
+}
+
+.galaxy__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: grab;
+}
+
+.galaxy__canvas:active {
+  cursor: grabbing;
+}
+
+.galaxy__hint {
+  position: absolute;
+  top: 0.65rem;
+  left: 50%;
+  z-index: 2;
+  margin: 0;
+  max-width: 92%;
+  padding: 0.25rem 0.55rem;
+  border: 1px solid color-mix(in oklab, var(--line) 80%, transparent);
+  border-radius: 0.25rem;
+  background: color-mix(in oklab, var(--bg-deep) 82%, transparent);
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--runtime-dim);
+  text-align: center;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.galaxy__toolbar {
+  position: absolute;
+  right: 0.65rem;
+  bottom: 0.65rem;
+  z-index: 3;
+  display: flex;
+  gap: 0.3rem;
+}
+
+.galaxy__tool {
+  display: grid;
+  place-items: center;
+  min-width: 2.45rem;
+  min-height: 2.45rem;
+  padding: 0 0.45rem;
+  border: 1px solid var(--line);
+  border-radius: 0.35rem;
+  background: color-mix(in oklab, var(--bg-field) 90%, transparent);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.galaxy__tool--wide {
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.galaxy__tool:hover {
+  border-color: color-mix(in oklab, var(--runtime-cyan) 40%, var(--line));
+}
+
+.galaxy__tool:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.galaxy__a11y {
+  position: absolute;
+  left: 0.55rem;
+  right: 4.5rem;
+  bottom: 0.55rem;
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  max-height: 28%;
+  overflow: auto;
+  pointer-events: auto;
+}
+
+.galaxy__a11y-btn {
+  min-height: 2.35rem;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--bg-deep) 75%, transparent);
+  color: var(--ink-muted);
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.galaxy__a11y-btn.is-active {
+  color: var(--bg-deep);
+  background: var(--runtime-green);
+  border-color: color-mix(in oklab, var(--runtime-green) 70%, transparent);
+}
+
+.galaxy__a11y-btn:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+:host ::ng-deep .galaxy__labels {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+:host ::ng-deep .galaxy__label {
+  display: block;
+  padding: 0.15rem 0.45rem;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink);
+  white-space: nowrap;
+  background: color-mix(in oklab, #0a0d11 78%, transparent);
+  border: 1px solid var(--line);
+  border-radius: 0.25rem;
+  transform: translate(-50%, -50%);
+}
+
+:host ::ng-deep .galaxy__label.is-active {
+  color: var(--runtime-green);
+  border-color: color-mix(in oklab, var(--runtime-green) 45%, transparent);
+}
+
+:host ::ng-deep .galaxy__moon-label {
+  display: block;
+  padding: 0.12rem 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--runtime-cyan);
+  white-space: nowrap;
+  background: color-mix(in oklab, #0a0d11 82%, transparent);
+  border: 1px solid color-mix(in oklab, var(--runtime-cyan) 35%, transparent);
+  border-radius: 0.2rem;
+  transform: translateY(-50%);
+}
+
+.galaxy {
+  background: #0a0d11;
+}
+
+.galaxy--static .galaxy__hint {
+  opacity: 0.7;
+}
+
+/* ——— Mobile sonar ——— */
+.sonar {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 240px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 0.55rem;
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 45%, color-mix(in oklab, var(--runtime-green) 10%, transparent), transparent 70%),
+    color-mix(in oklab, var(--bg-deep) 92%, var(--bg-field));
+}
+
+.sonar__stage {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+}
+
+.sonar__disc {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(88%, 20rem);
+  aspect-ratio: 1;
+  max-height: 92%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.sonar__glow {
+  position: absolute;
+  inset: 12%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--runtime-green) 18%, transparent),
+    transparent 70%
+  );
+}
+
+.sonar__ring {
+  position: absolute;
+  inset: 50%;
+  border: 1px solid color-mix(in oklab, var(--runtime-green) 20%, transparent);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.sonar__ring--a {
+  width: 100%;
+  height: 100%;
+  border-style: dashed;
+}
+
+.sonar__ring--b {
+  width: 68%;
+  height: 68%;
+  border-color: color-mix(in oklab, var(--runtime-cyan) 22%, transparent);
+}
+
+.sonar__ring--c {
+  width: 36%;
+  height: 36%;
+  border-style: dashed;
+  border-color: color-mix(in oklab, var(--ink-muted) 28%, transparent);
+}
+
+.sonar__cross {
+  position: absolute;
+  background: color-mix(in oklab, var(--line) 65%, transparent);
+}
+
+.sonar__cross--h {
+  left: 6%;
+  right: 6%;
+  top: 50%;
+  height: 1px;
+  transform: translateY(-50%);
+}
+
+.sonar__cross--v {
+  top: 6%;
+  bottom: 6%;
+  left: 50%;
+  width: 1px;
+  transform: translateX(-50%);
+}
+
+.sonar__sweep {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+
+.sonar__beam {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg at 50% 50%,
+    color-mix(in oklab, var(--runtime-green) 52%, transparent) 0deg,
+    color-mix(in oklab, var(--runtime-green) 18%, transparent) 42deg,
+    transparent 85deg,
+    transparent 360deg
+  );
+  -webkit-mask: radial-gradient(farthest-side, #000 99%, transparent 100%);
+  mask: radial-gradient(farthest-side, #000 99%, transparent 100%);
+}
+
+.sonar__needle {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 50%;
+  width: 2px;
+  margin-left: -1px;
+  background: linear-gradient(
+    to top,
+    color-mix(in oklab, var(--runtime-green) 95%, white),
+    color-mix(in oklab, var(--runtime-cyan) 40%, transparent)
+  );
+  box-shadow: 0 0 12px color-mix(in oklab, var(--runtime-green) 60%, transparent);
+}
+
+.sonar__core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: grid;
+  justify-items: center;
+  gap: 0.2rem;
+  transform: translate(-50%, -50%);
+}
+
+.sonar__core-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--runtime-green);
+  box-shadow: 0 0 14px color-mix(in oklab, var(--runtime-green) 60%, transparent);
+}
+
+.sonar__core-label {
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--runtime-dim);
+}
+
+.sonar__sector {
+  position: absolute;
+  z-index: 4;
+  display: grid;
+  gap: 0.05rem;
+  min-width: 4.5rem;
+  padding: 0.25rem 0.4rem;
+  border: 1px solid color-mix(in oklab, var(--line) 80%, transparent);
+  border-radius: 0.3rem;
+  background: color-mix(in oklab, var(--bg-deep) 88%, transparent);
+  color: var(--ink-muted);
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+}
+
+.sonar__sector-name {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+}
+
+.sonar__sector-lvl {
+  font-family: var(--font-mono);
+  font-size: 0.48rem;
+  color: var(--runtime-dim);
+}
+
+.sonar__sector.is-active {
+  border-color: color-mix(in oklab, var(--runtime-green) 50%, var(--line));
+  box-shadow: 0 0 14px color-mix(in oklab, var(--runtime-green) 20%, transparent);
+}
+
+.sonar__sector.is-active .sonar__sector-lvl {
+  color: var(--runtime-green);
+}
+
+.sonar__sector:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.sonar__blip {
+  position: absolute;
+  z-index: 5;
+  display: grid;
+  justify-items: center;
+  gap: 0.15rem;
+  width: 4.6rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  opacity: 0.2;
+  transition: opacity 0.12s linear;
+}
+
+.sonar__blip-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--runtime-dim) 70%, transparent);
+  transition:
+    background 0.1s linear,
+    box-shadow 0.1s linear,
+    transform 0.1s linear;
+}
+
+.sonar__blip-label {
+  max-width: 4.6rem;
+  padding: 0.1rem 0.28rem;
+  border-radius: 0.2rem;
+  background: color-mix(in oklab, var(--bg-deep) 86%, transparent);
+  border: 1px solid color-mix(in oklab, var(--runtime-green) 25%, transparent);
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+  text-align: center;
+  color: var(--ink);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.1s linear;
+}
+
+.sonar__blip.is-lit,
+.sonar__blip.is-ping {
+  opacity: 1;
+}
+
+.sonar__blip.is-lit .sonar__blip-dot,
+.sonar__blip.is-ping .sonar__blip-dot {
+  background: var(--runtime-green);
+  box-shadow: 0 0 14px color-mix(in oklab, var(--runtime-green) 70%, transparent);
+  transform: scale(1.35);
+}
+
+.sonar__blip.is-lit .sonar__blip-label,
+.sonar__blip.is-ping .sonar__blip-label {
+  opacity: 1;
+}
+
+.sonar__blip.is-active:not(.is-lit):not(.is-ping) {
+  opacity: 0.5;
+}
+
+.sonar__blip.is-active:not(.is-lit):not(.is-ping) .sonar__blip-dot {
+  background: color-mix(in oklab, var(--runtime-cyan) 75%, transparent);
+}
+
+.sonar__blip:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+  opacity: 1;
+}
+
+.sonar__blip:focus-visible .sonar__blip-label {
+  opacity: 1;
+}
+
+.sonar__cats {
+  position: relative;
+  z-index: 6;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.3rem;
+  flex: 0 0 auto;
+  padding: 0.4rem 0.5rem 0.5rem;
+  border-top: 1px solid var(--line);
+  background: color-mix(in oklab, var(--bg-deep) 70%, transparent);
+}
+
+.sonar__cat {
+  min-height: 2.2rem;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-muted);
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sonar__cat.is-active {
+  color: var(--bg-deep);
+  background: var(--runtime-green);
+  border-color: color-mix(in oklab, var(--runtime-green) 70%, transparent);
+}
+
+.sonar__cat:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+@media (max-width: 900px) {
+  .sonar {
+    min-height: 220px;
+  }
+
+  .sonar__disc {
+    width: min(94%, 17.5rem);
+  }
+
+  .sonar__blip {
+    width: 4rem;
+  }
+
+  .sonar__blip-label {
+    font-size: 0.48rem;
+  }
+
+  .sonar__sector {
+    min-width: 3.6rem;
+    padding: 0.18rem 0.28rem;
+  }
+
+  .sonar__sector-name {
+    font-size: 0.5rem;
+  }
+
+  .sonar__cat {
+    min-height: 2rem;
+    font-size: 0.68rem;
+    padding: 0.25rem 0.55rem;
+  }
+}

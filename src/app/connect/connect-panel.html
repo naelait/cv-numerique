@@ -1,0 +1,85 @@
+<div class="connect" [class.connect--ready]="ready()" [class.connect--reduced]="reducedMotion()">
+  <canvas #canvas class="connect__canvas" aria-hidden="true"></canvas>
+
+  <div class="connect__glow" aria-hidden="true"></div>
+
+  <header class="connect__head">
+    <div class="connect__badge" [class.is-live]="ready()">
+      <span class="connect__badge-dot" aria-hidden="true"></span>
+      {{ ready() ? 'CONNECTED' : 'DIALING…' }}
+    </div>
+    <p class="connect__fn">await Recruteur.Connect();</p>
+    @if (hasBreakpoint()) {
+      <span class="connect__bp" title="Breakpoint actif">⬤ BP</span>
+    }
+  </header>
+
+  <div class="connect__terminal" role="log" aria-live="polite" aria-label="Journal de connexion">
+    @for (line of connectLines(); track line.id; let i = $index) {
+      @if (i < visibleCount()) {
+        <p class="connect__line" [class]="'connect__line--' + line.tone">
+          @if (line.prefix) {
+            <span class="connect__prefix">{{ line.prefix }}</span>
+          }
+          <span>{{ line.text }}</span>
+          @if (line.suffix) {
+            <span class="connect__suffix">{{ line.suffix }}</span>
+          }
+        </p>
+      }
+    }
+    @if (!ready() && visibleCount() > 0 && visibleCount() < connectLines().length) {
+      <p class="connect__line connect__line--dim" aria-hidden="true">
+        <span class="connect__cursor">▋</span>
+      </p>
+    }
+  </div>
+
+  <div class="connect__endpoints" [class.is-visible]="ready()">
+    <a class="connect__endpoint connect__endpoint--mail" [href]="'mailto:' + email()">
+      <span class="connect__endpoint-verb">POST</span>
+      <span class="connect__endpoint-path">/mail</span>
+      <span class="connect__endpoint-val">{{ email() }}</span>
+      <span class="connect__endpoint-cta">Écrire →</span>
+    </a>
+
+    <a class="connect__endpoint connect__endpoint--phone" [href]="'tel:' + telephoneTel()">
+      <span class="connect__endpoint-verb">GET</span>
+      <span class="connect__endpoint-path">/phone</span>
+      <span class="connect__endpoint-val">{{ telephone() }}</span>
+      <span class="connect__endpoint-cta">Appeler →</span>
+    </a>
+
+    @if (liens()[0]; as link) {
+      <a
+        class="connect__endpoint connect__endpoint--social"
+        [href]="link.href"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <span class="connect__endpoint-verb">GET</span>
+        <span class="connect__endpoint-path">/linkedin</span>
+        <span class="connect__endpoint-val">{{ link.libelle }}</span>
+        <span class="connect__endpoint-cta">Ouvrir →</span>
+      </a>
+    }
+
+    <button type="button" class="connect__endpoint connect__endpoint--persona" (click)="openPersona()">
+      <span class="connect__endpoint-verb">WS</span>
+      <span class="connect__endpoint-path">/persona</span>
+      <span class="connect__endpoint-val">Chat IA · Ask()</span>
+      <span class="connect__endpoint-cta">Parler →</span>
+    </button>
+  </div>
+
+  <div class="connect__footer" [class.is-visible]="ready()">
+    <h2 class="connect__title">{{ cloture() }}</h2>
+    <div class="connect__meta">
+      <button type="button" class="connect__copy" (click)="copyEmail($event)">
+        {{ copied() === 'email' ? 'Copié ✓' : 'Copier l’email' }}
+      </button>
+      <span class="connect__sep" aria-hidden="true">·</span>
+      <span>{{ contactNote() }}</span>
+    </div>
+  </div>
+</div>

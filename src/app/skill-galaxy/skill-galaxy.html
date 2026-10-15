@@ -1,0 +1,121 @@
+@if (useSonar()) {
+  <div
+    class="sonar"
+    [class.sonar--static]="reducedMotion()"
+    [class.sonar--live]="active()"
+  >
+    <div class="sonar__stage">
+      <div class="sonar__disc" aria-hidden="true">
+        <span class="sonar__glow"></span>
+        <span class="sonar__ring sonar__ring--a"></span>
+        <span class="sonar__ring sonar__ring--b"></span>
+        <span class="sonar__ring sonar__ring--c"></span>
+        <span class="sonar__cross sonar__cross--h"></span>
+        <span class="sonar__cross sonar__cross--v"></span>
+
+        <div class="sonar__sweep" [style.transform]="'rotate(' + sweepDeg() + 'deg)'">
+          <span class="sonar__beam"></span>
+          <span class="sonar__needle"></span>
+        </div>
+
+        <span class="sonar__core">
+          <span class="sonar__core-dot"></span>
+          <span class="sonar__core-label">sonar</span>
+        </span>
+      </div>
+
+      @for (sector of sectors(); track sector.id) {
+        <button
+          type="button"
+          class="sonar__sector"
+          [class.is-active]="activeId() === sector.id"
+          [style.left.%]="sector.left"
+          [style.top.%]="sector.top"
+          [attr.aria-label]="sector.libelle"
+          (click)="selectGroup(sector.id, $event)"
+        >
+          <span class="sonar__sector-name">{{ sector.short }}</span>
+          <span class="sonar__sector-lvl">{{ sector.niveau }}%</span>
+        </button>
+      }
+
+      @for (blip of blips(); track blip.id) {
+        <button
+          type="button"
+          class="sonar__blip"
+          [class.is-lit]="isLit(blip.id)"
+          [class.is-ping]="isPing(blip.id)"
+          [class.is-active]="activeId() === blip.groupId"
+          [style.left.%]="blip.left"
+          [style.top.%]="blip.top"
+          [attr.aria-label]="blip.label"
+          (click)="selectBlip(blip, $event)"
+        >
+          <span class="sonar__blip-dot"></span>
+          <span class="sonar__blip-label">{{ blip.short }}</span>
+        </button>
+      }
+    </div>
+
+    <div
+      class="sonar__cats"
+      role="radiogroup"
+      aria-label="Compétences par domaine"
+      (keydown)="onRadioKey($event)"
+    >
+      @for (group of groups(); track group.id) {
+        <button
+          type="button"
+          class="sonar__cat"
+          role="radio"
+          [id]="'galaxy-radio-' + group.id"
+          [attr.aria-checked]="activeId() === group.id"
+          [attr.tabindex]="activeId() === group.id ? 0 : -1"
+          [class.is-active]="activeId() === group.id"
+          (click)="selectGroup(group.id, $event)"
+        >
+          {{ shortLabel(group.libelle) }}
+        </button>
+      }
+    </div>
+  </div>
+} @else {
+  <div #hostEl class="galaxy" [class.galaxy--static]="reducedMotion()">
+    <canvas #glCanvas class="galaxy__canvas" aria-hidden="true"></canvas>
+
+    <p class="galaxy__hint" id="galaxy-hint">
+      Molette · zoom · glisser · orbite · clic lune · compétence
+    </p>
+
+    <div class="galaxy__toolbar" aria-label="Contrôles de navigation 3D">
+      <button type="button" class="galaxy__tool" (click)="zoomIn($event)" aria-label="Zoom avant">+</button>
+      <button type="button" class="galaxy__tool" (click)="zoomOut($event)" aria-label="Zoom arrière">−</button>
+      <button type="button" class="galaxy__tool galaxy__tool--wide" (click)="resetView($event)" aria-label="Réinitialiser la vue">
+        reset
+      </button>
+    </div>
+
+    <div
+      class="galaxy__a11y"
+      role="radiogroup"
+      aria-label="Compétences par domaine"
+      aria-describedby="galaxy-hint"
+      (keydown)="onRadioKey($event)"
+    >
+      @for (group of groups(); track group.id) {
+        <button
+          type="button"
+          class="galaxy__a11y-btn"
+          role="radio"
+          [id]="'galaxy-radio-' + group.id"
+          [attr.aria-checked]="activeId() === group.id"
+          [attr.tabindex]="activeId() === group.id ? 0 : -1"
+          [class.is-active]="activeId() === group.id"
+          (click)="skillSelect.emit(group.id)"
+        >
+          {{ group.libelle }}
+        </button>
+      }
+    </div>
+  </div>
+}

@@ -1,0 +1,32 @@
+{
+  "name": "cv-numerique",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "sync:cv": "node ./scripts/sync-cv-pdf.mjs",
+    "prestart": "npm run sync:cv",
+    "prebuild": "npm run sync:cv",
+    "start": "ng serve",
+    "chat": "npm run start --prefix server",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development"
+  },
+  "private": true,
+  "packageManager": "npm@11.16.0",
+  "dependencies": {
+    "@angular/common": "^22.1.0",
+    "@angular/compiler": "^22.1.0",
+    "@angular/core": "^22.1.0",
+    "@angular/platform-browser": "^22.1.0",
+    "rxjs": "~7.8.0",
+    "three": "^0.185.1",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^22.1.5",
+    "@angular/cli": "^22.1.5",
+    "@angular/compiler-cli": "^22.1.0",
+    "@types/three": "^0.185.4",
+    "typescript": "~6.0.2"
+  }
+}

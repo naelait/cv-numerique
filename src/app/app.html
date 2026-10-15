@@ -1,0 +1,744 @@
+<div
+  class="shell"
+  [class.shell--ready]="introDone()"
+  [class.shell--reduced]="reducedMotion()"
+  [class.runtime--step]="stepPulse()"
+  [class.shell--booting]="isBooting()"
+  [style.--slide-dir]="sectionDirection()"
+  [style.--step-index]="sectionIndex()"
+>
+  @if (isBooting()) {
+    <div class="boot" aria-live="polite" aria-busy="true">
+      <p class="boot__title">dotnet build nael.cv</p>
+      <div class="boot__bar" aria-hidden="true">
+        <span [style.--boot]="bootProgress() / 100"></span>
+      </div>
+      <p class="boot__pct">{{ bootProgress() }}%</p>
+    </div>
+  }
+
+  <a class="skip-link" href="#about" (click)="skipToContent($event)">Aller au profil</a>
+
+  <header class="topbar">
+    <a class="topbar__brand" href="#intro" (click)="scrollTo('intro', $event)">
+      <span class="topbar__name">Naël Ait</span>
+      <span class="topbar__loc">{{ data.lieu }}</span>
+    </a>
+    <div class="topbar__debug" aria-live="polite">
+      <code class="topbar__trace">{{ callStack() }}</code>
+      <span class="topbar__status" [class.is-live]="stepPulse()">DEBUG</span>
+    </div>
+    <a class="topbar__mail" [href]="'mailto:' + data.email" aria-label="Envoyer un email à Naël">Mail</a>
+    <time class="topbar__clock" aria-hidden="true">{{ clock() }}</time>
+  </header>
+
+  <div class="progress" aria-hidden="true">
+    <span class="progress__fill" [style.--progress]="scrollProgress() / 100"></span>
+  </div>
+
+  @if (matrixClicker.raidAlert(); as alert) {
+    <div class="raid-toast" role="alert" aria-live="assertive">
+      <p class="raid-toast__msg">{{ alert }}</p>
+      @if (matrixClicker.activeRaid(); as raid) {
+        <button type="button" class="raid-toast__go" (click)="huntRaid($event)">
+          Y aller — {{ matrixClicker.sectionLabel(raid.sectionId) }}
+        </button>
+      }
+    </div>
+  }
+
+  <nav
+    #runtimeNav
+    class="runtime"
+    aria-label="Debugger nael.run()"
+    [style.--step-index]="sectionIndex()"
+  >
+    <div class="runtime__titlebar">
+      <span class="runtime__traffic" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="runtime__file">nael.exe</span>
+      <span class="runtime__mode">debug</span>
+    </div>
+
+    <div class="runtime__body">
+      <div class="runtime__code" [style.--step-index]="sectionIndex()">
+        <div class="runtime__row runtime__row--meta">
+          <span class="runtime__gutter-slot" aria-hidden="true"></span>
+          <p class="runtime__entry runtime__entry--main">async Task nael.run()</p>
+        </div>
+        <div class="runtime__row runtime__row--meta">
+          <span class="runtime__gutter-slot" aria-hidden="true"></span>
+          <p class="runtime__entry runtime__entry--brace">{{ '{' }}</p>
+        </div>
+        @for (item of navItems; track item.id; let i = $index) {
+          <div
+            class="runtime__row"
+            [class.is-active]="activeSection() === item.id"
+            [class.is-done]="sectionIndex() > i"
+            [class.has-bp]="hasBreakpoint(item.id)"
+            [class.has-raid]="hasRaidOn(item.id)"
+          >
+            <button
+              type="button"
+              class="runtime__bp"
+              [class.is-on]="hasBreakpoint(item.id)"
+              [attr.aria-label]="(hasBreakpoint(item.id) ? 'Retirer' : 'Ajouter') + ' breakpoint ' + item.fn"
+              [attr.aria-pressed]="hasBreakpoint(item.id)"
+              (click)="toggleBreakpoint(item.id, $event)"
+            ></button>
+            <button
+              type="button"
+              class="runtime__frame"
+              [attr.aria-current]="activeSection() === item.id ? 'page' : null"
+              [attr.aria-label]="item.fn + ' — ' + item.label"
+              (click)="scrollTo(item.id, $event)"
+            >
+              <span class="runtime__ln">{{ item.line }}</span>
+              <span class="runtime__kw">await</span>
+              <span class="runtime__fn">{{ item.fn }};</span>
+              @if (hasRaidOn(item.id)) {
+                <span class="runtime__raid" aria-hidden="true">!</span>
+              } @else if (sectionIndex() > i) {
+                <span class="runtime__ok" aria-hidden="true">✓</span>
+              }
+            </button>
+          </div>
+        }
+        <div class="runtime__row runtime__row--meta">
+          <span class="runtime__gutter-slot" aria-hidden="true"></span>
+          <p class="runtime__entry runtime__entry--brace">{{ '}' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="runtime__watch">
+      <div class="runtime__watch-head">
+        <span>Watch</span>
+      </div>
+      <ul class="runtime__watch-list">
+        @for (v of watchVars(); track v.name) {
+          <li>
+            <span class="runtime__watch-name">{{ v.name }}</span>
+            <span class="runtime__watch-type">{{ v.type }}</span>
+            <span class="runtime__watch-val">{{ v.value }}</span>
+          </li>
+        }
+      </ul>
+    </div>
+
+    <div class="runtime__term">
+      <div class="runtime__term-log" aria-live="polite">
+        @for (line of terminalLines(); track $index) {
+          <p>{{ line }}</p>
+        }
+      </div>
+      <label class="runtime__term-row">
+        <span class="runtime__prompt">›</span>
+        <input
+          class="runtime__term-input"
+          type="text"
+          autocomplete="off"
+          spellcheck="false"
+          [value]="terminalInput()"
+          (input)="onTerminalInput($event)"
+          (keydown)="onTerminalKey($event)"
+          aria-label="Terminal debugger"
+          placeholder="help | ask | reset game | goto Connect"
+        />
+      </label>
+    </div>
+
+    <div class="runtime__toolbar">
+      <button type="button" class="runtime__btn" aria-label="Step back (Shift+F10)" (click)="prevSection($event)">
+        <span class="runtime__btn-key">⇧F10</span>
+        <span class="runtime__btn-long">Step out</span>
+        <span class="runtime__btn-short">Prev</span>
+      </button>
+      <button type="button" class="runtime__btn" aria-label="Continue to breakpoint (F5)" (click)="continueToBreakpoint($event)">
+        <span class="runtime__btn-key">F5</span>
+        <span class="runtime__btn-long">Continue</span>
+        <span class="runtime__btn-short">Cont.</span>
+      </button>
+      <button type="button" class="runtime__btn runtime__btn--accent" aria-label="Step into (F10)" (click)="nextSection($event)">
+        <span class="runtime__btn-key">F10</span>
+        <span class="runtime__btn-long">Step into</span>
+        <span class="runtime__btn-short">Next</span>
+      </button>
+    </div>
+
+    <div class="runtime__dock">
+      <button
+        type="button"
+        class="runtime__dock-step"
+        aria-label="Section précédente"
+        [disabled]="sectionIndex() === 0"
+        (click)="prevSection($event)"
+      >
+        ‹
+      </button>
+      <div class="runtime__dock-tabs" role="tablist" aria-label="Sections du CV">
+        @for (item of navItems; track item.id) {
+          <button
+            type="button"
+            class="runtime__dock-tab"
+            role="tab"
+            [class.is-active]="activeSection() === item.id"
+            [class.has-raid]="hasRaidOn(item.id)"
+            [attr.aria-selected]="activeSection() === item.id"
+            [attr.aria-label]="item.label + (hasRaidOn(item.id) ? ' — intrusion' : '')"
+            (click)="scrollTo(item.id, $event)"
+          >
+            {{ item.shortLabel }}
+          </button>
+        }
+      </div>
+      <button
+        type="button"
+        class="runtime__dock-step"
+        aria-label="Section suivante"
+        [disabled]="sectionIndex() >= navItems.length - 1"
+        (click)="nextSection($event)"
+      >
+        ›
+      </button>
+    </div>
+  </nav>
+
+  <main
+    id="main-content"
+    class="stage"
+    tabindex="-1"
+  >
+    <p class="sr-only" aria-live="polite">{{ activeFrame().label }}</p>
+    <section
+      id="intro"
+      class="stage__view stage__view--hero"
+      [class.is-active]="isSectionActive('intro')"
+      [class.is-leaving]="isSectionLeaving('intro')"
+      [attr.aria-hidden]="!isSectionActive('intro')"
+      [attr.inert]="!isSectionActive('intro') ? '' : null"
+    >
+      <div class="stage__scroll stage__scroll--hero">
+        <div class="hero-layout">
+          <div class="hero">
+            <span class="hero__stamp">{{ data.disponibilite }}</span>
+            <h1 class="hero__title">{{ data.nomComplet }}</h1>
+            <p class="hero__role">{{ data.poste }}</p>
+            <p class="hero__trail hero__trail--desk" aria-label="Entreprises et formations">
+              @for (place of data.heroTrail; track place; let last = $last) {
+                <span>{{ place }}</span>@if (!last) {
+                  <span class="hero__trail-sep" aria-hidden="true"> · </span>
+                }
+              }
+            </p>
+            <p class="hero__lede hero__lede--desk" #taglineReveal data-reveal [attr.aria-label]="data.slogan">{{ data.slogan }}</p>
+            <ul class="hero__stack hero__stack--desk" aria-label="Stack technique">
+              @for (chip of data.heroChips; track chip) {
+                <li>{{ chip }}</li>
+              }
+            </ul>
+            <div class="hero__actions">
+              <a class="btn btn--primary" href="#about" (click)="scrollTo('about', $event)">Voir le profil</a>
+              <a class="btn btn--ghost hero__mail--desk" [href]="'mailto:' + data.email">Écrire un mail</a>
+            </div>
+            @if (showDeckHint()) {
+              <p class="deck-hint" role="note">
+                <span class="deck-hint__tag">nael.run()</span>
+                <span class="deck-hint__desk">F10 step · F5 continue · tape <code>help</code> dans le terminal</span>
+                <span class="deck-hint__mobile">Glisse pour changer de page</span>
+                <button type="button" class="deck-hint__dismiss" (click)="dismissDeckHint($event)">OK</button>
+              </p>
+            }
+          </div>
+
+          <div class="hero__play">
+            <p class="hero__play-label">Mini-jeu</p>
+            <app-matrix-clicker
+              [active]="isSectionActive('intro')"
+              (huntRequest)="huntRaid()"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section
+      id="about"
+      class="stage__view"
+      [class.is-active]="isSectionActive('about')"
+      [class.is-leaving]="isSectionLeaving('about')"
+      [attr.aria-hidden]="!isSectionActive('about')"
+      [attr.inert]="!isSectionActive('about') ? '' : null"
+    >
+      <div class="stage__scroll">
+        <header class="view-head">
+          <h2>{{ data.aProposTitre }}</h2>
+        </header>
+        <div class="about">
+          <div class="about__main">
+            <div class="about__prose">
+              @for (p of data.aPropos; track $index) {
+                <p>{{ p }}</p>
+              }
+            </div>
+            <div class="about__facts" aria-label="Points clés">
+              @for (stat of data.stats; track stat.libelle) {
+                <div class="fact">
+                  <span class="fact__value">{{ stat.valeur }}</span>
+                  <span class="fact__label">{{ stat.libelle }}</span>
+                </div>
+              }
+            </div>
+            @if (data.liens.length) {
+              <a class="about__link" [href]="data.liens[0].href" target="_blank" rel="noopener noreferrer">
+                {{ data.liens[0].libelle }} →
+              </a>
+            }
+          </div>
+
+          <a
+            class="about__cv"
+            [href]="data.cvPdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            [attr.aria-label]="'Ouvrir le CV PDF — ' + data.cvPdfLabel"
+          >
+            <header class="about__cv-head">
+              <span class="about__cv-file">cv.pdf</span>
+              <span class="about__cv-open">Ouvrir ↗</span>
+            </header>
+            <div class="about__cv-frame">
+              <iframe
+                [src]="cvPreviewUrl"
+                [title]="data.cvPdfLabel"
+                tabindex="-1"
+                aria-hidden="true"
+              ></iframe>
+              <span class="about__cv-overlay" aria-hidden="true">
+                <span class="about__cv-cta">Voir le PDF complet</span>
+              </span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section
+      id="work"
+      class="stage__view stage__view--work"
+      [class.is-active]="isSectionActive('work')"
+      [class.is-leaving]="isSectionLeaving('work')"
+      [attr.aria-hidden]="!isSectionActive('work')"
+      [attr.inert]="!isSectionActive('work') ? '' : null"
+    >
+      <div class="stage__scroll stage__scroll--fit">
+        <header class="view-head view-head--compact">
+          <h2>{{ data.parcoursTitre }}</h2>
+        </header>
+        <div class="xp">
+          <div
+            class="xp__rail"
+            role="tablist"
+            aria-label="Expériences professionnelles"
+            (keydown)="onTabListKey($event, 'exp')"
+          >
+            @for (exp of data.experiences; track exp.id; let i = $index) {
+              <button
+                type="button"
+                class="xp__tab"
+                role="tab"
+                [id]="'exp-tab-' + exp.id"
+                [class.is-active]="activeExp() === exp.id"
+                [attr.aria-selected]="activeExp() === exp.id"
+                [attr.tabindex]="activeExp() === exp.id ? 0 : -1"
+                [attr.aria-controls]="'exp-panel'"
+                (click)="selectExp(exp)"
+              >
+                <span class="xp__tab-idx">{{ ('0' + (i + 1)).slice(-2) }}</span>
+                <span class="xp__tab-body">
+                  <span class="xp__tab-when">{{ exp.periode }}</span>
+                  <span class="xp__tab-title">{{ exp.poste }}</span>
+                  <span class="xp__tab-co">{{ exp.entreprise }} · {{ exp.lieu }}</span>
+                </span>
+              </button>
+            }
+          </div>
+
+          @if (activeExperience(); as exp) {
+            <article
+              class="xp__panel"
+              id="exp-panel"
+              role="tabpanel"
+              [attr.aria-labelledby]="'exp-tab-' + exp.id"
+              aria-live="polite"
+            >
+              <header class="xp__panel-head">
+                <div class="xp__panel-top">
+                  <div>
+                    <p class="xp__when">{{ exp.periode }}</p>
+                    <h3>{{ exp.poste }}</h3>
+                    <p class="xp__where">{{ exp.entreprise }} · {{ exp.lieu }}</p>
+                  </div>
+                  <div class="xp__stepper" aria-label="Navigation entre expériences">
+                    <button type="button" class="xp__step" (click)="prevExp($event)" aria-label="Expérience précédente">
+                      ←
+                    </button>
+                    <span class="xp__step-count">{{ activeExpIndex() + 1 }}/{{ data.experiences.length }}</span>
+                    <button type="button" class="xp__step" (click)="nextExp($event)" aria-label="Expérience suivante">
+                      →
+                    </button>
+                  </div>
+                </div>
+              </header>
+              <p class="xp__resume">{{ exp.resume }}</p>
+              <ul class="xp__highlights wheel-local">
+                @for (h of exp.faitsMarquants; track h) {
+                  <li>{{ h }}</li>
+                }
+              </ul>
+              <ul class="tags tags--wide">
+                @for (s of exp.stack; track s) {
+                  <li>{{ s }}</li>
+                }
+              </ul>
+            </article>
+          }
+        </div>
+      </div>
+    </section>
+
+    <section
+      id="craft"
+      class="stage__view stage__view--craft"
+      [class.is-active]="isSectionActive('craft')"
+      [class.is-leaving]="isSectionLeaving('craft')"
+      [attr.aria-hidden]="!isSectionActive('craft')"
+      [attr.inert]="!isSectionActive('craft') ? '' : null"
+    >
+      <div class="stage__scroll stage__scroll--fit">
+        <header class="view-head view-head--compact">
+          <h2>{{ data.competencesTitre }}</h2>
+        </header>
+        <div class="craft-layout">
+          <app-skill-galaxy
+            [groups]="data.competences"
+            [activeId]="activeSkill()"
+            [active]="isSectionActive('craft')"
+            [reducedMotion]="reducedMotion()"
+            (skillSelect)="selectSkillById($event)"
+            (itemSelect)="selectSkillItem($event)"
+          />
+          @if (activeSkillGroup(); as skill) {
+            <div
+              class="skills__panel"
+              id="skill-panel"
+              aria-live="polite"
+              [attr.aria-labelledby]="'skill-panel-title-' + activeSkill()"
+            >
+              <header class="skills__panel-head">
+                <h3 [id]="'skill-panel-title-' + skill.id">{{ skill.libelle }}</h3>
+                <p class="skills__panel-level">{{ skillLevelLabel(skill.niveau) }} · {{ skill.niveau }}%</p>
+              </header>
+              <p class="skills__panel-hint">Technologies associées</p>
+              <ul class="tags tags--wide tags--skills" role="list">
+                @for (item of skill.items; track item.nom) {
+                  <li>
+                    <button
+                      type="button"
+                      class="skills__tag"
+                      [class.is-active]="activeSkillItem() === item.nom"
+                      [attr.aria-pressed]="activeSkillItem() === item.nom"
+                      (click)="selectSkillItem(item.nom)"
+                    >
+                      {{ item.nom }}
+                    </button>
+                  </li>
+                }
+              </ul>
+              @if (activeSkillItemDetail(); as detail) {
+                <p class="skills__panel-detail" aria-live="polite">{{ detail }}</p>
+              } @else {
+                <p class="skills__panel-detail skills__panel-detail--hint">
+                  Clique une techno pour voir ce que c’est.
+                </p>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+
+    <section
+      id="projects"
+      class="stage__view stage__view--projects"
+      [class.is-active]="isSectionActive('projects')"
+      [class.is-leaving]="isSectionLeaving('projects')"
+      [attr.aria-hidden]="!isSectionActive('projects')"
+      [attr.inert]="!isSectionActive('projects') ? '' : null"
+    >
+      <div class="stage__scroll stage__scroll--fit">
+        <header class="view-head view-head--compact">
+          <h2>{{ data.projetsTitre }}</h2>
+        </header>
+        <div class="proj-layout">
+          <div
+            class="proj__rail"
+            role="tablist"
+            aria-label="Liste des projets"
+            (keydown)="onTabListKey($event, 'project')"
+          >
+            @for (project of data.projets; track project.id; let i = $index) {
+              <button
+                type="button"
+                class="proj__tab"
+                role="tab"
+                [id]="'proj-tab-' + project.id"
+                [class.is-active]="activeProject() === project.id"
+                [attr.aria-selected]="activeProject() === project.id"
+                [attr.tabindex]="activeProject() === project.id ? 0 : -1"
+                [attr.aria-controls]="'proj-panel'"
+                (click)="selectProject(project)"
+              >
+                <span class="proj__tab-idx">{{ ('0' + (i + 1)).slice(-2) }}</span>
+                <span class="proj__tab-body">
+                  <span class="proj__tab-file">{{ projectSlug(project) }}/</span>
+                  <span class="proj__tab-title">{{ project.titre }}</span>
+                  <span class="proj__tab-meta">{{ project.annee }} · {{ project.tag }}</span>
+                </span>
+              </button>
+            }
+          </div>
+
+          @if (activeProjectItem(); as project) {
+            <article
+              class="proj__panel"
+              id="proj-panel"
+              role="tabpanel"
+              [attr.aria-labelledby]="'proj-tab-' + project.id"
+              aria-live="polite"
+            >
+              <header class="proj__panel-head">
+                <div class="proj__panel-top">
+                  <div>
+                    <p class="proj__path">
+                      <span class="proj__path-root">~/projets</span>/<span>{{ projectSlug(project) }}</span>
+                    </p>
+                    <h3>{{ project.titre }}</h3>
+                    <p class="proj__year">{{ project.annee }}</p>
+                  </div>
+                  <div class="proj__stepper" aria-label="Navigation entre projets">
+                    <button type="button" class="proj__step" (click)="prevProject($event)" aria-label="Projet précédent">
+                      ←
+                    </button>
+                    <span class="proj__step-count">{{ activeProjectIndex() + 1 }}/{{ data.projets.length }}</span>
+                    <button type="button" class="proj__step" (click)="nextProject($event)" aria-label="Projet suivant">
+                      →
+                    </button>
+                  </div>
+                </div>
+              </header>
+
+              <div class="proj__readme wheel-local">
+                <p class="proj__readme-bar" aria-hidden="true">
+                  <span>README.md</span>
+                  <span>utf-8</span>
+                </p>
+                <div class="proj__readme-body">
+                  <h4 class="proj__md-h1"># {{ project.readmeTitle }}</h4>
+                  @for (section of project.readme; track $index) {
+                    @if (section.heading) {
+                      <h5 class="proj__md-h2">{{ section.heading }}</h5>
+                    }
+                    @for (paragraph of section.paragraphs ?? []; track $index) {
+                      <p class="proj__md-p" [innerHTML]="formatReadmeParagraph(paragraph)"></p>
+                    }
+                    @if (section.bullets?.length) {
+                      <ul class="proj__md-ul">
+                        @for (item of section.bullets; track item) {
+                          <li>{{ item }}</li>
+                        }
+                      </ul>
+                    }
+                    @if (section.code) {
+                      <pre class="proj__md-code"><code>{{ section.code }}</code></pre>
+                    }
+                  }
+                </div>
+              </div>
+
+              <div class="proj__stack">
+                <p class="proj__stack-label">Stack</p>
+                <ul class="tags tags--wide">
+                  @for (tech of projectTags(project); track tech) {
+                    <li>{{ tech }}</li>
+                  }
+                </ul>
+              </div>
+            </article>
+          }
+        </div>
+      </div>
+    </section>
+
+    <section
+      id="education"
+      class="stage__view stage__view--education"
+      [class.is-active]="isSectionActive('education')"
+      [class.is-leaving]="isSectionLeaving('education')"
+      [attr.aria-hidden]="!isSectionActive('education')"
+      [attr.inert]="!isSectionActive('education') ? '' : null"
+    >
+      <div class="stage__scroll stage__scroll--fit">
+        <header class="view-head view-head--compact">
+          <h2>{{ data.formationsTitre }}</h2>
+        </header>
+        <div class="edu-layout">
+          <div
+            class="edu__rail"
+            role="tablist"
+            aria-label="Formations"
+            (keydown)="onTabListKey($event, 'formation')"
+          >
+            @for (edu of data.formations; track edu.id; let i = $index) {
+              <button
+                type="button"
+                class="edu__tab"
+                role="tab"
+                [id]="'edu-tab-' + edu.id"
+                [class.is-active]="activeFormation() === edu.id"
+                [attr.aria-selected]="activeFormation() === edu.id"
+                [attr.tabindex]="activeFormation() === edu.id ? 0 : -1"
+                [attr.aria-controls]="'edu-panel'"
+                (click)="selectFormation(edu)"
+              >
+                <span class="edu__tab-idx">{{ ('0' + (i + 1)).slice(-2) }}</span>
+                <span class="edu__tab-body">
+                  <span class="edu__tab-when">{{ edu.periode }}</span>
+                  <span class="edu__tab-title">{{ edu.titre }}</span>
+                  <span class="edu__tab-co">{{ edu.ecole }} · {{ edu.lieu }}</span>
+                </span>
+              </button>
+            }
+          </div>
+
+          @if (activeFormationItem(); as edu) {
+            <article
+              class="edu__panel"
+              id="edu-panel"
+              role="tabpanel"
+              [attr.aria-labelledby]="'edu-tab-' + edu.id"
+              aria-live="polite"
+            >
+              <header class="edu__panel-head">
+                <div class="edu__panel-top">
+                  <div>
+                    <p class="edu__when">{{ edu.periode }}</p>
+                    <h3>{{ edu.titre }}</h3>
+                    <p class="edu__where">{{ edu.ecole }} · {{ edu.lieu }}</p>
+                  </div>
+                  <div class="edu__stepper" aria-label="Navigation entre formations">
+                    <button type="button" class="edu__step" (click)="prevFormation($event)" aria-label="Formation précédente">
+                      ←
+                    </button>
+                    <span class="edu__step-count">{{ activeFormationIndex() + 1 }}/{{ data.formations.length }}</span>
+                    <button type="button" class="edu__step" (click)="nextFormation($event)" aria-label="Formation suivante">
+                      →
+                    </button>
+                  </div>
+                </div>
+              </header>
+
+              <div class="edu__response wheel-local">
+                <p class="edu__response-bar" aria-hidden="true">
+                  <span>GET /credentials/{{ edu.endpoint }}</span>
+                  <span [class.edu__status--sync]="edu.statut === 'en_cours'" [class.edu__status--ok]="edu.statut === 'obtenu'">{{
+                    formationStatusLabel(edu)
+                  }}</span>
+                </p>
+                <pre class="edu__json"><code>{{ formationJsonPreview(edu) }}</code></pre>
+              </div>
+
+              <div class="edu__body wheel-local">
+                @for (detail of edu.details; track detail) {
+                  <p class="edu__detail">{{ detail }}</p>
+                }
+                <p class="edu__modules-label">Modules</p>
+                <ul class="edu__modules">
+                  @for (mod of edu.modules; track mod) {
+                    <li>{{ mod }}</li>
+                  }
+                </ul>
+              </div>
+
+              <ul class="tags tags--wide">
+                @for (tech of edu.stack; track tech) {
+                  <li>{{ tech }}</li>
+                }
+              </ul>
+            </article>
+          }
+        </div>
+      </div>
+    </section>
+
+    <section
+      id="contact"
+      class="stage__view stage__view--contact"
+      [class.is-active]="isSectionActive('contact')"
+      [class.is-leaving]="isSectionLeaving('contact')"
+      [attr.aria-hidden]="!isSectionActive('contact')"
+      [attr.inert]="!isSectionActive('contact') ? '' : null"
+    >
+      <div class="stage__scroll stage__scroll--fit">
+        <app-connect-panel
+          [active]="isSectionActive('contact')"
+          [reducedMotion]="reducedMotion()"
+          [hasBreakpoint]="hasBreakpoint('contact')"
+          [email]="data.email"
+          [telephone]="data.telephone"
+          [telephoneTel]="data.telephoneTel"
+          [cloture]="data.cloture"
+          [contactNote]="data.contactNote"
+          [disponibilite]="data.disponibilite"
+          [nomComplet]="data.nomComplet"
+          [liens]="data.liens"
+          (connected)="onConnectEstablished()"
+        />
+      </div>
+    </section>
+  </main>
+
+  @if (matrixClicker.activeRaid(); as raid) {
+    @if (activeSection() === raid.sectionId) {
+      <div class="raid-arena" aria-live="polite">
+        <button
+          type="button"
+          class="raid-mob"
+          [class.is-hit]="raidMobHit()"
+          (click)="hitRaidEnemy($event)"
+          [attr.aria-label]="'Attaquer ' + raid.name + ' — ' + matrixClicker.formatHp(raid.hp) + ' PV restants'"
+        >
+          <span class="raid-mob__ring" aria-hidden="true"></span>
+          <span class="raid-mob__name">{{ raid.name }}</span>
+          <span
+            class="raid-mob__hp"
+            role="progressbar"
+            [attr.aria-valuenow]="raid.hp"
+            [attr.aria-valuemin]="0"
+            [attr.aria-valuemax]="raid.maxHp"
+          >
+            <span class="raid-mob__hp-fill" [style.--hp]="matrixClicker.raidHpRatio()"></span>
+          </span>
+          <span class="raid-mob__hint">cliquer · {{ matrixClicker.raidSecondsLeft() }}s</span>
+        </button>
+      </div>
+    }
+  }
+
+  @if (matrixClicker.lastRaidLoot(); as loot) {
+    <p class="raid-loot" role="status">
+      Intrusion clear — +{{ matrixClicker.formatCount(loot.gold) }} gold · +{{ matrixClicker.formatCount(loot.xp) }} xp
+    </p>
+  }
+
+  <app-chat-panel />
+</div>

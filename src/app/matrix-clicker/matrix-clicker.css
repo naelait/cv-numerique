@@ -1,0 +1,1444 @@
+:host {
+  display: block;
+  width: 100%;
+  max-width: 22.5rem;
+  min-width: 0;
+  height: 44.5rem;
+  margin-inline: auto;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.matrix {
+  --matrix-pad: 0.7rem;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  border: 1px solid var(--line);
+  border-radius: 1.35rem;
+  background: var(--bg-deep);
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklab, var(--runtime-green) 8%, transparent),
+    0 18px 48px rgba(0, 0, 0, 0.42),
+    0 0 0 3px color-mix(in oklab, var(--bg-panel) 80%, transparent);
+  transition:
+    border-color 0.4s ease,
+    box-shadow 0.4s ease;
+}
+
+.matrix *,
+.matrix *::before,
+.matrix *::after {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.matrix--lv5 {
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklab, var(--runtime-cyan) 18%, transparent),
+    0 14px 44px rgba(0, 0, 0, 0.38);
+}
+
+.matrix--deploy {
+  border-color: color-mix(in oklab, var(--accent) 35%, var(--line));
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklab, var(--accent) 20%, transparent),
+    0 14px 44px rgba(0, 0, 0, 0.38);
+}
+
+.matrix--boss {
+  border-color: color-mix(in oklab, var(--accent) 30%, var(--line));
+}
+
+.matrix--raid {
+  border-color: color-mix(in oklab, var(--syntax-red) 35%, var(--line));
+}
+
+.matrix__rain {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.42;
+  pointer-events: none;
+}
+
+.matrix--static .matrix__rain {
+  opacity: 0.18;
+  filter: saturate(0.55);
+}
+
+.matrix__shell {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+}
+
+.matrix__chrome {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.3rem 0.5rem;
+  flex: 0 0 4rem;
+  height: 4rem;
+  overflow: hidden;
+  padding: 0.85rem var(--matrix-pad) 0.45rem;
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in oklab, var(--bg-panel) 88%, transparent);
+}
+
+.matrix__chrome::before {
+  content: '';
+  position: absolute;
+  top: 0.35rem;
+  left: 50%;
+  width: 3.25rem;
+  height: 0.28rem;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--ink) 18%, transparent);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.matrix__chrome-left,
+.matrix__chrome-right {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.matrix__chrome-right {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.matrix__traffic {
+  display: inline-flex;
+  gap: 0.28rem;
+}
+
+.matrix__traffic i {
+  display: block;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--traffic-red);
+}
+
+.matrix__traffic i:nth-child(2) {
+  background: var(--traffic-yellow);
+}
+
+.matrix__traffic i:nth-child(3) {
+  background: var(--traffic-green);
+}
+
+.matrix__file {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.matrix__badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.35rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 0.25rem;
+  border: 1px solid color-mix(in oklab, var(--runtime-cyan) 28%, var(--line));
+  background: color-mix(in oklab, var(--runtime-cyan) 8%, transparent);
+  color: var(--runtime-cyan);
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+.matrix__badge--zone {
+  border-color: color-mix(in oklab, var(--runtime-green) 30%, var(--line));
+  background: color-mix(in oklab, var(--runtime-green) 8%, transparent);
+  color: var(--runtime-green);
+}
+
+.matrix__badge--streak {
+  border-color: color-mix(in oklab, var(--accent) 35%, var(--line));
+  background: color-mix(in oklab, var(--accent) 12%, transparent);
+  color: var(--accent);
+}
+
+.matrix--deploy .matrix__badge--zone {
+  border-color: color-mix(in oklab, var(--accent) 35%, var(--line));
+  background: color-mix(in oklab, var(--accent) 10%, transparent);
+  color: var(--accent);
+}
+
+.matrix__live {
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--runtime-green);
+  animation: matrix-live 1.6s ease-in-out infinite;
+}
+
+.matrix--deploy .matrix__live {
+  color: var(--accent);
+}
+
+.matrix--static .matrix__live {
+  animation: none;
+}
+
+@keyframes matrix-live {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.matrix__xp {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: color-mix(in oklab, var(--line) 75%, transparent);
+  overflow: hidden;
+}
+
+.matrix__xp-fill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-origin: left center;
+  transform: scaleX(var(--xp, 0));
+  background: linear-gradient(90deg, var(--runtime-green), var(--runtime-cyan));
+  transition: transform 0.35s var(--ease-out);
+}
+
+.matrix--deploy .matrix__xp-fill {
+  background: linear-gradient(90deg, var(--accent), var(--runtime-cyan));
+}
+
+/* ——— Raid strip (always reserved) ——— */
+.matrix__raid-slot {
+  flex: 0 0 auto;
+  min-height: 2.65rem;
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in oklab, var(--bg-panel) 55%, transparent);
+}
+
+.matrix__raid {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  width: 100%;
+  min-height: 2.65rem;
+  padding: 0.35rem var(--matrix-pad);
+  border: 0;
+  background: color-mix(in oklab, #3a1212 55%, var(--bg-panel));
+  color: var(--ink);
+  font-family: var(--font-mono);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.18s ease;
+}
+
+.matrix__raid:hover {
+  background: color-mix(in oklab, #4a1818 60%, var(--bg-panel));
+}
+
+.matrix__raid:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+}
+
+.matrix__raid-tag {
+  flex-shrink: 0;
+  padding: 0.12rem 0.35rem;
+  border-radius: 0.2rem;
+  background: color-mix(in oklab, var(--syntax-red) 28%, transparent);
+  color: #ffb4b0;
+  font-size: 0.5rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.matrix__raid-copy {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.62rem;
+  color: color-mix(in oklab, #ffb4b0 85%, var(--ink));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.matrix__raid-timer {
+  flex-shrink: 0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #ffb4b0;
+  font-variant-numeric: tabular-nums;
+}
+
+.matrix__raid-go {
+  flex-shrink: 0;
+  padding: 0.2rem 0.45rem;
+  border-radius: 0.25rem;
+  border: 1px solid color-mix(in oklab, var(--runtime-cyan) 40%, var(--line));
+  background: color-mix(in oklab, var(--runtime-cyan) 12%, transparent);
+  color: var(--runtime-cyan);
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ——— Body layout (phone stack) ——— */
+.matrix__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 0.55rem var(--matrix-pad) 0.75rem;
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--bg-deep) 55%, transparent) 0%,
+    color-mix(in oklab, var(--bg-deep) 92%, transparent) 100%
+  );
+}
+
+.matrix__arena {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.55rem;
+  flex: 0 0 auto;
+  width: 100%;
+}
+
+.matrix__target {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  min-width: 0;
+  height: 4.6rem;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background: color-mix(in oklab, var(--bg-field) 75%, transparent);
+  text-align: center;
+  transition:
+    border-color 0.2s ease,
+    transform 0.12s var(--ease-out);
+}
+
+.matrix__target.is-boss {
+  border-color: color-mix(in oklab, var(--accent) 42%, var(--line));
+  background: color-mix(in oklab, var(--accent) 6%, var(--bg-field));
+}
+
+.matrix--hit .matrix__target {
+  animation: matrix-mob-hit 0.12s var(--ease-out);
+}
+
+.matrix__target-name {
+  margin: 0;
+  max-width: 100%;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.matrix__target.is-boss .matrix__target-name {
+  color: var(--accent);
+}
+
+.matrix__hp {
+  width: 100%;
+  height: 0.65rem;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--bg-deep) 80%, transparent);
+  overflow: hidden;
+}
+
+.matrix__hp-fill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-origin: left center;
+  transform: scaleX(var(--hp, 1));
+  background: linear-gradient(
+    90deg,
+    color-mix(in oklab, var(--hp-red) 85%, var(--accent)),
+    var(--accent)
+  );
+  transition: transform 0.15s var(--ease-out);
+}
+
+.matrix__target.is-boss .matrix__hp-fill {
+  background: linear-gradient(
+    90deg,
+    color-mix(in oklab, var(--accent) 70%, var(--danger)),
+    var(--accent)
+  );
+}
+
+.matrix__hp-meta {
+  display: flex;
+  justify-content: center;
+  gap: 0.25rem;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--runtime-dim);
+}
+
+/* ——— Strike / core ——— */
+.matrix__strike {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 0;
+  width: 100%;
+  height: 10.25rem;
+  padding: 0.2rem 0 0;
+}
+
+.matrix__combo {
+  position: absolute;
+  left: 50%;
+  top: 0.1rem;
+  z-index: 2;
+  margin: 0;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--accent) 35%, transparent);
+  background: color-mix(in oklab, var(--accent) 10%, transparent);
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+  transform: translateX(-50%);
+  animation: matrix-combo-in 0.2s var(--ease-out);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.matrix__combo-mult {
+  font-weight: 500;
+  color: color-mix(in oklab, var(--accent) 75%, var(--ink-muted));
+}
+
+@keyframes matrix-combo-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+.matrix__core {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 8.75rem;
+  aspect-ratio: 1;
+  margin: 0.85rem 0 0;
+  border: 2px solid color-mix(in oklab, var(--runtime-green) 55%, transparent);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 30%,
+    color-mix(in oklab, var(--runtime-green) 22%, var(--bg-panel)),
+    var(--bg-panel) 68%
+  );
+  cursor: pointer;
+  touch-action: manipulation;
+  transition:
+    transform 0.12s var(--ease-out),
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.matrix__core:hover {
+  border-color: var(--runtime-green);
+  box-shadow: 0 8px 28px color-mix(in oklab, var(--runtime-green) 22%, transparent);
+}
+
+.matrix__core:active {
+  transform: scale(0.94);
+}
+
+.matrix__core:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.matrix--pulse .matrix__core {
+  animation: matrix-core-burst 0.85s var(--ease-out);
+}
+
+.matrix--lv5 .matrix__core {
+  border-color: color-mix(in oklab, var(--runtime-cyan) 55%, transparent);
+  background: radial-gradient(
+    circle at 35% 30%,
+    color-mix(in oklab, var(--runtime-cyan) 22%, var(--bg-panel)),
+    var(--bg-panel) 68%
+  );
+}
+
+.matrix--deploy .matrix__core {
+  border-color: color-mix(in oklab, var(--accent) 55%, transparent);
+  background: radial-gradient(
+    circle at 35% 30%,
+    color-mix(in oklab, var(--accent) 22%, var(--bg-panel)),
+    var(--bg-panel) 68%
+  );
+}
+
+.matrix__core-glow {
+  position: absolute;
+  inset: 12%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--runtime-green) 35%, transparent),
+    transparent 70%
+  );
+  animation: matrix-pulse 2.4s ease-in-out infinite;
+}
+
+.matrix--lv5 .matrix__core-glow {
+  background: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--runtime-cyan) 35%, transparent),
+    transparent 70%
+  );
+}
+
+.matrix--static .matrix__core-glow {
+  animation: none;
+  opacity: 0.45;
+}
+
+@keyframes matrix-pulse {
+  0%,
+  100% {
+    transform: scale(0.92);
+    opacity: 0.45;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.85;
+  }
+}
+
+@keyframes matrix-core-burst {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.matrix__core-glyph {
+  position: relative;
+  font-family: var(--font-mono);
+  font-size: 1.55rem;
+  font-weight: 600;
+  color: var(--runtime-green);
+}
+
+.matrix--lv5 .matrix__core-glyph {
+  color: var(--runtime-cyan);
+}
+
+.matrix--deploy .matrix__core-glyph {
+  color: var(--accent);
+}
+
+.matrix__core--code .matrix__core-glyph {
+  font-size: 1.35rem;
+  letter-spacing: -0.06em;
+}
+
+.matrix__core-hint {
+  position: absolute;
+  bottom: 1.05rem;
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--runtime-dim);
+}
+
+.matrix__particle {
+  position: absolute;
+  z-index: 3;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--syntax-red);
+  pointer-events: none;
+  translate: -50% -50%;
+  animation: matrix-float 0.75s var(--ease-out) forwards;
+  white-space: nowrap;
+}
+
+.matrix__particle--crit {
+  font-size: 0.82rem;
+  color: var(--accent);
+  animation-duration: 0.9s;
+}
+
+@keyframes matrix-float {
+  from {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(var(--tx, 0px), var(--ty, -1.5rem)) scale(1.08);
+  }
+}
+
+@keyframes matrix-mob-hit {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-2px);
+  }
+  50% {
+    transform: translateX(2px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* ——— Economy strip ——— */
+.matrix__economy {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.4rem;
+  flex: 0 0 auto;
+  min-height: 5.1rem;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background: color-mix(in oklab, var(--bg-field) 70%, transparent);
+}
+
+.matrix__gold {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.matrix__gold-val {
+  font-family: var(--font-display);
+  font-size: 1.85rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--runtime-green);
+  font-variant-numeric: tabular-nums;
+}
+
+.matrix--deploy .matrix__gold-val {
+  color: var(--accent);
+}
+
+.matrix__gold-label {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--runtime-dim);
+}
+
+.matrix__gold-pop {
+  position: absolute;
+  left: 50%;
+  top: -0.85rem;
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: var(--accent);
+  white-space: nowrap;
+  transform: translateX(-50%);
+  animation: matrix-gold-pop 1.35s var(--ease-out) forwards;
+  pointer-events: none;
+}
+
+@keyframes matrix-gold-pop {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(4px);
+  }
+  12% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-6px);
+  }
+}
+
+.matrix__rates {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.35rem;
+  margin: 0;
+  padding-top: 0.35rem;
+  border-top: 1px solid color-mix(in oklab, var(--line) 80%, transparent);
+}
+
+.matrix__rates > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.05rem;
+}
+
+.matrix__rates > div.is-dim {
+  opacity: 0.4;
+}
+
+.matrix__rates dt {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.48rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--runtime-dim);
+}
+
+.matrix__rates dd {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--runtime-cyan);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ——— Market / shop ——— */
+.matrix__market {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.matrix__market-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.4rem;
+  flex: 0 0 auto;
+  min-height: 4.35rem;
+}
+
+.matrix__market-title {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-align: center;
+}
+
+.matrix__tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.25rem;
+  padding: 0.2rem;
+  border-radius: 0.55rem;
+  border: 1px solid var(--line);
+  background: color-mix(in oklab, var(--bg-deep) 60%, transparent);
+}
+
+.matrix__tab {
+  min-height: var(--touch-min);
+  min-width: 0;
+  width: 100%;
+  padding: 0.35rem 0.5rem;
+  border-radius: 0.4rem;
+  border: 1px solid transparent;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--runtime-dim);
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.matrix__tab.is-active {
+  color: var(--runtime-green);
+  border-color: color-mix(in oklab, var(--runtime-green) 40%, transparent);
+  background: color-mix(in oklab, var(--runtime-green) 10%, var(--bg-field));
+}
+
+.matrix--deploy .matrix__tab.is-active {
+  color: var(--accent);
+  border-color: color-mix(in oklab, var(--accent) 40%, transparent);
+  background: color-mix(in oklab, var(--accent) 10%, var(--bg-field));
+}
+
+.matrix__tab:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.matrix__tab:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.matrix__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(2, 4.6rem);
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  flex: 0 0 auto;
+}
+
+.matrix__grid li {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+}
+
+.matrix__item {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.45rem;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 0.4rem 0.45rem;
+  border: 1px solid var(--line);
+  border-radius: 0.4rem;
+  background: color-mix(in oklab, var(--bg-field) 88%, transparent);
+  font-family: var(--font-mono);
+  text-align: left;
+  color: var(--ink);
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease,
+    transform 0.12s var(--ease-out),
+    box-shadow 0.18s ease;
+}
+
+.matrix__item--ghost {
+  cursor: default;
+  opacity: 0.45;
+  border-style: dashed;
+  background: color-mix(in oklab, var(--bg-deep) 40%, transparent);
+  color: var(--runtime-dim);
+  pointer-events: none;
+}
+
+.matrix__item.is-ready {
+  border-color: color-mix(in oklab, var(--runtime-green) 42%, var(--line));
+  background: color-mix(in oklab, var(--runtime-green) 7%, var(--bg-field));
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.matrix__item.is-ready:hover {
+  border-color: color-mix(in oklab, var(--runtime-green) 65%, transparent);
+  background: color-mix(in oklab, var(--runtime-green) 12%, var(--bg-field));
+}
+
+.matrix__item.is-ready:active {
+  transform: scale(0.985);
+}
+
+.matrix__item.is-bought {
+  animation: matrix-power-buy 0.45s var(--ease-out);
+}
+
+.matrix__item:disabled {
+  cursor: not-allowed;
+  opacity: 1;
+  background: color-mix(in oklab, var(--bg-field) 65%, transparent);
+}
+
+.matrix__item:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.matrix__item-glyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  flex-shrink: 0;
+  border-radius: 0.35rem;
+  border: 1px solid color-mix(in oklab, var(--runtime-green) 32%, var(--line));
+  background: color-mix(in oklab, var(--bg-deep) 70%, transparent);
+  color: var(--runtime-green);
+  font-size: 0.62rem;
+  font-weight: 700;
+}
+
+.pix {
+  display: grid;
+  grid-template-rows: repeat(12, 1fr);
+  width: 2.55rem;
+  height: 2.55rem;
+  flex-shrink: 0;
+  padding: 0.12rem;
+  border-radius: 0.35rem;
+  border: 1px solid color-mix(in oklab, var(--runtime-cyan) 25%, var(--line));
+  background: #0d1117;
+  image-rendering: pixelated;
+  overflow: hidden;
+}
+
+.pix__row {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  min-height: 0;
+}
+
+.pix__row i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.matrix__item-main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+  min-width: 0;
+}
+
+.matrix__item-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.matrix__item-name {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.3rem;
+  min-width: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--runtime-green);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.matrix__item--dev .matrix__item-name {
+  color: var(--runtime-cyan);
+}
+
+.matrix__item-role {
+  font-size: 0.5rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--runtime-dim);
+}
+
+.matrix__item-lv {
+  flex-shrink: 0;
+  min-width: 1.2rem;
+  padding: 0.08rem 0.28rem;
+  border-radius: 0.2rem;
+  background: color-mix(in oklab, var(--runtime-green) 16%, transparent);
+  color: var(--runtime-green);
+  font-size: 0.52rem;
+  font-weight: 800;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.matrix__item-effect {
+  font-size: 0.55rem;
+  color: var(--runtime-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.matrix__item-passive {
+  font-size: 0.5rem;
+  line-height: 1.3;
+  color: color-mix(in oklab, var(--accent) 80%, var(--runtime-dim));
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.matrix__item-buy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+  min-width: 3.1rem;
+}
+
+.matrix__item-price {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.12rem;
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.25rem;
+  background: color-mix(in oklab, var(--accent) 16%, transparent);
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.matrix__item-price span {
+  font-size: 0.5rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.matrix__item-need {
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: color-mix(in oklab, #ffb4b0 75%, var(--runtime-dim));
+  font-variant-numeric: tabular-nums;
+}
+
+.matrix__item-meter {
+  display: block;
+  width: 100%;
+  height: 2px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--line) 80%, transparent);
+  overflow: hidden;
+}
+
+.matrix__item-meter::after {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-origin: left center;
+  transform: scaleX(var(--afford, 0));
+  background: linear-gradient(90deg, var(--runtime-cyan), var(--runtime-green));
+  transition: transform 0.25s var(--ease-out);
+}
+
+.matrix__item.is-ready .matrix__item-meter::after {
+  background: var(--runtime-green);
+}
+
+@keyframes matrix-power-buy {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(1.03);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ——— Level up overlay ——— */
+.matrix__levelup {
+  position: absolute;
+  inset: 0;
+  z-index: 12;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  text-align: center;
+  background: color-mix(in oklab, var(--bg-deep) 62%, transparent);
+  pointer-events: none;
+  animation: matrix-levelup-in 0.35s var(--ease-out) both;
+}
+
+.matrix__levelup-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(13.5rem, 68%);
+  aspect-ratio: 1;
+  border: 2px solid color-mix(in oklab, var(--runtime-green) 55%, transparent);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: matrix-levelup-ring 1.2s var(--ease-out) forwards;
+}
+
+.matrix--deploy .matrix__levelup-ring {
+  border-color: color-mix(in oklab, var(--accent) 55%, transparent);
+}
+
+.matrix__levelup-copy {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  gap: 0.25rem;
+  max-width: min(16rem, 92%);
+  padding: 0.85rem 1rem;
+  border: 1px solid color-mix(in oklab, var(--runtime-green) 28%, var(--line));
+  border-radius: 0.55rem;
+  background: color-mix(in oklab, var(--bg-deep) 88%, transparent);
+  box-shadow: 0 10px 28px color-mix(in oklab, var(--runtime-green) 12%, transparent);
+}
+
+.matrix__levelup-tag {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--runtime-dim);
+}
+
+.matrix__levelup-lv {
+  font-family: var(--font-display);
+  font-size: clamp(1.65rem, 5vw, 2.35rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  color: var(--runtime-green);
+}
+
+.matrix--deploy .matrix__levelup-lv {
+  color: var(--accent);
+}
+
+.matrix--deploy .matrix__levelup-copy {
+  border-color: color-mix(in oklab, var(--accent) 30%, var(--line));
+}
+
+.matrix__levelup-title {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1.35;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+@keyframes matrix-levelup-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes matrix-levelup-ring {
+  from {
+    transform: translate(-50%, -50%) scale(0.65);
+    opacity: 0.95;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1.45);
+    opacity: 0;
+  }
+}
+
+.matrix--static .matrix__levelup,
+.matrix--static .matrix__combo,
+.matrix--static.matrix--pulse .matrix__core,
+.matrix--static .matrix__item.is-bought,
+.matrix--static .matrix__gold-pop {
+  animation: none;
+}
+
+.matrix--static .matrix__item-meter::after {
+  transition: none;
+}
+
+@media (max-width: 900px) {
+  :host {
+    display: block;
+    max-width: none;
+    width: 100%;
+    height: 100%;
+    min-height: clamp(20rem, 58dvh, 34rem);
+    margin-inline: 0;
+  }
+
+  .matrix {
+    height: 100%;
+    min-height: 0;
+    border-radius: 0.75rem;
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--runtime-green) 8%, transparent);
+  }
+
+  .matrix__shell {
+    min-height: 0;
+  }
+
+  .matrix__chrome {
+    flex: 0 0 auto;
+    height: auto;
+    min-height: 0;
+    padding: 0.35rem 0.55rem 0.3rem;
+  }
+
+  .matrix__chrome::before {
+    display: none;
+  }
+
+  .matrix__traffic,
+  .matrix__live {
+    display: none;
+  }
+
+  .matrix__file {
+    font-size: 0.62rem;
+  }
+
+  .matrix__badge {
+    font-size: 0.55rem;
+    padding: 0.12rem 0.35rem;
+  }
+
+  .matrix__raid-slot {
+    min-height: 2.1rem;
+  }
+
+  .matrix__raid {
+    min-height: 2.1rem;
+    padding: 0.25rem 0.55rem;
+    font-size: 0.62rem;
+  }
+
+  .matrix__body {
+    gap: 0.4rem;
+    padding: 0.4rem 0.55rem 0.5rem;
+  }
+
+  .matrix__target {
+    height: auto;
+    min-height: 0;
+    padding: 0.4rem 0.5rem;
+    gap: 0.2rem;
+  }
+
+  .matrix__target-name {
+    font-size: 0.9rem;
+  }
+
+  .matrix__hp {
+    height: 0.45rem;
+  }
+
+  .matrix__hp-meta {
+    font-size: 0.55rem;
+  }
+
+  .matrix__strike {
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 4.5rem;
+    max-height: 7rem;
+  }
+
+  .matrix__core {
+    width: min(5.75rem, 28%);
+    margin-top: 0.25rem;
+  }
+
+  .matrix__core-glyph {
+    font-size: 1.1rem;
+  }
+
+  .matrix__core-hint {
+    bottom: 0.45rem;
+    font-size: 0.45rem;
+  }
+
+  .matrix__economy {
+    flex: 0 0 auto;
+    min-height: 0;
+    padding: 0.3rem 0.4rem;
+    gap: 0.2rem;
+  }
+
+  .matrix__gold-val {
+    font-size: 1.15rem;
+  }
+
+  .matrix__rates dd {
+    font-size: 0.62rem;
+  }
+
+  .matrix__rates dt {
+    font-size: 0.42rem;
+  }
+
+  .matrix__market-title {
+    font-size: 0.55rem;
+  }
+
+  .matrix__market {
+    flex: 0 0 auto;
+    min-height: 0;
+  }
+
+  .matrix__market-bar {
+    min-height: 0;
+    gap: 0.2rem;
+  }
+
+  .matrix__tab {
+    min-height: 2.15rem;
+    font-size: 0.55rem;
+    padding: 0.2rem 0.35rem;
+  }
+
+  .matrix__grid {
+    grid-template-rows: repeat(2, minmax(2.6rem, 3.1rem));
+    gap: 0.2rem;
+  }
+
+  .matrix__item {
+    padding: 0.2rem 0.25rem;
+    gap: 0.22rem;
+    border-radius: 0.35rem;
+  }
+
+  .matrix__item-glyph {
+    width: 1.35rem;
+    height: 1.35rem;
+    font-size: 0.62rem;
+  }
+
+  .matrix__item-name {
+    font-size: 0.62rem;
+  }
+
+  .matrix__item-effect,
+  .matrix__item-passive {
+    font-size: 0.48rem;
+  }
+
+  .matrix__item--ghost .matrix__item-effect {
+    display: none;
+  }
+
+  .matrix__levelup-copy {
+    gap: 0.18rem;
+    padding: 0.65rem 0.75rem;
+    max-width: min(14rem, 90%);
+  }
+
+  .matrix__levelup-tag {
+    font-size: 0.55rem;
+    letter-spacing: 0.14em;
+  }
+
+  .matrix__levelup-lv {
+    font-size: clamp(1.35rem, 6vw, 1.85rem);
+  }
+
+  .matrix__levelup-title {
+    font-size: 0.62rem;
+  }
+
+  .matrix__levelup-ring {
+    width: min(10.5rem, 72%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .matrix__live,
+  .matrix__core-glow,
+  .matrix__combo,
+  .matrix__levelup,
+  .matrix__levelup-ring,
+  .matrix__item.is-bought,
+  .matrix__gold-pop,
+  .matrix__particle {
+    animation: none;
+  }
+}

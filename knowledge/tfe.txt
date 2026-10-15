@@ -1,0 +1,2245 @@
+--- page 1 ---
+ 
+ 
+ 
+ 
+ 
+École Pratique des Hautes Études Commerciales 
+EPHEC 
+Institut d'Enseignement Supérieur Économique de Type Court 
+VIBELY 
+Une application mobile de rencontres fondée sur les croisements  
+géolocalisés et l'affinité musicale Spotify  
+Travail de Fin d'Études présenté  
+en vue de l'obtention du diplôme de  
+BACHELIER EN INFORMATIQUE DE GESTION  
+Naël Ait 
+Année académique 2025-2026 
+Rapporteur : Vincent Fievez 
+  
+
+--- page 2 ---
+Vibely - Travail de Fin d'Études  
+2 
+Remerciements 
+Ce travail de fin d'études n'aurait pas été possible sans les cours d'Informatique de 
+Gestion à l'EPHEC, ni sans les conseils reçus pendant l'analyse, le développement et la 
+rédaction. 
+Je remercie l'équipe pédagogique pour la méthode transmise en analyse, en modélisation 
+et en développement. 
+Enfin, j'adresse mes remerciements à ma famille et à mes proches pour leur soutien au 
+cours de ces derniers mois. 
+  
+
+--- page 3 ---
+Vibely - Travail de Fin d'Études  
+3 
+Table des matières 
+Remerciements.......................................................................................................................... 2 
+Table des matières .................................................................................................................... 3 
+Chapitre I : Introduction ......................................................................................................... 7 
+1.1 Contexte général du projet ............................................................................................... 7 
+1.1.1 Rencontres et distance sociale.................................................................................. 7 
+1.1.2 Musique comme signal ............................................................................................ 7 
+1.1.3 Contraintes du développement mobile..................................................................... 8 
+1.2 Présentation générale du projet........................................................................................ 8 
+1.3 Objectifs du TFE.............................................................................................................. 9 
+Chapitre II : Analyse fonctionnelle ....................................................................................... 10 
+2.1 Cas d'utilisation.............................................................................................................. 10 
+2.1.1 Brève description des fonctionnalités .................................................................... 10 
+2.1.2 Acteurs ................................................................................................................... 14 
+2.1.3 Diagrammes de cas d'utilisation............................................................................. 14 
+2.1.4 Authentification et profil ........................................................................................ 18 
+UC-01 - S’inscrire ........................................................................................................... 18 
+UC-02 - Se connecter ...................................................................................................... 18 
+UC-03 - Rafraîchir la session.......................................................................................... 19 
+UC-04 - Se déconnecter .................................................................................................. 19 
+UC-05 - Mettre à jour le profil........................................................................................ 20 
+2.1.5 Musique.................................................................................................................. 21 
+UC-06 - Connecter Spotify ............................................................................................. 21 
+UC-07 - Synchroniser le profil musical .......................................................................... 21 
+UC-08 - Écouter un extrait de titre.................................................................................. 22 
+2.1.6 Découverte ............................................................................................................. 23 
+UC-09 - Partager sa position (croisement de chemin) .................................................... 23 
+UC-10 - V oir les profils croisés....................................................................................... 24 
+2.1.7 Social...................................................................................................................... 25 
+UC-11 - Liker un profil ................................................................................................... 25 
+UC-12 - Passer un profil ................................................................................................. 26 
+UC-13 - Annuler le dernier pass ..................................................................................... 26 
+UC-14 - V oir qui a liké .................................................................................................... 27 
+UC-15 - Consulter ses matchs......................................................................................... 27 
+UC-16 - Consulter le profil d’un match .......................................................................... 28 
+
+--- page 4 ---
+Vibely - Travail de Fin d'Études  
+4 
+UC-17 - Rompre un match.............................................................................................. 28 
+UC-18 - Discuter ............................................................................................................. 29 
+2.1.8 Photos, Plus et notifications ................................................................................... 29 
+UC-19 - Gérer ses photos................................................................................................ 29 
+UC-20 - Consulter plans et privilèges............................................................................. 30 
+UC-21 - Souscrire Vibely Plus ........................................................................................ 31 
+UC-22 - Gérer / résilier l’abonnement Plus .................................................................... 31 
+UC-23 - Configurer les préférences de notification........................................................ 32 
+UC-24 - Recevoir une notification in-app....................................................................... 33 
+2.2 Diagramme de classes conceptuel ................................................................................. 34 
+2.3 Navigation entre écrans ................................................................................................. 35 
+2.4 Règles fonctionnelles ..................................................................................................... 36 
+2.4.1 Découverte ............................................................................................................. 36 
+2.4.2 Interactions............................................................................................................. 36 
+2.4.3 Musique, authentification, Plus et alertes .............................................................. 36 
+Chapitre III : Architecture générale..................................................................................... 38 
+3.1 Architecture technique du système ................................................................................ 38 
+3.1.1 Découpage.............................................................................................................. 38 
+3.1.2 Déploiement logique .............................................................................................. 39 
+3.2 Technologies employées................................................................................................ 39 
+3.2.1 Alternatives écartées .............................................................................................. 40 
+3.3 Analyse des scénarios de l'application........................................................................... 41 
+3.3.1 Inscription .............................................................................................................. 41 
+3.3.2 Connexion .............................................................................................................. 43 
+3.3.3 Mise à jour de position et croisement .................................................................... 44 
+3.3.4 Like vers match ...................................................................................................... 46 
+3.3.5 Liaison Spotify ....................................................................................................... 47 
+Chapitre IV : Base de données .............................................................................................. 48 
+4.1 Schéma........................................................................................................................... 48 
+4.2 Tables, contraintes et clefs............................................................................................. 49 
+4.2.1 Users....................................................................................................................... 49 
+4.2.2 UserPhotos ............................................................................................................. 49 
+4.2.3 PathCrossings......................................................................................................... 49 
+4.2.4 UserInteractions ..................................................................................................... 49 
+4.2.5 Matches / Conversations / Messages / MessageReactions .................................... 50 
+4.2.6 UserSubscriptions / UserRefreshTokens / DeviceTokens...................................... 50 
+4.3 Dictionnaires de données ............................................................................................... 51 
+
+--- page 5 ---
+Vibely - Travail de Fin d'Études  
+5 
+4.3.1 Dictionnaire Users.................................................................................................. 51 
+4.3.2 Dictionnaire UserPhotos ........................................................................................ 52 
+4.3.3 Dictionnaire PathCrossings.................................................................................... 52 
+4.3.4 Dictionnaire UserInteractions ................................................................................ 52 
+4.3.5 Dictionnaire Matches ............................................................................................. 53 
+4.3.6 Dictionnaire Conversations.................................................................................... 53 
+4.3.7 Dictionnaire Messages ........................................................................................... 53 
+4.3.8 Dictionnaire MessageReactions ............................................................................. 54 
+4.3.9 Dictionnaire UserSubscriptions ............................................................................. 54 
+4.3.10 Dictionnaire UserRefreshTokens ......................................................................... 55 
+4.3.11 Dictionnaire DeviceTokens .................................................................................. 55 
+4.3.12 Index et contraintes notables................................................................................ 56 
+Chapitre V : Web API............................................................................................................ 57 
+5.1 Le choix REST .............................................................................................................. 57 
+5.2 Arborescence ................................................................................................................. 57 
+5.3 Sécurité et autorisation .................................................................................................. 58 
+5.3.1 Hachage des mots de passe .................................................................................... 58 
+5.3.2 JSON Web Token ................................................................................................... 58 
+5.3.3 Autorisation ............................................................................................................ 59 
+5.4 Règles métier côté serveur ............................................................................................. 59 
+5.4.1 Inscription, connexion et renouvellement .............................................................. 59 
+5.4.2 Mise à jour de position........................................................................................... 59 
+5.4.3 Découvrir ............................................................................................................... 60 
+5.4.4 Like, pass et retour arrière...................................................................................... 60 
+5.4.5 Ajout d’une photo .................................................................................................. 60 
+5.4.6 Paiement Stripe ...................................................................................................... 61 
+5.5 Stratégie de tests automatisés ........................................................................................ 63 
+5.5.1 Périmètre couvert ................................................................................................... 64 
+Chapitre VI : Interface utilisateur Flutter ........................................................................... 65 
+6.1 Le choix Flutter.............................................................................................................. 65 
+6.2 Vues ............................................................................................................................... 66 
+6.2.1 Vue Connexion....................................................................................................... 66 
+6.2.2 Vue Découvrir ........................................................................................................ 67 
+6.2.3 Vue Messages......................................................................................................... 68 
+6.2.4 Vue Conversation ................................................................................................... 69 
+6.2.5 Vue Profil d'un match............................................................................................. 70 
+6.2.6 Vue Profil (compte courant)................................................................................... 71 
+
+--- page 6 ---
+Vibely - Travail de Fin d'Études  
+6 
+6.2.7 Vue Localisation .................................................................................................... 72 
+6.2.8 Vue Spotify ............................................................................................................ 74 
+6.2.9 Vue Vibely Plus ...................................................................................................... 75 
+6.3 Suivi GPS en arrière-plan .............................................................................................. 76 
+6.4 Permissions .................................................................................................................... 77 
+Chapitre VII : Futures possibilités de développement........................................................ 78 
+7.1 Modération et signalement ............................................................................................ 78 
+7.2 Qualité du GPS en intérieur ........................................................................................... 78 
+7.3 Notifications natives et App Store iOS.......................................................................... 78 
+7.4 Mot de passe oublié ....................................................................................................... 79 
+7.5 Web ................................................................................................................................ 79 
+Chapitre VIII : Conclusion .................................................................................................... 80 
+Bibliographie ........................................................................................................................... 81 
+Annexes.................................................................................................................................... 83 
+Annexe I : Glossaire ............................................................................................................ 83 
+Annexe II : Matrice exigences / cas d'utilisation ................................................................. 84 
+Annexe III : Droits Vibely Plus ........................................................................................... 85 
+Annexe IV : Catalogue des routes (OpenAPI / Minimal APIs)........................................... 86 
+Annexe V : Photo de profil .................................................................................................. 88 
+Annexe VI : Arborescence repo .......................................................................................... 88 
+ 
+  
+
+--- page 7 ---
+Vibely - Travail de Fin d'Études  
+7 
+Chapitre I : Introduction  
+1.1 Contexte général du projet  
+1.1.1 Rencontres et distance sociale 
+Les applications de rencontre ont largement popularisé un fonctionnement basé sur un 
+rayon géographique et des critères tels que l’âge, suivi du défilement de profils (swipe). La 
+mise en relation peut ainsi se faire entre deux personnes qui ne se sont jamais rencontrées 
+physiquement. 
+La CNIL rappelle que la géolocalisation constitue une donnée personnelle qui doit être 
+traitée selon un principe de minimisation. Vibely applique ce principe en n’affichant jamais la 
+position en temps réel d’un autre utilisateur. Le système conserve uniquement l’information 
+nécessaire à la détection d’une co-présence, sans cartographier les déplacements. 
+Vibely se distingue surtout par l’association de deux critères complémentaires : la 
+rencontre physique et l’affinité musicale. Un profil n’est proposé que lorsque deux personnes 
+se sont effectivement trouvées à proximité l’une de l’autre, par exemple dans le métro, sur un 
+campus, lors d’un festival ou dans la rue. L’application utilise ensuite les données musicales 
+du compte Spotify pour mesurer l’affinité entre ces personnes et classer les profils proposés. 
+La musique constitue ainsi un élément central de la mise en relation, sans demander à 
+l’utilisateur de renseigner manuellement ses goûts musicaux. 
+L’objectif est donc de partir d’une rencontre réelle, puis d’utiliser un centre d’intérêt 
+personnel et automatiquement récupéré pour identifier les profils présentant la plus forte 
+affinité. 
+1.1.2 Musique comme signal 
+La musique constitue un signal riche pour caractériser les goûts d’un utilisateur. Après 
+autorisation OAuth, Vibely récupère via la Web API Spotify des informations telles que les 
+artistes, les titres et les genres écoutés, sans nécessiter de questionnaire supplémentaire. 
+L’affinité musicale constitue ainsi l’un des éléments qui distinguent Vibely d’une 
+application de rencontre classique. Le système calcule un score à partir des goûts musicaux 
+communs afin de classer les profils dans l’onglet Découvrir. Ce score ne représente toutefois 
+
+--- page 8 ---
+Vibely - Travail de Fin d'Études  
+8 
+pas une compatibilité sociale réelle : il sert uniquement à déterminer l’ordre de présentation 
+des profils. 
+Ainsi, deux personnes qui se sont croisées et partagent certains goûts musicaux ne 
+constituent pas automatiquement un match. L’affinité musicale fournit simplement un point 
+d’accroche supplémentaire permettant de mettre en avant les profils susceptibles de présenter 
+des centres d’intérêt communs. 
+1.1.3 Contraintes du développement mobile 
+L’application est destinée aux smartphones. Le développement doit donc tenir compte du 
+GPS, des permissions et du cycle de vie de l’application. Lorsque la localisation en arrière -
+plan est accordée, les envois de position continuent après que l’utilisateur a quitté l’écran. 
+L’application n’a pas à rester ouverte pour qu’un croisement soit enregistré. J’ai retenu Flutter 
+pour viser Android et iOS avec une seule interface. Cela évite de maintenir deux clients natifs 
+distincts. 
+1.2 Présentation générale du projet 
+Vibely est une application mobile Flutter, adossée à une API ASP.NET Core 10 et à SQL 
+Server. Un utilisateur connecté partage sa position sans devoir garder l’interface ouverte. Le 
+serveur enregistre un croisement lorsque deux fixes GPS se trouvent à environ 120 m l’un de 
+l’autre et datent de moins de 45 minutes. Ces croisements restent visibles jusqu’à 7 jours. 
+L’écran Découvrir n’affiche que ces profils-là, classés par affinité musicale. 
+Le parcours type va du croisement au like ou au pass, puis au match et au chat. En offre 
+Free, les likes sont plafonnés à 10 par jour. Vibely Plus lève ce quota. Il ouvre aussi le retour 
+arrière sur un pass et la liste des likes reçus. Le paiement passe par Stripe Checkout. 
+L’activation Plus n’a lieu qu’après une confirmation Stripe authentique. Le webhook est 
+signé, et peut être relu côté serveur après le retour Checkout. 
+ 
+ 
+ 
+ 
+
+--- page 9 ---
+Vibely - Travail de Fin d'Études  
+9 
+1.3 Objectifs du TFE 
+Ce TFE a trois objectifs concrets : 
+• Formaliser le besoin, avec les acteurs, les exigences, les cas d’utilisation et les règles 
+métier numérotées. 
+• Montrer que le filtre géographique et le signal Spotify tiennent dans un modèle de 
+données et une API.  
+• Présenter un client Flutter utilisable en démo, avec l’authentification, Découvrir, le 
+chat, Spotify et l’abonnement. 
+Le back-office de modération, le site web et l’envoi des notifications via APNs / FCM 
+restent hors périmètre. L’API enregistre déjà un identifiant d’installation. L’envoi réel vers les 
+stores n’est pas le cœur du travail. 
+Le document suit l’ordre d’un TFE de réalisation. Il enchaîne l’analyse, l’architecture, la 
+base, l’API et l’interface. Les diagrammes UML et les captures se placent au plus près du 
+propos. 
+
+--- page 10 ---
+Vibely - Travail de Fin d'Études  
+10 
+Chapitre II : Analyse fonctionnelle  
+2.1 Cas d'utilisation 
+2.1.1 Brève description des fonctionnalités 
+Dans l’application, un utilisateur a plusieurs possibilités. Le tableau 1 présente les 
+fonctionnalités principales. Le tableau 2 les rattache aux cas d’utilisation détaillés plus loin, 
+également repris sur les diagrammes UML. 
+Tableau 1 - Fonctionnalités principales du produit  
+Fonctionnalité Description 
+Découvrir Les profils proposés viennent de croisements GPS réels, à 120 m  
+Swipe L’utilisateur like ou pass. Un match naît si le like est réciproque.  
+Musique Le profil musical est synchronisé via Spotify.  
+Chat  La messagerie s’ouvre après un match.  
+Plus L’offre lève le quota de likes, montre qui a liké et permet d’annuler le dernier pass.  
+ 
+Tableau 2 - Cartographie des cas d'utilisation  
+Domaine Cas d’utilisation 
+Authentification et profil  UC-01 à UC -05 
+Musique UC-06 à UC -08 
+Découverte  UC-09 à UC -10 
+Social UC-11 à UC -18 
+Photos UC-19 
+Vibely Plus UC-20 à UC -22 
+Notifications  UC-23 à UC -24 
+ 
+Les exigences fonctionnelles ci -dessous sont celles que j’ai utilisées pour découper les 
+cas d’utilisation. Chaque code EF -* réapparaît dans la ligne « Exigences liées » des fiches 
+UC. 
+  
+
+--- page 11 ---
+Vibely - Travail de Fin d'Études  
+11 
+ 
+Tableau 3 - Exigences d'authentification et de profil  
+Code Exigence  
+EF-AUTH-001 Créer un compte avec un email, un mot de passe, un nom d’affichage, un genre, une 
+date de naissance et les genres recherchés.  
+EF-AUTH-002 Se connecter et recevoir un access token et un refresh token.  
+EF-AUTH-003 Rafraîchir la session sans saisir de nouveau le mot de passe.  
+EF-AUTH-004 Se déconnecter en révoquant un refresh token, ou tous les refresh tokens du compte.  
+EF-PROF-001 Consulter et mettre à jour le profil, dont le nom d’affichage, la bio, le genre, la date 
+de naissance, les genres recherchés et la description de vibe . 
+EF-PROF-002 Gérer jusqu’à 6 photos (upload, primaire, suppression), max 5 Mo, 
+JPEG/PNG/WebP 
+EF-PROF-003 Partager la position GPS pour activer les croisements.  
+EF-PROF-004 Avoir au moins 18 ans pour être découvrable.  
+ 
+Tableau 4 - Exigences musicales (Spotify)  
+Code Exigence  
+EF-MUS-001 Connecter Spotify via OAuth avec PKCE.  
+EF-MUS-002 Synchroniser l’instantané musical, avec les artistes, les titres et les genres.  
+EF-MUS-003 Déconnecter Spotify.  
+EF-MUS-004 Écouter un extrait du titre qui représente la personne croisée.  
+EF-MUS-005 Exiger un compte Spotify connecté pour parcourir Découvrir.  
+ 
+Tableau 5 - Exigences de découverte et d'interactions  
+Code Exigence  
+EF-DISC-001 Enregistrer un croisement de chemin à environ 120 m, si les deux derniers fixes ont 
+moins de 45 minutes.  
+EF-DISC-002 Lister les profils croisés encore visibles depuis au plus 7 jours, avec pagination.  
+EF-DISC-003 Classer les profils d’abord par récence du croisement, puis par affinité musicale 
+Jaccard, enfin par distance.  
+EF-INT-001 Liker un profil éligible. 
+EF-INT-002 Passer un profil. 
+EF-INT-003 Créer un match lorsque le like est mutuel.  
+EF-INT-004 Consulter ses matchs et le profil d’un match.  
+EF-INT-005 Rompre un match.  
+
+--- page 12 ---
+Vibely - Travail de Fin d'Études  
+12 
+Code Exigence  
+EF-INT-006 Annuler le dernier pass. Cette action est réservée à l’abonnement Vibely Plus.  
+EF-INT-007 Voir qui a liké. Cette action est réservée à l’abonnement Vibely Plus.  
+EF-INT-008 Un compte Free est limité à 10 likes par jour.  
+ 
+Tableau 6 - Exigences de messagerie et de notification  
+Code Exigence  
+EF-CHAT-001 Lister les conversations.  
+EF-CHAT-002 Envoyer un message. La conversation est créée s’il n’en existe pas encore.  
+EF-CHAT-003 Consulter l’historique paginé.  
+EF-CHAT-004 Marquer une conversation comme lue.  
+EF-CHAT-005 Consulter le résumé des messages non lus.  
+EF-CHAT-006 Envoyer une photo dans le chat, après un match.  
+EF-CHAT-007 Réagir à un message par un emoji.  
+EF-CHAT-008 Répondre à un message.  
+EF-CHAT-009 Rechercher dans une conversation.  
+EF-CHAT-010 Recevoir les événements de chat en temps réel.  
+EF-NOTIF-001 Consulter et mettre à jour les préférences de notification.  
+EF-NOTIF-002 Enregistrer ou retirer l’identifiant d’appareil pour les alertes.  
+EF-NOTIF-003 Recevoir une alerte in -app pour un match, un like ou un message, selon les 
+préférences. 
+EF-NOTIF-004 Ne pas afficher l’alerte message si la conversation est déjà ouverte.  
+ 
+Tableau 7 - Exigences de facturation (Vibely Plus)  
+Code Exigence  
+EF-BILL-001 Consulter les plans Free et Plus, ainsi que leurs prix.  
+EF-BILL-002 Consulter les droits actifs du compte.  
+EF-BILL-003 Souscrire Vibely Plus via Stripe Checkout.  
+EF-BILL-004 Recevoir et traiter les webhooks Stripe pour l’activation, le renouvellement et 
+l’échec de paiement.  
+EF-BILL-005 Résilier ou gérer l’abonnement via le portail client Stripe.  
+EF-BILL-006 Retirer automatiquement les droits Plus à l’expiration ou à la résiliation.  
+ 
+
+--- page 13 ---
+Vibely - Travail de Fin d'Études  
+13 
+Tableau 8 - Exigences non fonctionnelles  
+Code Exigence  
+ENF-001 Authentifier par jeton les accès protégés.  
+ENF-002 Hacher les mots de passe de façon sécurisée. Les refresh tokens sont également 
+stockés sous forme de hash.  
+ENF-003 Conserver le secret Spotify uniquement côté serveur. Le client n’utilise que le client 
+id et PKCE. 
+ENF-004 Valider les champs avant le traitement métier.  
+ENF-005 Limiter le débit des requêtes et centraliser la gestion des erreurs.  
+ENF-006 Valider le format réel de l’image à l’upload.  
+ENF-007 Horodater en UTC.  
+ENF-008 Exposer le JSON en camelCase. Les listes paginées utilisent Skip, Take et un total.  
+ENF-009 Structurer le backend en Clean Architecture. Structurer le client Flutter en couches, 
+avec Riverpod.  
+ENF-010 
+Contrôler l’accès aux photos de profil. Seuls le propriétaire, un match actif ou un 
+croisement récent peuvent les voir. Les médias de chat sont réservés aux participants 
+de la conversation.  
+ENF-011 Exposer un health check qui vérifie Entity Framework.  
+ENF-012 Ne pas coder les secrets en dur. Ils viennent des User Secrets ou des variables 
+d’environnement.  
+ENF-013 Authentifier le canal temps réel par JWT, pour le chat et les alertes in -app. 
+ENF-014 Émettre les alertes métier seulement après un enregistrement réussi, sans événement 
+fantôme.  
+ 
+  
+
+--- page 14 ---
+Vibely - Travail de Fin d'Études  
+14 
+ 
+2.1.2 Acteurs 
+Le tableau ci -dessous liste les acteurs du système. J’y inclus l’application mobile 
+lorsqu’elle agit sans geste de l’utilisateur, par exemple pour renouveler la session, envoyer la 
+position en arrière-plan ou afficher une alerte in-app. 
+Acteur Rôle 
+Visiteur Personne sans session. Elle peut s’inscrire ou ouvrir l’écran de connexion.  
+Utilisateur Free Compte authentifié, soumis au quota de likes. Il parcourt Découvrir si Spotify est 
+lié. 
+Utilisateur Plus Il a les mêmes fonctions de base que Free. Il dispose en plus des likes illimités, du 
+rewind, des likes reçus et du portail Stripe.  
+Application Mobile Client Flutter. Elle gère le GPS, le renouvellement de session, l’affichage et les 
+alertes in-app.  
+Spotify Service externe pour l’OAuth et la lecture du profil musical.  
+Stripe Service externe pour Checkout, les webhooks et le portail client.  
+ 
+Tableau 9 - Acteurs du système Vibely  
+ 
+2.1.3 Diagrammes de cas d'utilisation 
+Les trois diagrammes suivants regroupent les cas d’utilisation par domaine. Le premier 
+couvre l’authentification, le profil et la musique, de UC -01 à UC -07. Le deuxième couvre la 
+découverte, l’extrait de titre et le social, de UC -08 à UC -18. Le troisième couvre les photos, 
+Vibely Plus et les notifications, de UC -19 à UC -24. L’écoute d’un extrait, UC -08, reste 
+rattachée fonctionnellement à la musique dans le tableau 2. Elle figure sur le diagramme de 
+découverte parce qu’elle s’exerce depuis une carte de Déco uvrir. 
+
+--- page 15 ---
+Vibely - Travail de Fin d'Études  
+15 
+ 
+Figure 1 - Cas d'utilisation : authentification, profil et musique (UC -01 à UC-07) 
+
+
+--- page 16 ---
+Vibely - Travail de Fin d'Études  
+16 
+ 
+Figure 2 - Cas d'utilisation : découverte, extrait de titre et social (UC -08 à UC-18) 
+
+
+--- page 17 ---
+Vibely - Travail de Fin d'Études  
+17 
+ 
+Figure 3 - Cas d'utilisation : photos, Plus et notifications  
+  
+
+
+--- page 18 ---
+Vibely - Travail de Fin d'Études  
+18 
+2.1.4 Authentification et profil 
+UC-01 - S’inscrire 
+Acteur : Visiteur 
+Objectif : Créer un compte et obtenir une session initiale. 
+Scénario nominal 
+Le visiteur ouvre l’écran d’inscription. Il saisit l’email, le mot de passe, le nom 
+d’affichage, la date de naissance, le genre et les genres recherchés. À la validation, le système 
+contrôle les champs, crée le compte et stocke le mot de passe de façon sécurisée. Il ouvre une 
+session et la mémorise sur l’appareil. Le visiteur entre ensuite dans l’application. 
+Scénario alternatif 
+Si le visiteur quitte l’écran d’inscription sans valider, aucun compte n’est créé. 
+Scénario d’erreur 
+Si le visiteur soumet un email déjà enregistré, le système refuse l’inscription et n’ouvre 
+pas de session. 
+Exigences liées : EF-AUTH-001, ENF-002 
+UC-02 - Se connecter 
+Acteur : Visiteur 
+Objectif : Obtenir une session à partir des identifiants. 
+Scénario nominal 
+Le visiteur saisit l’email et le mot de passe sur l’écran de connexion. Le système vérifie 
+les identifiants, ouvre une session et affiche l’application. 
+Scénario alternatif 
+Si le visiteur quitte l’écran de connexion sans valider, aucune session n’est ouverte. 
+Scénario d’erreur 
+Si le visiteur saisit un email ou un mot de passe incorrect, le système refuse la connexion. 
+Il n’indique pas si l’email existe. 
+
+--- page 19 ---
+Vibely - Travail de Fin d'Études  
+19 
+Exigences liées : EF-AUTH-002 
+UC-03 - Rafraîchir la session 
+Acteur : Application mobile, pour un utilisateur authentifié. 
+Objectif : Prolonger l’accès sans ressaisie du mot de passe. 
+Scénario nominal 
+Tant qu’une session renouvelable est valide, l’application la prolonge en arrière -plan 
+avant expiration. Le système vérifie le refresh token, le consomme et en émet un nouveau. 
+L’application mémorise la nouvelle session. 
+Scénario alternatif 
+S’il n’y a pas de refresh token sur l’appareil, l’application n’appelle pas l’API et affiche 
+l’écran de connexion. 
+Scénario d’erreur 
+Si le refresh token est expiré, révoqué ou invalidé, le renouvellement est refusé. 
+L’application affiche l’écran de connexion. 
+Exigences liées : EF-AUTH-003, RM-AUTH-01 
+UC-04 - Se déconnecter 
+Acteur : Utilisateur authentifié 
+Objectif : Révoquer la session courante. 
+Scénario nominal 
+Depuis les paramètres, l’utilisateur se déconnecte. Le système révoque le refresh token de 
+cet appareil. Si l’appareil était enregistré pour les alertes, cet enregistrement est retiré. 
+L’application efface la session locale et revient à l’écran de connexion. 
+Scénario alternatif 
+Si l’utilisateur se déconnecte sur un appareil, les refresh tokens des autres appareils 
+restent valides. Leurs access JWT sont pourtant invalidés jusqu’au prochain refresh, via 
+AuthVersion. 
+
+--- page 20 ---
+Vibely - Travail de Fin d'Études  
+20 
+Si l’utilisateur se déconnecte sans réseau, l’application le ramène quand même à l’écran 
+de connexion. 
+Scénario d’erreur 
+Si l’API refuse ou échoue la révocation, l’application efface quand même la session 
+locale et affiche la connexion. La révocation côté serveur peut rester incomplète. 
+Exigences liées : EF-AUTH-004, RM-AUTH-02 
+UC-05 - Mettre à jour le profil 
+Acteur : Utilisateur authentifié 
+Objectif : Mettre à jour les informations du profil, dont la bio, le genre, la date de naissance, 
+l’accroche vibe et les genres recherchés. 
+Scénario nominal 
+Depuis les paramètres de profil, l’utilisateur modifie ses informations. Le système valide 
+et enregistre les changements. 
+Scénario alternatif 
+Si l’utilisateur ne modifie qu’une partie du profil, seuls ces champs sont enregistrés. Les 
+autres informations restent inchangées. 
+Scénario d’erreur 
+Si l’utilisateur envoie des données invalides, le système refuse et n’enregistre rien. Une 
+date de naissance inférieure à 18 ans est refusée. 
+Exigences liées : EF-PROF-001, EF-PROF-004 
+  
+
+--- page 21 ---
+Vibely - Travail de Fin d'Études  
+21 
+2.1.5 Musique 
+UC-06 - Connecter Spotify 
+Acteur : Utilisateur authentifié 
+Objectif : Lier le compte Spotify via OAuth, avec PKCE . 
+Scénario nominal 
+L’utilisateur lance l’autorisation Spotify depuis l’application. Après accord, le système 
+associe le compte Spotify au profil Vibely. Les secrets d’accès restent côté serveur. 
+Scénario alternatif 
+Si l’utilisateur relie à nouveau Spotify alors qu’un compte était déjà associé, le nouveau 
+lien remplace l’ancien. 
+Si l’utilisateur annule l’écran d’autorisation Spotify, aucun lien n’est créé. 
+Si l’utilisateur déconnecte Spotify, le lien et l’instantané musical sont retirés. 
+Scénario d’erreur 
+Si l’utilisateur refuse l’autorisation Spotify, ou si celle -ci échoue, un message s’affiche. 
+Le profil musical reste inchangé. 
+Exigences liées : EF-MUS-001, EF-MUS-003, ENF-003, RM-MUS-03 
+UC-07 - Synchroniser le profil musical 
+Acteur : Utilisateur authentifié, avec Spotify déjà lié. L’application mobile peut aussi lancer la 
+synchro. 
+Objectif : Enregistrer un instantané musical pour le score d’affinité et l’affichage. 
+Scénario nominal 
+L’utilisateur, ou l’application après une connexion Spotify, demande une 
+synchronisation. Le système interroge Spotify et enregistre un instantané, artistes, titres et 
+genres. Cet instantané sert au classement Découvrir et à l’affichage. 
+ 
+ 
+
+--- page 22 ---
+Vibely - Travail de Fin d'Études  
+22 
+Scénario alternatif 
+Si l’utilisateur relance une synchronisation, l’instantané précédent est remplacé par les 
+données les plus récentes. 
+Scénario d’erreur 
+Si Spotify est indisponible, ou si l’accès a été retiré, la synchronisation échoue. 
+L’utilisateur est invité à reconnecter Spotify. L’ancien profil musical est conservé. 
+Exigences liées : EF-MUS-002, RM-MUS-01 
+UC-08 - Écouter un extrait de titre 
+Acteur : Utilisateur authentifié 
+Objectif : Écouter un extrait audio d’un titre. 
+Scénario nominal 
+Depuis une carte profil, l’utilisateur demande la lecture d’un extrait. Le système fournit 
+une adresse d’écoute Spotify. L’application lance la lecture. 
+Scénario alternatif 
+Si Spotify ne fournit pas d’extrait, l’application tente une autre source. 
+Scénario d’erreur 
+Si l’utilisateur demande un extrait qui n’existe pas, un message s’affiche. L’application 
+reste utilisable. 
+Exigences liées : EF-MUS-004 
+  
+
+--- page 23 ---
+Vibely - Travail de Fin d'Études  
+23 
+2.1.6 Découverte 
+UC-09 - Partager sa position (croisement de chemin) 
+Acteur : Utilisateur authentifié. L’application mobile envoie les pings. 
+Objectif : Mettre à jour la position GPS et enregistrer les croisements de chemin. 
+Scénario nominal 
+Dès qu’une session est valide et que la localisation en arrière -plan a été accordée, 
+l’application envoie la position même lorsque l’interface n’est pas ouverte. L’envoi a lieu au 
+plus toutes les 4 minutes, si le déplacement dépasse 45 m. Le système met à jour la position 
+de l’utilisateur. Il détecte les autres profils dans un rayon d’environ 120 m dont le dernier fix 
+date de moins de 45 minutes. Il enregistre ou rafraîchit un croisement pour chaque paire. 
+Scénario alternatif 
+Si l’utilisateur recroise quelqu’un déjà croisé, le système met à jour la date du dernier 
+croisement.  
+Si seule la localisation au premier plan est accordée, les pings continuent tant que 
+l’application est utilisée, pas après l’avoir quittée. 
+Scénario d’erreur 
+Si l’utilisateur refuse la permission de localisation, aucune position n’est envoyée. Aucun 
+nouveau croisement n’est enregistré depuis cet appareil. 
+Exigences liées : EF-DISC-001, EF-PROF-003, RM-DISC-01, RM-DISC-02, RM-DISC-04 
+  
+
+--- page 24 ---
+Vibely - Travail de Fin d'Études  
+24 
+UC-10 - Voir les profils croisés 
+Acteur : Utilisateur authentifié 
+Objectif : Obtenir une liste de profils croisés à parcourir via swipe. 
+Scénario nominal 
+À l’ouverture de l’onglet Découvrir, le système charge les croisements visibles depuis au 
+plus 7 jours. Il ne retient que les profils découvrables, avec des données musicales affichables 
+et 18 ans révolus. Le filtre des genres recherchés exclut les profils dont le genre ne correspond 
+pas aux préférences du visiteur. Les likes et les passes postérieurs au dernier croisement sont 
+exclus. Le système calcule le score d’affinité musicale, Jaccard des genres à 60 % et des 
+artistes à 40 % lorsque les deux signaux sont disponibles. Il trie d’abord par récence du 
+croisement, puis par affinité, enfin par distance. Le résultat est paginé avec Skip, Take et un 
+total. Un compte Spotify lié est requis pour parcourir l’onglet. 
+Scénario alternatif 
+Si l’utilisateur ouvre Découvrir sans croisement récent, la liste est vide. L’application 
+l’invite à se déplacer. 
+Scénario d’erreur 
+Si l’utilisateur n’a pas lié Spotify, le parcours Découvrir est bloqué. Aucun profil n’est 
+affiché. 
+Exigences liées  : EF-DISC-002, EF-DISC-003, EF-MUS-005, RM-DISC-03, RM-DISC-05, 
+RM-DISC-06, RM-DISC-07, RM-MUS-02 
+  
+
+--- page 25 ---
+Vibely - Travail de Fin d'Études  
+25 
+2.1.7 Social 
+UC-11 - Liker un profil 
+Acteur : Utilisateur authentifié. 
+Objectif : Exprimer un intérêt. Créer un match si le like est réciproque. 
+Scénario nominal 
+Un like n’est possible que s’il existe un croisement récent de 7 jours au plus, ou un match 
+actif. Une seule interaction est conservée par paire dirigée. Un pass antérieur peut être 
+remplacé par un like. Au geste like, le système vérifie d’abord le quota, 10 likes par jour en 
+Free, puis enregistre le like. Si l’autre a déjà liké, un match est créé. Sinon le like reste simple. 
+Scénario alternatif 
+Si l’utilisateur like un profil qui ne l’a pas liké, l’intérêt est enregistré, sans match. 
+Si l’utilisateur like un profil qui l’a déjà liké, un match est créé et le chat devient possible. 
+Scénario d’erreur 
+Si l’utilisateur Free a utilisé tous ses likes du jour, une alerte lui propose d’attendre le 
+lendemain ou de passer à Vibely Plus. Rien n’est enregistré. 
+Si le profil n’est pas éligible, le like est refusé. Rien n’est enregistré. 
+Exigences liées : EF-INT-001, EF-INT-003, EF-INT-008, RM-INT-01, RM-INT-02, RM-INT-
+03, RM-INT-06, RM-DISC-07 
+  
+
+--- page 26 ---
+Vibely - Travail de Fin d'Études  
+26 
+UC-12 - Passer un profil 
+Acteur : Utilisateur authentifié. 
+Objectif : Rejeter un profil sans créer de match. 
+Scénario nominal 
+Le pass n’est possible que s’il existe un croisement récent de 7 jours au plus, ou un match 
+actif. Le geste enregistre un refus. Le profil sort de Découvrir jusqu’à un nouveau croisement 
+après ce pass. 
+Scénario alternatif 
+S’il existait déjà un pass vers ce profil, ce pass est simplement mis à jour. 
+Si l’utilisateur et le profil sont déjà matchés, le pass est refusé. Le match reste en place. 
+Scénario d’erreur 
+Si le profil n’est pas éligible, le pass est refusé. Rien n’est enregistré. 
+Exigences liées : EF-INT-002, RM-INT-06, RM-DISC-07 
+UC-13 - Annuler le dernier pass 
+Acteur : Utilisateur Plus. 
+Objectif : Annuler le dernier pass. 
+Scénario nominal 
+Avec le droit Plus de retour arrière, l’utilisateur revient sur le dernier profil qu’il a passé. 
+Le système retire ce refus. Le profil peut réapparaître dans Découvrir s’il reste un croisement 
+visible. 
+Scénario alternatif 
+Si l’utilisateur annule son dernier pass alors que le croisement a expiré, le refus est retiré. 
+Le profil ne réapparaît pas dans la liste. 
+Scénario d’erreur 
+Si l’utilisateur Free tente d’annuler un pass, l’action est refusée. Une proposition Vibely 
+Plus s’affiche. 
+Exigences liées : EF-INT-006, RM-INT-04 
+
+--- page 27 ---
+Vibely - Travail de Fin d'Études  
+27 
+UC-14 - Voir qui a liké 
+Acteur : Utilisateur Plus. 
+Objectif : Consulter les likes reçus. 
+Scénario nominal 
+Avec le droit Plus pour voir qui a liké, l’utilisateur ouvre la liste des likes entrants. Il peut 
+consulter les profils concernés. La liste est paginée. 
+Scénario alternatif 
+Si l’utilisateur Plus n’a reçu aucun like, la liste s’affiche vide. 
+Scénario d’erreur 
+Si l’utilisateur Free ouvre la liste de ceux qui l’ont liké, l’accès est refusé. Une 
+proposition d’abonnement s’affiche. 
+Exigences liées : EF-INT-007, RM-INT-04 
+UC-15 - Consulter ses matchs 
+Acteur : Utilisateur authentifié. 
+Objectif : Lister les matchs actifs. 
+Scénario nominal 
+Depuis la messagerie, l’utilisateur voit ses matchs actifs. Il peut ouvrir le profil ou le chat. 
+La liste est paginée. Un match rompu n’apparaît plus. 
+Scénario alternatif 
+Si l’utilisateur n’a aucun match, la liste de la messagerie s’affiche vide. 
+Scénario d’erreur 
+Si l’utilisateur ouvre la messagerie mais que le chargement échoue, un message s’affiche. 
+Il peut réessayer. 
+Exigences liées : EF-INT-004 
+
+--- page 28 ---
+Vibely - Travail de Fin d'Études  
+28 
+UC-16 - Consulter le profil d’un match 
+Acteur : Utilisateur authentifié. 
+Objectif : Voir le détail d’un utilisateur avec lequel on a un match actif. 
+Scénario nominal 
+L’utilisateur ouvre le profil d’un match. Il voit les photos, la bio et le profil musical, en 
+lecture seule. Le match doit être actif. Celui qui consulte doit en faire partie. 
+Scénario alternatif 
+Si l’utilisateur ouvre le profil d’un match incomplet, l’écran s’affiche quand même avec 
+les informations disponibles. 
+Scénario d’erreur 
+Si l’utilisateur ouvre le profil de quelqu’un qui n’est plus un match, l’accès est refusé. 
+Exigences liées : EF-INT-004 
+UC-17 - Rompre un match 
+Acteur : Utilisateur authentifié. 
+Objectif : Désactiver un match et couper le chat associé. 
+Scénario nominal 
+L’utilisateur demande la rupture du match. Le système désactive le match. La messagerie 
+entre les deux devient inaccessible. Le match disparaît de la liste active. 
+Scénario alternatif 
+Si le match est déjà inactif, l’action ne change rien. Le chat reste inaccessible. 
+Scénario d’erreur 
+Si l’utilisateur n’appartient pas à ce match, la rupture est refusée. 
+Si l’appel échoue, un message s’affiche. Le match reste actif. 
+Exigences liées : EF-INT-005, RM-INT-05 
+
+--- page 29 ---
+Vibely - Travail de Fin d'Études  
+29 
+UC-18 - Discuter 
+Acteur : Utilisateur authentifié 
+Objectif : Échanger des messages avec un match, en temps réel. Texte, photo ou réaction. 
+Scénario nominal 
+L’utilisateur ouvre la conversation avec un match actif. Il peut envoyer du texte ou une 
+photo, réagir, répondre ou rechercher dans la conversation. Les messages sont horodatés. Le 
+destinataire peut recevoir une alerte in -app. À la lecture, l’émetteur reçoit un accusé de 
+réception. Un indicateur signale aussi lorsque l’interlocuteur est en train d’écrire. 
+Scénario alternatif 
+Si l’utilisateur envoie le premier message après un match, une conversation est créée pour 
+les deux personnes. 
+Scénario d’erreur 
+Si l’utilisateur essaie d’écrire après une rupture de match, le serveur refuse l’envoi. 
+L’application affiche une erreur. Le message n’est pas transmis. 
+Si la photo n’est pas une image acceptée, ou si elle dépasse 5 Mo, l’envoi est refusé. 
+Exigences liées : EF-CHAT-001 à EF-CHAT-010 , EF-NOTIF-001 à EF-NOTIF-004 
+2.1.8 Photos, Plus et notifications 
+UC-19 - Gérer ses photos 
+Acteur : Utilisateur authentifié. 
+Objectif : Ajouter, ordonner, choisir la photo principale ou supprimer ses photos de profil. 
+Scénario nominal 
+Depuis les paramètres Photos, l’utilisateur ajoute une photo, en désigne une comme 
+principale ou en supprime. Il peut en avoir jusqu’à 6. Chaque fichier fait au plus 5 Mo, en 
+JPEG, PNG ou WebP. Le système vérifie que le fichier est vraiment une image avant 
+d’accepter. 
+ 
+ 
+
+--- page 30 ---
+Vibely - Travail de Fin d'Études  
+30 
+Scénario alternatif 
+Si l’utilisateur ajoute sa première photo, elle devient la photo principale. Il peut ensuite 
+en choisir une autre. 
+Scénario d’erreur 
+Si le fichier est trop lourd, ou si ce n’est pas une image JPEG, PNG ou WebP, il est 
+rejeté. 
+Si l’album a déjà 6 photos, l’ajout est refusé. 
+Exigences liées : EF-PROF-002, ENF-006, ENF-010 
+UC-20 - Consulter plans et privilèges 
+Acteur : Utilisateur authentifié. 
+Objectif : Connaître l’offre commerciale et les droits actifs du compte . 
+Scénario nominal 
+L’utilisateur consulte les plans Free et Plus, ainsi que ses droits courants. En Free, il voit 
+le quota de likes. En Plus, il voit les likes illimités, la liste de ceux qui l’ont liké et le retour 
+arrière.  
+Scénario alternatif 
+Si l’utilisateur Free ouvre l’écran Plus, il voit ses quotas. 
+Si l’utilisateur Plus ouvre le même écran, il voit ses avantages débloqués. 
+Scénario d’erreur 
+Si l’utilisateur ouvre l’écran Plus mais que les droits du compte ne se chargent pas, un 
+message l’invite à réessayer. En attendant, l’application ne le traite pas comme Plus. 
+Exigences liées : EF-BILL-001, EF-BILL-002 
+  
+
+--- page 31 ---
+Vibely - Travail de Fin d'Études  
+31 
+UC-21 - Souscrire Vibely Plus 
+Acteur : Utilisateur authentifié. 
+Objectif : Souscrire Vibely Plus via Stripe Checkout. 
+Scénario nominal 
+Depuis l’écran Plus, l’utilisateur choisit un plan et est conduit vers le paiement Stripe. 
+Après un paiement réussi, Stripe confirme l’abonnement par un webhook signé. Le système 
+n’active Plus qu’après cette confirmation. Les droits Plus deviennent alors effectifs . 
+Scénario alternatif 
+Si l’utilisateur abandonne le paiement Stripe, ses droits restent inchangés. 
+Scénario d’erreur 
+Si la session Stripe ne peut pas être créée, une erreur s’affiche. Aucun abonnement n’est 
+créé. 
+Si le paiement est refusé, l’utilisateur reste sur le plan Free. 
+Exigences liées : EF-BILL-003, EF-BILL-004, EF-BILL-006, RM-BILL-01, RM-BILL-03, 
+RM-BILL-04, RM-BILL-05 
+UC-22 - Gérer / résilier l’abonnement Plus 
+Acteur : Utilisateur Plus. Stripe fournit le portail. 
+Objectif : Gérer ou résilier l’abonnement Plus via le portail client Stripe. 
+Scénario nominal 
+L’utilisateur ouvre le portail Stripe. Il peut résilier, changer de moyen de paiement ou 
+voir les factures. Les changements côté Stripe sont répercutés sur le compte Vibely. À 
+l’échéance d’une résiliation, le compte repasse Free. Les droits Plus sont retirés. 
+Scénario alternatif 
+Si l’utilisateur résilie, Plus reste actif jusqu’à la fin de la période payée, puis le compte 
+redevient Free. 
+Si l’utilisateur reprend l’abonnement avant l’échéance, Plus continue sans interruption. 
+ 
+
+--- page 32 ---
+Vibely - Travail de Fin d'Études  
+32 
+Scénario d’erreur 
+Si l’utilisateur demande à gérer son abonnement mais que le portail Stripe ne s’ouvre pas, 
+un message d’erreur s’affiche. Le statut ne change pas. 
+Exigences liées : EF-BILL-005, EF-BILL-006, RM-BILL-02 
+UC-23 - Configurer les préférences de notification 
+Acteur : Utilisateur authentifié. L’application mobile enregistre l’appareil. 
+Objectif : Choisir si les alertes sont actives, et pour quels événements. 
+Scénario nominal 
+Dans les paramètres Notifications, l’utilisateur active ou désactive les alertes. Il choisit 
+les types match, message et like. S’il active, l’application demande la permission du téléphone 
+et enregistre l’identifiant d’appareil. S’il désactive, cet enregistrement est retiré. 
+Scénario alternatif 
+Si l’utilisateur refuse la permission de notification du téléphone, ses choix sont quand 
+même enregistrés sur le compte. L’interface indique que les notifications locales ne peuvent 
+pas être délivrées. 
+Scénario d’erreur 
+Si l’enregistrement de l’appareil échoue, un message indique que les alertes n’ont pas pu 
+s’activer. 
+Exigences liées : EF-NOTIF-001, EF-NOTIF-002, ENF-001 
+  
+
+--- page 33 ---
+Vibely - Travail de Fin d'Études  
+33 
+UC-24 - Recevoir une notification in-app 
+Acteur : Utilisateur authentifié. Application mobile. 
+Objectif : Être informé d’un like, d’un match ou d’un message sans interroger le serveur en 
+boucle. 
+Scénario nominal 
+Après un like, un match ou un message correctement enregistré, le système vérifie les 
+préférences de l’utilisateur. Il envoie une alerte in -app en temps réel lorsque c’est possible. 
+L’application affiche une notification locale. Un appui ouvre le chat, les likes reçus ou le 
+match concerné. 
+Scénario alternatif 
+Si l’utilisateur reçoit un message alors que la conversation est déjà ouverte, aucune alerte 
+n’est affichée. 
+Si l’utilisateur a désactivé ce type d’alerte, aucune notification de ce type n’est envoyée. 
+Scénario d’erreur 
+Si l’utilisateur n’a pas de connexion temps réel, il ne reçoit pas d’alerte en direct. 
+L’historique s’affiche au prochain chargement. 
+Exigences liées : EF-NOTIF-003, EF-NOTIF-004, RM-NOTIF-01, RM-NOTIF-02  
+
+--- page 34 ---
+Vibely - Travail de Fin d'Études  
+34 
+2.2 Diagramme de classes conceptuel 
+Le diagramme ci -dessous reprend le modèle du domaine. User est le point d’ancrage. 
+Photos, abonnement, croisements, interactions, matchs, conversations et messages s’y 
+rattachent. Pour un croisement, un match ou une conversation, les deux identifiants sont 
+toujours rangés dans le même ordre. Cela évite d’enregistrer deux fois la même paire. 
+ 
+ 
+ 
+Figure 4 - Classes du domaine Vibely  
+  
+
+
+--- page 35 ---
+Vibely - Travail de Fin d'Études  
+35 
+2.3 Navigation entre écrans 
+Le client s’organise autour de trois onglets, Découvrir, Messages et Profil. Au lancement, 
+si une session est encore utilisable, l’application ouvre Découvrir. Sinon elle affiche l’écran 
+de connexion. Pour parcourir les cartes, l’API exige un compte Spotify lié. L’inscription 
+impose 18 ans révolus. Seuls les profils d’au moins 18 ans sont proposés. Si la date de 
+naissance manque, l’application bloque l’onglet Découvrir jusqu’à sa saisie. 
+Tableau 10 - Routes, écrans et accès  
+Route / écran Description Accès 
+Démarrage  Écran affiché au lancement, le temps de vérifier la 
+session. Public 
+Connexion  Écran de connexion.  Public 
+Inscription Écran d’inscription. Public 
+Découvrir Cartes des profils croisés.  Connecté, onglet Découvrir  
+Messages Liste des matchs et des conversations.  Connecté, onglet Social  
+Paramètres  Menu des réglages. Connecté, onglet Compte  
+Profil Édition du profil.  Connecté  
+Aperçu profil Prévisualisation du profil tel qu’il apparaît aux autres.  Connecté  
+Photos Gestion des photos de profil.  Connecté  
+Localisation  Réglages de localisation.  Connecté  
+Spotify Liaison et synchronisation Spotify.  Connecté  
+Vibely Plus Offre et abonnement Plus.  Connecté  
+Profil d’un match  Détail d’un match.  Connecté (hors onglets)  
+Conversation  Fil de discussion. Connecté (hors onglets)  
+ 
+  
+
+--- page 36 ---
+Vibely - Travail de Fin d'Études  
+36 
+2.4 Règles fonctionnelles 
+2.4.1 Découverte 
+Code Règle 
+RM-DISC-01 Le rayon de croisement est d’environ 120 m.  
+RM-DISC-02 Le dernier fix GPS doit dater de 45 minutes ou moins.  
+RM-DISC-03 Un croisement reste visible 7 jours au plus.  
+RM-DISC-04 Les deux identifiants d’une paire sont toujours rangés dans le même ordre, pour 
+éviter les doublons.  
+RM-DISC-05 Découvrir exige un compte Spotify lié.  
+RM-DISC-06 Un profil n’apparaît dans Découvrir que s’il a un instantané Spotify et 18 ans 
+révolus. 
+RM-DISC-07 Un like retire le profil de Découvrir. Un pass le retire jusqu’au prochain 
+recroisement.  
+ 
+2.4.2 Interactions 
+Code Règle 
+RM-INT-01 De A vers B, une seule interaction est conservée. Un pass peut être remplacé par un 
+like. 
+RM-INT-02 Le match n’existe que si le like est mutuel.  
+RM-INT-03 Un compte Free est limité à 10 likes par jour.  
+RM-INT-04 Le retour arrière et la liste de ceux qui ont liké sont réservés à Plus.  
+RM-INT-05 Rompre un match le désactive et bloque le chat.  
+RM-INT-06 On ne like ou ne passe un profil que s’il existe un croisement récent ou un match 
+actif.  
+ 
+2.4.3 Musique, authentification, Plus et alertes 
+Code Règle 
+RM-MUS-01 L’instantané Spotify est la seule source du profil musical. Il n’y a plus de genres ni 
+d’artistes saisis à la main . 
+RM-MUS-02 Le score d’affinité va de 0 à 100. Il combine le Jaccard des genres à 60 % et celui 
+des artistes à 40 %, lorsque les deux signaux sont disponibles.  
+RM-MUS-03 Les secrets OAuth Spotify restent côté serveur.  
+RM-AUTH-01 Un refresh consomme le jeton courant et en émet un nouveau.  
+RM-AUTH-02 Une déconnexion révoque la session concernée, ou toutes les sessions.  
+
+--- page 37 ---
+Vibely - Travail de Fin d'Études  
+37 
+Code Règle 
+RM-BILL-01 Plus n’est actif que si le plan est plus, le statut est actif et l’échéance n’est pas 
+dépassée.  
+RM-BILL-02 Dans tout autre cas, le compte est Free.  
+RM-BILL-03 Le paiement passe par Stripe.  
+RM-BILL-04 Seules les confirmations Stripe authentiques mettent à jour l’abonnement.  
+RM-BILL-05 Un même événement Stripe ne doit pas activer Plus deux fois.  
+RM-NOTIF-01 Aucune alerte n’est envoyée si l’utilisateur a coupé ce type d’événement.  
+RM-NOTIF-02 Aucune alerte message n’est affiché e si la conversation est déjà ouverte.  
+ 
+
+--- page 38 ---
+Vibely - Travail de Fin d'Études  
+38 
+Chapitre III : Architecture générale  
+3.1 Architecture technique du système 
+3.1.1 Découpage 
+Le système tient en trois parties. Le téléphone ne parle jamais directement à SQL Server. 
+Il passe par une API JSON, qui applique les règles puis persiste. 
+Le client Flutter affiche les écrans, suit le GPS en arrière -plan si la permission le permet, 
+et stocke la session localement, c’est -à-dire les jetons. L’API ASP.NET Core expose des 
+endpoints Minimal APIs, des handlers MediatR et un hub SignalR pour le chat et les alertes 
+in-app. SQL Server conserve les données. Les photos sont des fichiers. Spotify et Stripe 
+interviennent comme partenaires. 
+La figure 5 détaille les projets serveur. Api, Application, Domain et Infrastructure.  
+ 
+Figure 5 - Paquetages / couches backend  
+Côté serveur, j’ai adopté une architecture en couches inspirée de la Clean Architecture. 
+Api gère le transport HTTP. Application contient les handlers. Domain contient les entités et 
+les invariants. Infrastructure contient EF Core, les appels Stripe et Spotify, et la gestion des 
+fichiers. 
+
+
+--- page 39 ---
+Vibely - Travail de Fin d'Études  
+39 
+3.1.2 Déploiement logique 
+ 
+Figure 6 - Déploiement logique  
+En développement, l’API et SQL Server tournent en local. Les photos sont des fichiers, 
+servis en HTTPS. Spotify et Stripe restent des systèmes externes. L’OAuth PKCE part du 
+téléphone. L’API interroge ensuite la Web API Spotify. Stripe assure Checkout, le portail et 
+les webhooks. 
+3.2 Technologies employées 
+Technologie  Rôle dans Vibely  Motif du choix  
+Flutter Client mobile Android et iOS  Une seule base de code, alors que le GPS et les 
+permissions sont les mêmes sur les deux stores  
+Riverpod  Injection des dépendances et 
+mise à jour des écrans  
+Seuls les widgets concernés se reconstruisent  
+ASP.NET Core 10  Points d’entrée REST  Un endpoint prépare la requête et l’envoie à 
+MediatR, sans règle métier dans Api  
+Minimal APIs Points d’entrée REST  Un endpoint prépare la requête et l’envoie à 
+MediatR, sans règle métier dans Api  
+MediatR  Handlers de commandes et de 
+requêtes  
+Chaque cas d’utilisation a son dossier, séparé du 
+HTTP 
+SQL Server et EF Core  Persistance Intégration native à .NET. Le schéma reste dans 
+Infrastructure  
+BCrypt  Hachage des mots de passe  Aucun mot de passe n’est stocké en clair  
+
+
+--- page 40 ---
+Vibely - Travail de Fin d'Études  
+40 
+ 
+3.2.1 Alternatives écartées 
+Alternative Motif 
+Xamarin  Flutter donne une seule interface pour Android et iOS. Je n’avais pas à maintenir 
+deux clients natifs.  
+Provider Riverpod ne s’appuie pas sur le  BuildContext  pour lire un état. Les providers se 
+déclarent à part, ce qui colle au découpage du client.  
+Session cookie côté 
+serveur 
+L’API est sans état. Un JWT suffit à authentifier chaque appel. Une session serveur 
+aurait forcé à conserver l’état de connexion dans l’API.  
+ 
+  
+
+--- page 41 ---
+Vibely - Travail de Fin d'Études  
+41 
+3.3 Analyse des scénarios de l'application 
+Chaque diagramme de séquence est suivi d’une liste d’étapes. Les codes HTTP sont ceux 
+renvoyés par l’API.  
+3.3.1 Inscription 
+ 
+Figure 7 - Séquence : inscription utilisateur  
+ 
+ 
+ 
+
+
+--- page 42 ---
+Vibely - Travail de Fin d'Études  
+42 
+1. L’application envoie l’email, le mot de passe, le nom d’affichage, la date de naissance, 
+le genre et les genres recherchés par POST /auth/register. 
+2. L’API normalise l’email (trim, minuscules) et valide les champs. Un échec donne 400. 
+Aucun compte n’est créé. 
+3. L’API vérifie que l’email n’est pas déjà utilisé. S’il l’est, la réponse est 409. Aucun 
+compte n’est créé et aucun jeton n’est émis. 
+4. Le mot de passe est haché avec BCrypt. 
+5. L’utilisateur est inséré dans la table Users. 
+6. Un JWT et un refresh token sont émis. Le refresh token (haché) est enregistré en base. 
+7. L’API répond 201 Created, avec l’identifiant, l’email, le nom d’affichage, le JWT et le 
+refresh token. 
+
+--- page 43 ---
+Vibely - Travail de Fin d'Études  
+43 
+3.3.2 Connexion 
+ 
+Figure 8 - Séquence : connexion utilisateur  
+1. L’application envoie l’email et le mot de passe par POST /auth/login. 
+2. L’API valide les champs. Un échec donne 400. 
+3. L’API sélectionne l’utilisateur par email. S’il n’existe pas, la réponse est 401, 
+avec le même traitement qu’un mot de passe erroné. 
+4. L’API vérifie le mot de passe avec BCrypt. Un échec donne 401 Unauthorized. 
+Aucun jeton n’est émis. 
+5. En cas de succès, l’API émet un JWT (60 min) et un refresh token, persisté sous 
+forme de hash. La réponse est 200. 
+
+
+--- page 44 ---
+Vibely - Travail de Fin d'Études  
+44 
+3.3.3 Mise à jour de position et croisement 
+ 
+Figure 9 - Séquence : envoi de position et enregistrement d'un croisement  
+1. L’application envoie la latitude et la longitude par  POST /auth/me/location, avec 
+un JWT. Sans jeton, la réponse est  401. Le suivi GPS peut poster cet appel sans 
+que l’écran reste ouvert, tant que le processus tourne et que la permission de 
+localisation en arrière-plan est accordée . 
+2. L’API valide les coordonnées. Un échec donne 400. Sinon elle met à jour la 
+position de l’utilisateur. 
+3. L’API cherche les autres utilisateurs dont le dernier fix date de moins de 45 
+minutes et qui se trouvent à environ 120 m. 
+4. Pour chaque paire ordonnée (UserAId inférieur à UserBId), elle crée ou met à jour 
+le croisement. 
+5. L’API répond 200. Découvrir pourra lister ce profil pendant 7 jours. 
+ 
+ 
+
+
+--- page 45 ---
+Vibely - Travail de Fin d'Études  
+45 
+Le diagramme d’activité ci-dessous reprend le même enregistrement, sous forme de décisions 
+plutôt que d’échanges HTTP. 
+ 
+
+
+--- page 46 ---
+Vibely - Travail de Fin d'Études  
+46 
+Figure 10 - Activité : enregistrement d'un croisement de chemin  
+3.3.4 Like vers match 
+ 
+Figure 11 - Séquence : like et création éventuelle du match  
+Le quota Free est décidé avant l’écriture. Un refus 402 n’enregistre rien. Le match n’est 
+pas un bouton séparé. 
+1. L’application envoie POST /interactions/like sur un profil avec croisement récent 
+(7 jours) ou match actif. 
+2. L’API vérifie le quota (10 likes par jour en Free, illimité en Plus) puis l’éligibilité. 
+Quota atteint, réponse 402, rien n’est écrit. Profil non éligible, réponse 422, rien 
+n’est écrit. 
+3. Le like est enregistré. La réponse est 200. 
+4. S’il existe déjà un like inverse, l’API crée le match. Le chat devient possible. 
+5. Sinon le client reçoit un simple « liké ». 
+
+
+--- page 47 ---
+Vibely - Travail de Fin d'Études  
+47 
+3.3.5 Liaison Spotify 
+ 
+Figure 12 - Séquence : liaison Spotify et synchronisation musicale  
+Le cas nominal suit les étapes suivantes. 
+1. L’application ouvre l’autorisation Spotify en OAuth PKCE. Spotify renvoie un 
+code d’autorisation. 
+2. L’application transmet ce code, l’URI de redirection et le code_verifier par POST 
+/auth/spotify/connect (JWT obligatoire). 
+3. L’API échange le code contre les jetons Spotify. Le refresh token est stocké côté 
+serveur. L’API interroge déjà la Web API (artistes, titres, genres) et enregistre 
+l’instantané. Succès, réponse 200. Échec, réponse 400. 
+4. Plus tard, POST /auth/spotify/sync relit Spotify avec le refresh token enregistré. Le 
+nouvel instantané remplace le précédent. Succès, réponse 200. 
+5. Découvrir se sert de cet instantané pour classer les profils (Jaccard genres 60 %, 
+artistes 40 %). 
+
+
+--- page 48 ---
+Vibely - Travail de Fin d'Études  
+48 
+Chapitre IV : Base de données  
+4.1 Schéma 
+Le schéma ci -dessous est le modèle relationnel des tables principales. Il reprend le 
+diagramme de classes, avec une table par association entre deux utilisateurs. 
+J’ai choisi EF Core plutôt qu’un catalogue de procédures stockées. Les invariants (paire 
+ordonnée, quota, éligibilité) se testent dans Application.Tests, sans déployer SQL. Les index 
+et les unicités restent dans le schéma, là où SQL Server est le plus fort. 
+ 
+ 
+ 
+Figure 13 - Modèle de données (tables principales)  
+  
+
+
+--- page 49 ---
+Vibely - Travail de Fin d'Études  
+49 
+4.2 Tables, contraintes et clefs 
+4.2.1 Users 
+La clé primaire est Id (uniqueidentifier). L’email est unique. SpotifyUserId l’est aussi 
+lorsqu’il n’est pas nul. La table n’a pas de clé étrangère sortante. Les autres tables pointent 
+vers elle. 
+Le mot de passe n’existe qu’en PasswordHash. La latitude, la longitude et l’horodatage 
+du dernier fix servent au croisement. Un index porte sur les coordonnées. 
+AuthVersion est incrémenté à chaque logout. Un JWT dont le claim av ne correspond 
+plus est rejeté tout de suite, même s’il n’est pas encore expiré. 
+4.2.2 UserPhotos 
+La clé primaire est Id. La clé étrangère UserId référence Users. Un utilisateur a au plus 6 
+photos. La limite est appliquée dans le handler, pas seulement à l’écran. IsPrimary désigne la 
+photo principale. La première photo ajoutée le devient. 
+Le fichier n’est pas stocké en varbinary dans SQL Server. Il est sur disque. La base ne 
+garde que l’URL relative. 
+4.2.3 PathCrossings 
+La clé primaire est Id. Les clés étrangères UserAId et UserBId référencent Users. La 
+paire est unique et toujours stockée avec UserAId inférieur à UserBId. FirstCrossedAtUtc date 
+le premier croisement. LastCrossedAtUtc est mis à jour à chaque nouveau fix dans le rayon. 
+Un croisement de plus de 7 jours sort de Découvrir. La ligne n’est pas forcément 
+supprimée tout de suite . 
+4.2.4 UserInteractions 
+La clé primaire est Id. Les clés étrangères FromUserId et ToUserId référencent Users. 
+L’interaction est orientée. Type vaut like ou pass. La paire (FromUserId, ToUserId) est 
+unique. Alice vers Bob et Bob vers Alice sont deux lignes distinctes. 
+Un like vers la même personne ne crée pas une deuxième ligne. Un pass peut être 
+remplacé par un like sur cette paire. 
+
+--- page 50 ---
+Vibely - Travail de Fin d'Études  
+50 
+Un like retire le profil de Découvrir. Un pass le retire seulement jusqu’à un nouveau 
+croisement. Un pass plus ancien que LastCrossedAtUtc n’exclut plus le profil. C’est la règle 
+RM-DISC-07. 
+4.2.5 Matches / Conversations / Messages / MessageReactions 
+Matches a pour clé primaire Id. La paire (UserAId, UserBId) est unique et ordonnée 
+comme pour les croisements. IsActive distingue un match vivant d’une rupture. Un unmatch 
+passe IsActive à faux. L’envoi de message est alors refusé. La ligne n’est pas supprimée. 
+Conversations reprend la même paire unique. Il n’y a pas de clé étrangère vers Matches. 
+La conversation est créée au premier message, si le match est encore actif. Un match peut 
+donc exister sans conversation. 
+Messages référence Conversations. Un message est du texte ou une image, avec un 
+horodatage (SentAtUtc) et une date de lecture éventuelle (ReadAtUtc).  
+MessageReactions lie un message et un utilisateur. Un seul emoji par couple (MessageId, 
+UserId). 
+4.2.6 UserSubscriptions / UserRefreshTokens / DeviceTokens 
+UserSubscriptions a au plus une ligne par utilisateur (UserId unique). PlanCode vaut free 
+ou plus. La table porte aussi le statut, les dates, l’identifiant client Stripe et l’identifiant 
+d’abonnement. L’absence de ligne équivaut au plan Free. Plus n’est actif que si le plan est 
+plus, le statut active, et l’expiration non dépassée. 
+UserRefreshTokens stocke le hash SHA -256 du jeton, pas le jeton en clair. TokenHash 
+est unique. ExpiresAtUtc fixe la durée de vie (30 jours). 
+DeviceTokens enregistre un UUID d’installation, pour adresser les alertes in -app. Ce 
+n’est pas un jeton FCM ou APNs. Le logout retire cette ligne. 
+  
+
+--- page 51 ---
+Vibely - Travail de Fin d'Études  
+51 
+4.3 Dictionnaires de données 
+4.3.1 Dictionnaire Users 
+Tableau 11 - Dictionnaire Users  
+Attribut Type Commentaire 
+Id uniqueidentifier  Clé primaire  
+Email nvarchar(256)  Unique 
+PasswordHash  nvarchar(500)  Jamais en clair  
+DisplayName  nvarchar(200)  Nom affiché  
+CreatedAtUtc  datetime2  Création du compte  
+Role nvarchar(50)  Valeur par défaut  User 
+AuthVersion int Incrémenté à chaque logout. Un JWT dont le 
+claim AV ne correspond plus est rejeté  
+Bio nvarchar(500)  Peut être nul 
+BirthDate  datetime2  Peut être nul. L’âge est calculé à partir de cette date  
+Gender nvarchar(50)  Genre d’identité. Peut être nul  
+LookingForGenders  nvarchar(100)  Genres d’identité recherchés  
+AvatarUrl nvarchar(500)  Copie de l’URL de la photo principale  
+VibeDescription nvarchar(200)  Peut être nul 
+Latitude  float  Peut être nul 
+Longitude float  Peut être nul 
+LocationUpdatedAtUtc  datetime2  Horodatage du dernier fix GPS  
+SpotifyUserId  nvarchar(100)  Unique s’il est renseigné  
+SpotifyDisplayName  nvarchar(200)  Peut être nul 
+SpotifyConnectedAtUt
+c datetime2  Peut être nul 
+SpotifyRefreshToken  nvarchar(2000)  Chiffré, côté serveur uniquement  
+SpotifyMusicSnapshotJ
+son nvarchar(max)  Instantané musical  
+SpotifyProduct  nvarchar(32)  Offre Spotify (free  ou premium), pas Vibely Plus  
+NotificationsEnabled  bit Interrupteur général des alertes in -app  
+NotifyMatches  bit Alerte match  
+NotifyMessages  bit Alerte message  
+NotifyLikes bit Alerte like 
+ 
+
+--- page 52 ---
+Vibely - Travail de Fin d'Études  
+52 
+4.3.2 Dictionnaire UserPhotos 
+Tableau 12 - Dictionnaire UserPhotos  
+Attribut Type Commentaire 
+Id uniqueidentifier  Clé primaire  
+UserId uniqueidentifier  Clé étrangère vers  Users. Suppression en cascade  
+Url nvarchar(500)  Chemin relatif du fichier sur disque  
+SortOrder int Ordre dans la galerie  
+IsPrimary  bit Photo principale. La première photo ajoutée le devient  
+CreatedAtUtc  datetime2  Date d’ajout  
+ 
+4.3.3 Dictionnaire PathCrossings 
+Tableau 13 - Dictionnaire PathCrossings  
+Attribut Type Commentaire 
+Id uniqueidentifier  Clé primaire  
+UserAId uniqueidentifier  Clé étrangère vers  Users. Toujours inférieur à  UserBId 
+UserBId uniqueidentifier  Clé étrangère vers  Users 
+FirstCrossedAtUtc datetime2  Premier croisement  
+LastCrossedAtUtc  datetime2  Dernier croisement. Sert à la visibilité de 7 jours dans 
+Découvrir 
+ 
+4.3.4 Dictionnaire UserInteractions 
+Tableau 14 - Dictionnaire UserInteractions  
+Attribut Type Commentaire 
+Id uniqueidentifier  Clé primaire  
+FromUserId uniqueidentifier  Clé étrangère vers  Users. Émetteur. La paire 
+avec  ToUserId est unique  
+ToUserId uniqueidentifier  Clé étrangère vers  Users. Cible 
+Type int 1 like, 2 pass  
+CreatedAtUtc  datetime2  Date du geste. Un pass plus ancien qu’un nouveau 
+croisement n’exclut plus le profil  
+ 
+  
+
+--- page 53 ---
+Vibely - Travail de Fin d'Études  
+53 
+4.3.5 Dictionnaire Matches 
+Tableau 15 - Dictionnaire Matches  
+Attribut Type Commentaire 
+Id uniqueidentifier  Clé primaire  
+UserAId uniqueidentifier  Clé étrangère vers  Users. Toujours inférieur à  UserBId 
+UserBId uniqueidentifier  Clé étrangère vers  Users 
+MatchedAtUtc  datetime2  Date du match  
+IsActive bit Passe à faux après une rupture. La ligne n’est pas 
+supprimée  
+ 
+4.3.6 Dictionnaire Conversations 
+Tableau 16 - Dictionnaire Conversations  
+Attribut Type Commentaire 
+Id uniqueidentifier  Clé primaire  
+UserAId uniqueidentifier  Clé étrangère vers  Users. Toujours inférieur à  UserBId 
+UserBId uniqueidentifier  Clé étrangère vers  Users 
+LastMessageAtUtc  datetime2  Date du dernier message. Peut être nul  
+ 
+4.3.7 Dictionnaire Messages 
+Tableau 17 - Dictionnaire Messages  
+Attribut Type Commentaire 
+Id uniqueidentifier  Clé primaire  
+ConversationId  uniqueidentifier  Clé étrangère vers  Conversations. Suppression en 
+cascade  
+SenderUserId  uniqueidentifier  Auteur du message  
+Content  nvarchar(2000)  Texte. Peut être vide pour une image  
+Kind int 0 texte, 1 image. Valeur par défaut  0 
+MediaUrl nvarchar(500)  Chemin du média. Peut être nul  
+MediaContentType  nvarchar(100)  Type MIME. Peut être nul  
+ReplyToMessageId  uniqueidentifier  Message cité. Peut être nul  
+SentAtUtc datetime2  Date d’envoi  
+ReadAtUtc  datetime2  Date de lecture. Nul si le message n’est pas lu  
+ 
+
+--- page 54 ---
+Vibely - Travail de Fin d'Études  
+54 
+4.3.8 Dictionnaire MessageReactions 
+Tableau 18 - Dictionnaire MessageReactions  
+Attribut Type Commentaire 
+Id uniqueidentifier  Clé primaire  
+MessageId  uniqueidentifier  Clé étrangère vers  Messages. Suppression en cascade  
+UserId uniqueidentifier  Clé étrangère vers  Users 
+Emoji nvarchar(16)  Emoji de la réaction  
+CreatedAtUtc  datetime2  Date de la réaction  
+ 
+4.3.9 Dictionnaire UserSubscriptions 
+Tableau 19 - Dictionnaire UserSubscriptions  
+Attribut Type Commentaire 
+Id uniqueidentifier  Clé primaire  
+UserId uniqueidentifier  Clé étrangère vers  Users. Unique. Au plus une ligne 
+par compte  
+PlanCode  nvarchar(32)  free ou plus 
+Status  nvarchar(32)  active,  canceled  ou expired 
+StartsAtUtc  datetime2  Début de la période  
+ExpiresAtUtc datetime2  Fin de l’accès Plus. Peut être nul  
+Provider nvarchar(32)  none  ou stripe 
+ExternalReference  nvarchar(200)  Identifiant d’abonnement Stripe. Peut être nul  
+ProviderCustomerId  nvarchar(200)  Identifiant client Stripe. Peut être nul  
+UpdatedAtUtc  datetime2  Dernière mise à jour  
+ 
+  
+
+--- page 55 ---
+Vibely - Travail de Fin d'Études  
+55 
+4.3.10 Dictionnaire UserRefreshTokens 
+Tableau 20 - Dictionnaire UserRefreshTokens  
+Attribut Type Commentaire 
+Id uniqueidentifier  Clé primaire  
+UserId uniqueidentifier  Clé étrangère vers  Users. Un compte peut avoir 
+plusieurs jetons  
+TokenHash  nvarchar(128)  Hash SHA -256. Unique. Le jeton n’est jamais stocké 
+en clair 
+ExpiresAtUtc datetime2  Fin de validité. 30 jours à l’émission  
+CreatedAtUtc  datetime2  Date d’émission  
+ 
+4.3.11 Dictionnaire DeviceTokens 
+Tableau 21 - Dictionnaire DeviceTokens  
+Attribut Type Commentaire 
+Id uniqueidentifier  Clé primaire  
+UserId uniqueidentifier  Clé étrangère vers  Users 
+Token  nvarchar(512)  UUID d’installation. Unique. Ce n’est pas un jeton 
+FCM ou APNs 
+Platform  nvarchar(32)  android,  ios, web ou unknown  
+UpdatedAtUtc  datetime2  Dernière déclaration de l’appareil  
+ 
+  
+
+--- page 56 ---
+Vibely - Travail de Fin d'Études  
+56 
+4.3.12 Index et contraintes notables 
+Tableau 22 - Index et contraintes notables  
+Table Index / contraintes notables  
+Users Email unique. SpotifyUserId  unique s’il est renseigné. Index  (Latitude, Longitude)  
+UserPhotos Clé étrangère  UserId. Index  (UserId, SortOrder) 
+PathCrossings  Unique (UserAId, UserBId). Index  LastCrossedAtUtc  
+UserInteractions  Unique (FromUserId, ToUserId)  
+Matches  Unique (UserAId, UserBId)  
+Conversations  Unique (UserAId, UserBId)  
+Messages Index  (ConversationId, SentAtUtc). Clé étrangère  ConversationId  
+MessageReactions  Unique (MessageId, UserId)  
+UserSubscriptions UserId unique. Index sur  ExternalReference  et ProviderCustomerId  
+UserRefreshTokens  TokenHash  unique  
+DeviceTokens  Token  unique 
+ 
+Les paires sont toujours stockées avec UserAId < UserBId. Sans ça, un croisement 
+(Alice, Bob) et (Bob, Alice) doublonneraient. La même règle vaut pour Match et 
+Conversation. 
+
+--- page 57 ---
+Vibely - Travail de Fin d'Études  
+57 
+Chapitre V : Web API 
+5.1 Le choix REST  
+L’API est REST. Le JSON est en camelCase. Il n’y a pas de session serveur. Chaque 
+requête authentifiée porte un JWT dans Authorization: Bearer. J’ai utilisé des Minimal APIs 
+plutôt que du MVC. Un fichier d’endpoints existe par domaine (Auth, Discovery, 
+Interactions, Chat, Billing, Media). OpenAPI est généré depuis ces endpoints, via 
+AddVibelyOpenApi dans Program.cs. 
+Les erreurs métier remontent en ProblemDetails. Une validation échouée donne 400. Un 
+email déjà inscrit donne 409. Un login en échec donne 401, sans dire si l’email existe. Un 402 
+(Payment Required) apparaît quand le quota Free de likes est atteint, quand un compte Free 
+demande le retour arrière (rewind), ou la liste des likes reçus. Un 403 (Forbidden) est renvoyé 
+quand l’action est interdite, par exemple un unmatch sur un match dont l’utilisateur n’est pas 
+parti. Un 422 (Unprocessable Entity) est renvoyé quand un like ou un pass n’est pas éligible, 
+par exemple sans croisement récent. 
+5.2 Arborescence 
+La solution backend compte Vibely.Api (HTTP), Vibely.Application (handlers), 
+Vibely.Domain (entités), Vibely.Infrastructure (EF Core, BCrypt, JWT, Stripe, Spotify, 
+fichiers) et Vibely.Application.Tests. Côté Flutter, les couches sont presentation, domain et 
+data, avec Riverpod et GoRouter . 
+Tableau 23 - Projets backend  
+Projet Contenu 
+Vibely.Api Endpoints, JWT Bearer, rate limiting, OpenAPI, gestion des exceptions  
+Vibely.Application Handlers MediatR, DTOs, interfaces de dépôts. Règles de genre et d’âge  
+Vibely.Domain Entités (User, PathCrossing, Match,  Message, etc.) 
+Vibely.Infrastructure  DbContext, BCrypt,  JwtTokenService, Stripe, Spotify, stockage des photos  
+Vibely.Application.Tests Tests des handlers et des règles métier  
+ 
+
+--- page 58 ---
+Vibely - Travail de Fin d'Études  
+58 
+5.3 Sécurité et autorisation 
+5.3.1 Hachage des mots de passe 
+Le mot de passe n’est jamais stocké en clair, ni renvoyé par l’API. J’utilise BCrypt 
+(BCrypt.Net). HashPassword à l’inscription, Verify à la connexion. BCrypt inclut un sel dans 
+la chaîne de hash. Chaque hash a son propre sel. On ne peut donc pas réutiliser une table 
+précalculée unique contre tous les comptes. 
+MD5 ou SHA -1 seuls, encore cités dans de vieux tutoriels, ne conviennent pas à un mot 
+de passe. Ils sont trop rapides et n’intègrent pas de sel. 
+Un login en échec, email inconnu ou mot de passe faux, renvoie le même 401. Sinon 
+l’endpoint servirait à tester quels emails ont un compte. 
+5.3.2 JSON Web Token 
+Dans une API REST, on évite la session serveur et les cookies de session. Après un login 
+réussi, le serveur signe un JWT. Le client le renvoie, sur chaque appel, dans l’en -tête 
+Authorization avec le schéma Bearer.  
+Un JWT a trois parties, séparées par un point 
+1. L’en-tête. Algorithme HMAC-SHA256 et type, encodés en Base64URL . 
+2. Le payload. Claims NameIdentifier (identifiant utilisateur), Email, av (version 
+d’authentification), rôle Admin éventuel, et l’expiration. 
+3. La signature. HMAC de l’en -tête et du payload avec le secret Jwt:Secret (au moins 32 
+caractères en production). 
+La durée d’accès est de 60 minutes (Jwt:ExpirationMinutes). Un refresh token, stocké 
+hashé en SHA-256 et valable 30 jours, permet d’en émettre un nouveau sans resaisir le mot de 
+passe. Le logout révoque ce refresh, pour un appareil ou pour tous, et incrémente 
+AuthVersion. L’access token en cours devient alors inutilisable, même s’il n’est pas expiré. 
+Le claim av est comparé à la valeur en base à chaque requête authentifiée. 
+  
+
+--- page 59 ---
+Vibely - Travail de Fin d'Études  
+59 
+5.3.3 Autorisation 
+Les routes anonymes sont register, login, refresh, GET /billing/plans et le webhook 
+Stripe. Ce webhook est authentifié par sa signature, pas par un JWT. Les photos de profil 
+exigent un JWT et un contrôle d’accès. Peuvent les voir le propriétaire, un match actif, ou un 
+croisement récent. Les médias de chat exigent un JWT et d’être participant de la conversation 
+ENF-010. Le reste exige RequireAuthorization. 
+Le rate limiting (politique  auth) bride  register, login et refresh contre le bourrage 
+d’identifiants. 
+Les droits Plus ne sont pas un rôle JWT.  EntitlementService relit l’abonnement en base à 
+chaque like, à chaque retour arrière (rewind) et à chaque consultation des likes reçus 
+5.4 Règles métier côté serveur 
+Cette section reprend les règles appliquées par les handlers, avec les codes HTTP 
+correspondants. 
+5.4.1 Inscription, connexion et renouvellement 
+À l’inscription (RegisterUserHandler), le serveur vérifie que l’email est libre, hache le 
+mot de passe et répond 201 Created. 
+À la connexion (LoginHandler), le succès donne  200. Un échec donne  401, sans dire si 
+l’email existe ou si le mot de passe est faux. 
+Le renouvellement (RefreshTokenHandler) consomme le refresh token courant et en émet 
+un nouveau. S’il est inconnu, expiré ou révoqué, la réponse est 401. 
+5.4.2 Mise à jour de position 
+Le client transmet la latitude et la longitude par POST /auth/me/location, avec un JWT. 
+Le suivi GPS en arrière -plan appelle le même endpoint. L’écran n’a pas besoin de rester 
+ouvert. Le contrat HTTP ne change pas. 
+Le serveur refuse les coordonnées invalides (400). Sinon il met à jour la latitude, la 
+longitude et LocationUpdatedAtUtc. Il cherche ensuite les utilisateurs dont le dernier fix date 
+de moins de 45 minutes et qui se trouvent à environ 120 m, puis crée ou met à jour les 
+croisements. 
+  
+
+--- page 60 ---
+Vibely - Travail de Fin d'Études  
+60 
+5.4.3 Découvrir 
+Sans compte Spotify lié, ou sans position, GetNearbyProfilesHandler renvoie une liste 
+vide. Le serveur charge les croisements encore visibles (7 jours). Il exclut les likes, et les 
+passes postérieurs au dernier croisement. Il ne garde que les profils d’au moins 18 ans, avec 
+un instantané Spotify, et dont le genre correspond à LookingForGenders.  
+Le score d’affinité est un Jaccard, 60 % genres et 40 % artistes. Le tri est la récence du 
+croisement, puis l’affinité, puis la distance. Le résultat est paginé avec Skip et Take. 
+5.4.4 Like, pass et retour arrière 
+Pour un like (SendLikeHandler), le serveur vérifie d’abord le quota Free (10 likes par 
+jour, illimité en Plus), puis l’éligibilité (croisement visible ou match actif). Quota atteint, 
+réponse 402, rien n’est écrit. Profil non éligible, réponse  422. Sinon le like est enregistré. Un 
+like inverse crée le match. 
+Pour un pass (PassProfileHandler), les mêmes règles d’éligibilité s’appliquent. Un pass 
+sur un match actif est refusé. Le profil sort de Découvrir jusqu’à un nouveau croisement. 
+Le retour arrière (RewindPassHandler) est réservé à Plus (402  sinon) et ne concerne que 
+le dernier pass (422 s’il n’y en a pas). 
+5.4.5 Ajout d’une photo 
+Le serveur limite le nombre de photos à six par compte. Seuls JPEG, PNG et WebP sont 
+acceptés, jusqu’à 5 Mo. Le type MIME fourni par le client n’est pas fiable. Le serveur lit les 
+magic bytes du fichier. Un fichier qui n’est pas une image est refusé. 
+Six photos déjà présentes, ou un contenu qui n’est pas une image, donnent 422. Un 
+fichier manquant ou trop lourd donne 400. 
+La première photo devient la photo principale (IsPrimary et AvatarUrl). Le fichier est 
+stocké sur disque. La base ne garde que l’URL relative. 
+
+--- page 61 ---
+Vibely - Travail de Fin d'Études  
+61 
+ 
+Figure 16 - Séquence : ajout d'une photo de profil  
+ 
+5.4.6 Paiement Stripe 
+CreateCheckoutSessionHandler crée une session Checkout et renvoie une URL Stripe. 
+L’utilisateur paie sur Stripe, pas dans l’API. 
+Plus n’est activé qu’après une confirmation authentique. Soit le webhook Stripe, signé, 
+traité par  ProcessStripeWebhookHandler. Soit  POST /billing/sync, qui relie l’abonnement 
+chez Stripe (SyncStripeSubscriptionHandler). Une signature invalide donne  400. Un 
+événement ignoré ou déjà connu répond 200. 
+Le traitement est idempotent. Un même événement reçu plusieurs fois met à jour la même 
+ligne UserSubscriptions. Il n’active pas deux fois l’abonnement. 
+
+
+--- page 62 ---
+Vibely - Travail de Fin d'Études  
+62 
+ 
+Figure 14 - États de souscription Vibely Plus.  
+ 
+
+
+--- page 63 ---
+Vibely - Travail de Fin d'Études  
+63 
+ 
+ 
+Figure 15 - Séquence : Checkout Stripe et webhook.  
+ 
+5.5 Stratégie de tests automatisés 
+Les règles métier critiques du backend sont couvertes par des tests unitaires xUnit, 
+dans Vibely.Application.Tests. Au moment de la rédaction, 71 tests passent. L’objectif n’est 
+pas une couverture de toute l’application. Il s’agit de fixer les invariants propres à Vibely, ce 
+que le serveur accepte ou refuse avant d’écrire en base. 
+Les handlers sont testés avec des dépôts et des services factices. La logique applicative se 
+valide sans déployer SQL Server, et sans appeler Spotify ou Stripe. C’est le choix du chapitre 
+IV. Les règles vivent dans Application. Elles restent testables hors infrastructure. 
+
+
+--- page 64 ---
+Vibely - Travail de Fin d'Études  
+64 
+5.5.1 Périmètre couvert 
+• Authentification : inscription, connexion et renouvellement du token lorsque 
+ConsumeAsync ne restitue aucun jeton, correspondant notamment au cas d’un jeton 
+absent ou déjà consommé côté fake. L’expiration réelle des tokens, gérée en SQL via 
+ExpiresAtUtc, n’est pas testée dans ce périmètre. 
+• Découverte : enregistrement d’un croisement à l’intérieur et à l’extérieur du rayon 
+(CrossingRadiusKm, soit 120 m en production), exclusion des profils déjà likés ou 
+passés, obligation d’avoir un compte Spotify lié, filtre d’âge minimum et filtre 
+LookingForGenders. La fenêtre de visibilité de 7 jours est définie par la constante 
+VisibleCrossingAge, mais n’est pas directement vérifiée par ces tests. 
+GetNearbyProfilesHandler n’est pas testé de bout en bout.  
+• Scoring musical : calcul du score de Jaccard avec une pondération de 60 % pour les 
+genres et 40 % pour les artistes, ainsi que le cas où seuls les genres sont disponibles. 
+Le cas où seuls les artistes sont disponibles ne possède pas de test dédié.  
+• Interactions : vérification de l’éligibilité d’un like ou d’un pass à partir d’un 
+croisement ou d’un match actif, création d’un match en cas de like réciproque et 
+rupture d’un match (unmatch). Le quota Free de 10 likes par jour est testé au niveau 
+du résolveur de droits et non via le code HTTP 402 de SendLikeHandler.  
+• Abonnement Plus : résolution des droits Free / Plus, notamment lorsque 
+l’abonnement est expiré et doit être considéré comme Free, ainsi que l’application 
+d’un état Stripe simulé lors de l’activation. Le code HTTP 402 du like et la 
+vérification de la signature des webhooks ne sont pas couverts par ces tests. 
+• Utilitaires transverses : normalisation des paires UserAId < UserBId, calcul de l’âge, 
+règles liées aux genres et parsing des identifiants Spotify.  
+Ces tests ciblent la couche Application. Le client Flutter et les parcours HTTP complets 
+ne font pas l’objet de tests automatisés dans le périmètre de ce TFE. 
+
+--- page 65 ---
+Vibely - Travail de Fin d'Études  
+65 
+Chapitre VI : Interface utilisateur Flutter  
+6.1 Le choix Flutter 
+Flutter a été choisi pour développer l’application mobile afin de cibler Android et iOS à 
+partir d’une base de code commune. Ce choix permet de limiter la duplication du code et de 
+simplifier la maintenance, tout en conservant une interface cohérente entre les deux 
+plateformes. Flutter propose également un système d’interface basé sur des widgets 
+permettant de construire rapidement des écrans personnalisés, ainsi qu’un hot reload facilitant 
+les phases de développement et d’itération. 
+Ce choix est particulièrement adapté à Vibely, dont l’interface repose principalement sur 
+des écrans interactifs tels que les cartes de profils, la navigation, les conversations et la 
+gestion du profil utilisateur. L’écosystème Flutter fournit également des bibliothèques 
+permettant d’accéder aux fonctionnalités natives nécessaires à l’application, notamment la 
+géolocalisation, le stockage local et les notifications. 
+La gestion de l’état de l’application est assurée par Riverpod, notamment pour la session 
+utilisateur, les profils affichés dans Découvrir et les conversations. GoRouter est utilisé pour 
+centraliser la navigation et rediriger l’utilisateur vers l’authentification lorsqu’une session 
+n’est plus valide. 
+Flutter implique néanmoins de prendre en compte certaines différences entre Android et 
+iOS, notamment la gestion des permissions, de la géolocalisation et de certaines 
+fonctionnalités natives. Ces adaptations restent toutefois limitées par rapport au 
+développement et à la maintenance de deux applications distinctes. 
+  
+
+--- page 66 ---
+Vibely - Travail de Fin d'Études  
+66 
+6.2 Vues 
+Les captures qui suivent reprennent le parcours principal, de la connexion à Découvrir, 
+aux Messages et à une conversation, puis le profil d’un match et les écrans de compte (profil, 
+localisation, Spotify, Vibely Plus). 
+6.2.1 Vue Connexion 
+ 
+Figure 17 - Écran Connexion  
+L’écran affiche la marque, le slogan, puis un formulaire (email, mot de passe, bouton Se 
+connecter) et un lien vers l’inscription. 
+  
+
+
+--- page 67 ---
+Vibely - Travail de Fin d'Études  
+67 
+Règles techniques. 
+• Les champs email et mot de passe sont obligatoires. Un œil bascule l’affichage du mot 
+de passe. Côté client, l’email est aussi contrôlé (présence d’un @ et d’un point). 
+• L’envoi appelle POST /auth/login. Un échec  401 affiche un message générique. Le 
+serveur ne dit pas si l’email est inconnu ou si le mot de passe est faux 
+(LoginHandler renvoie null dans les deux cas). 
+• En cas de succès, les jetons d’accès et de rafraîchissement sont enregistrés en stockage 
+sécurisé local, puis l’application ouvre Découvrir. 
+• Le lien « S’inscrire » ouvre le flux d’inscription (POST /auth/register, champs 
+supplémentaires, hors capture). 
+6.2.2 Vue Découvrir 
+ 
+Figure 18 - Écran Découvrir (carte profil)  
+La carte occupe l’écran. En haut, le score d’affinité et un libellé de croisement. En bas, le 
+prénom, l’âge, un éventuel artiste commun, la bio et le titre signature. Like et pass se font par 
+glissement, pas par boutons sur cette capture. 
+
+
+--- page 68 ---
+Vibely - Travail de Fin d'Études  
+68 
+Règles techniques. 
+• Tant que Spotify n’est pas lié, l’onglet affiche un écran d’invitation. Sans compte 
+Spotify, GET /discovery/nearby ne restitue aucun profil (liste vide, pas un 403). 
+• Un candidat n’entre dans le deck que s’il a un instantané Spotify et 18 ans révolus 
+(RM-DISC-06). 
+• Le badge de croisement est un texte de co -présence calculé à partir 
+de LastCrossedAtUtc (ici « Croisement plus tôt aujourd’hui »). Il n’y a jamais de carte en 
+temps réel de l’autre utilisateur. 
+• Le pourcentage vibe est le score Jaccard renvoyé par l’API. Le titre signature et la 
+ligne d’artiste commun viennent de l’instantané musical, pas de champs saisis à la main. 
+• Un glissement à droite appelle  POST /interactions/like, un glissement à gauche  POST 
+/interactions/pass. Un like réciproque ouvre une animation de célébration. L’utilisateur 
+peut alors ouvrir la conversation ou continuer le deck. L’application n’envoie pas d’elle -
+même vers le hub Messages. 
+6.2.3 Vue Messages 
+ 
+Figure 19 - Écran Messages  
+Le hub affiche une recherche, l’entrée « Qui t’a liké », une rangée Nouveaux matchs, puis 
+la liste des conversations. Ici la liste est vide. Léa est un match sans fil encore créé. La pastille 
+bulle sur l’avatar ouvre le chat. Ce n’est pas un compteur de non-lus. 
+
+
+--- page 69 ---
+Vibely - Travail de Fin d'Études  
+69 
+Règles techniques. 
+• GET des matchs et des conversations ne retient que les paires encore actives 
+(IsActive). Un unmatch les retire des deux listes. 
+• « Qui t’a liké » est un droit Plus (seeWhoLikedYou). En Free, le tap ouvre l’offre 
+Vibely Plus, sans appeler  GET /interactions/likes/received. Si l’API est appelée quand 
+même, elle répond 402. 
+• La recherche filtre localement les matchs et conversations déjà chargés, par nom. Elle 
+ne parcourt pas l’annuaire des comptes. 
+• Les non-lus d’un fil viennent du serveur (hasUnread  sur la liste des conversations). Le 
+point sur l’onglet Messages vient de GET /chat/unread-summary. Sur cette capture, ni l’un 
+ni l’autre n’apparaît, faute de conversation. 
+6.2.4 Vue Conversation 
+ 
+Figure 20 - Écran Conversation  
+Le fil montre les bulles du jour, le champ « Message… », l’ajout de photo et l’envoi. La 
+coche unique sous le message envoyé signifie « parti », pas encore lu. La bannière « New 
+message » est une notification locale (SignalR, pas FCM). 
+
+
+--- page 70 ---
+Vibely - Travail de Fin d'Études  
+70 
+Règles techniques. 
+• Sans match actif, POST /chat/messages répond 422. Après un unmatch, le fil reste en 
+base mais l’envoi et la lecture sont refusés (GetMessages répond 404). 
+• Un texte vide ou de plus de 2 000 caractères donne  400 (FluentValidation). Une photo 
+passe par  POST /chat/messages/media, comme le profil (magic bytes JPEG, PNG ou 
+WebP, 5 Mo). Hors image 422, fichier manquant ou trop lourd 400. 
+• Une double coche apparaît quand le destinataire a lu le fil (POST 
+/chat/conversations/{id}/read, champ readAtUtc). Sur cette capture, la réponse démo n’a 
+pas marqué le message comme lu, d’où la simple coche. 
+• RM-NOTIF-02. Si ce fil est déjà ouvert sous son identifiant définitif, l’alerte locale 
+n’est pas affichée. La bannière de la figure peut encore passer au premier message, tant 
+que l’écran est encore un brouillon new-… 
+6.2.5 Vue Profil d'un match 
+ 
+Figure 21 - Écran Profil d'un match  
+L’écran est en lecture seule. En haut, la photo, le prénom, l’âge et la phrase d’accroche. 
+Plus bas, À propos (âge, genre, bio) puis les genres extraits de l’instantané Spotify. Le bouton 
+Message reste collé en bas. Le menu ⋯ est en haut à droite. 
+
+
+--- page 71 ---
+Vibely - Travail de Fin d'Études  
+71 
+ 
+Règles techniques. 
+• GET /interactions/matches/{targetUserId}/profile  ne répond  200 que s’il existe un 
+match actif entre l’appelant et la cible. Sinon  404, que le match soit inactif, inexistant, ou 
+que l’appelant ne fasse pas partie de la paire. 
+• Rien n’est éditable ici. Les photos, la bio et la musique (genres, puis artistes et titres si 
+on défile) viennent du profil et de l’instantané Spotify, pas de champs saisis à la main. 
+Message ouvre le fil (openMatchChat). 
+• Le menu ⋯ demande confirmation, puis  DELETE /interactions/matches/{matchId}. 
+Le match passe à  IsActive = false. Hors paire, ce DELETE répond  403. Inconnu, 404. En 
+succès, l’écran se ferme. 
+6.2.6 Vue Profil (compte courant) 
+ 
+Figure 22 - Écran Profil  
+C’est le hub du compte, pas la fiche publique. L’en -tête reprend l’avatar, le prénom, 
+l’email et le badge de complétion. Les lignes mènent vers l’édition, les photos, Plus, la 
+localisation, Spotify et la langue. La déconnexion est plus bas, hors capture. 
+
+
+--- page 72 ---
+Vibely - Travail de Fin d'Études  
+72 
+Règles techniques. 
+• Le pourcentage est calculé côté client sur 8 cases (compte de base, bio, date de 
+naissance, genre, préférences, avatar, phrase d’accroche, Spotify). Il ne compte pas le 
+nombre de photos de la galerie. Ici 88 % correspond à 7 cases sur 8. 
+• Photos, jusqu’à 6 (GET  de la galerie, quota serveur). Localisation, « Activé -
+croisements activés » si un dernier fix (latitude  / longitude) est enregistré, pas d’après la 
+permission OS. Spotify affiche le nom lié (spotifyDisplayName) dès 
+qu’un spotifyUserId  existe. 
+• « Likes illimités · actif » n’apparaît que si  GET /auth/me renvoie isPlus. Cette valeur 
+vient de EntitlementService (abonnement Plus encore valable). Un Plus expiré est affiché 
+comme Free. 
+• Se déconnecter demande confirmation, appelle  POST /auth/logout, puis efface les 
+jetons en local même si l’appel réseau échoue. L’application revient ensuite à la 
+connexion. 
+6.2.7 Vue Localisation 
+ 
+Figure 23 - Écran Localisation  
+Le texte d’intro dit que Vibely détecte un croisement y compris hors écran, que la 
+position live n’est jamais montrée aux autres, et que les croisements s’affichent après un délai 
+
+
+--- page 73 ---
+Vibely - Travail de Fin d'Études  
+73 
+de sécurité. Le pin est uniquement la dernière position de l’utilisateur courant, pour vérifier 
+que le GPS répond. Ce n’est pas un radar des autres membres. 
+L’état a trois modes, d’après PathCrossingTracker. Vert, croisements actifs (arrière-plan). 
+Ambre, premier plan seulement (iOS « Lorsque l’app est active »). Gris, arrêt (permission ou 
+GPS refusés). 
+Règles techniques. 
+• Synchroniser envoie tout de suite  POST /auth/me/location. Ce n’est pas le seul ping. 
+Le suivi périodique (6.3) envoie aussi, au plus toutes les 4 minutes si le déplacement 
+atteint 45 m. Sur iOS, tant que le mode est premier plan, le bouton propose d’autoriser « 
+Toujours » au lieu de synchroniser. Sur Android, « lorsque l’application est en cours 
+d’utilisation » suffit, grâce au service de premier plan. 
+• Permission OS refusée, aucun POST. Découvrir continue de s’appuyer sur le dernier 
+fix déjà stocké (latitude, longitude, LocationUpdatedAtUtc), s’il existe . 
+• Personne ne voit la carte live d’un autre utilisateur. Le serveur enregistre le croisement 
+dès le ping (environ 120 m, dernier fix de moins de 45 minutes). L’écran parle d’un délai 
+de sécurité. Dans le code, il n’y a pas de file d’attente de 30 minutes avant l’upsert. Ce qui 
+est masqué, c’est la position en direct, pas l’existence du croisement. 
+
+--- page 74 ---
+Vibely - Travail de Fin d'Études  
+74 
+6.2.8 Vue Spotify 
+ 
+Figure 24 - Écran Spotify  
+L’écran rappelle que Spotify alimente le profil musical et Découvrir. La carte verte 
+montre l’état  Connecté, le nom d’écoute (ici Alex), un refresh, une rupture de lien, 
+et Reconnecter. Les pastilles de genres viennent de l’instantané, pas d’une saisie manuelle. 
+Règles techniques. 
+• Lié, la flèche appelle POST /auth/spotify/sync (rafraîchit l’instantané). Le maillon 
+cassé appelle DELETE /auth/spotify/disconnect (efface SpotifyUserId et 
+SpotifyMusicSnapshotJson). Reconnecter relance l’OAuth (POST /auth/spotify/connect), 
+qui récupère déjà un instantané, comme en 3.3.5. 
+• Sans spotifyUserId, l’onglet Découvrir affiche l’écran d’invitation et ne parcourt pas 
+le deck RM-DISC-05. 
+• Les genres affichés sont ceux de SpotifyMusicSnapshotJson. Il n’existe plus de 
+champs manuels FavoriteGenres / TopArtists. RM -MUS-01 désigne uniquement 
+l’instantané. 
+
+
+--- page 75 ---
+Vibely - Travail de Fin d'Études  
+75 
+6.2.9 Vue Vibely Plus 
+ 
+Figure 25 - Écran Vibely Plus  
+La carte d’état affiche Actif, « Tu es sur Plus », et une date de fin ou de renouvellement. 
+En dessous, les trois droits (likes illimités, qui t’a liké, rewind du dernier pass). Le bouton 
+Gérer l’abonnement ouvre Stripe dans le navigateur. 
+Règles techniques. 
+• Actif et la date viennent de GET /auth/me (isPlus, expiresAtUtc), via 
+EntitlementService. Ce n’est pas un rôle JWT. Un Plus encore payé jusqu’à ExpiresAtUtc 
+reste affiché actif, même si Stripe a déjà marqué une résiliation. Un abonnement expiré est 
+traité comme Free. 
+• Gérer l’abonnement appelle POST /billing/customer -portal (JWT). Le serveur renvoie 
+une URL Stripe Customer Portal, ouverte en navigateur externe. Sans client Stripe déjà 
+connu, l’appel échoue. La résiliation se fait dans le portail, pas dans l’app. 
+• En Free, le même écran affiche le quota quotidien et le bouton Passer à Vibely Plus. Il 
+appelle POST /billing/checkout -session, puis Checkout. L’activation Plus n’a lieu 
+qu’après webhook (ou POST /billing/sync au retour), pas au moment de ce POST. 
+
+
+--- page 76 ---
+Vibely - Travail de Fin d'Études  
+76 
+6.3 Suivi GPS en arrière-plan 
+Le suivi GPS est assuré par PathCrossingTracker, un Notifier Riverpod qui s’abonne à 
+Geolocator.getPositionStream et transmet les fixes par POST /auth/me/location. Le serveur 
+met à jour latitude, longitude et LocationUpdatedAtUtc, puis enregistre les croisements 
+(RegisterCrossingsAsync, environ 120 m, dernier fix de moins de 45 minutes). 
+PathCrossingScope enveloppe le shell authentifié de GoRouter. Le tracker survit donc au 
+changement d’onglet (Découvrir, Messages, Profil) sans dépendre d’un écran. Au retour au 
+premier plan, le scope relance le flux si le système l’a coupé. Ce n’est pas un Service Java 
+écrit pour Vibely. L’écouteur reste en Dart. Sur Android, Geolocator démarre toutefois 
+GeolocatorLocationService (type location, notification persistante, 
+FOREGROUND_SERVICE_LOCATION) pour que le système continue d’alimenter le flux 
+une fois l’écran quitté. Sur iOS, ce maintien hors premier plan suppose la permission « 
+Toujours » et le mode d’arrière -plan location dans Info.plist. Les pings peuvent donc 
+continuer sans garder Vibely ouverte à l’écran. 
+• Démarrage seulement si l’utilisateur est connecté, si le GPS du téléphone est allumé, 
+et si la permission de localisation est accordée. Sur iOS, PathCrossingTracker demande 
+ensuite « Toujours », sans bloquer le suivi « Lorsque l’app est active ». Sur Android, « 
+lorsque l’application est en cours d’utilisation » suffit, grâce au service de premier plan. 
+• Filtre de distance, 45 m. On n’envoie pas un ping à chaque mètre. 
+• Intervalle minimal entre deux POST, 4 minutes, même si le GPS émet plus souvent. 
+Côté Dart, un second garde -fou _minPingInterval refuse les envois trop rapprochés. 
+• Précision medium, assez pour 120 m, moins agressive pour la batterie. 
+• À la destruction du notifier (déconnexion) ou en cas d’arrêt forcé, la souscription est 
+annulée. Quitter l’écran ou passer à une autre application n’arrête pas le suivi si l’arrière -
+plan est autorisé. 
+Une fois le service de premier plan Android actif, ou la permission « Toujours » accordée 
+sur iOS, les pings continuent pendant que l’utilisateur se déplace hors de Vibely. Ce n’est pas 
+un processus indépendant 24 h/24. Pas de WorkManager, pas de géorepérage, pas de FCM. 
+Le suivi s’arrête à la déconnexion et si l’application est arrêtée de force. Un refus de l’accès 
+d’arrière-plan le ramène au premier plan, surtout sous iOS. La qualité du GPS en intérieur 
+reste une limite, reprise au chapitre 7.2. 
+
+--- page 77 ---
+Vibely - Travail de Fin d'Études  
+77 
+6.4 Permissions 
+Sans localisation, aucun nouveau croisement n’est enregistré. Découvrir peut encore 
+s’appuyer sur le dernier fix déjà stocké. L’OS distingue l’usage au premier plan et l’accès 
+permanent. 
+Sur Android, « lorsque l’application est en cours d’utilisation » suffit pour l’arrière -plan, 
+grâce au service de premier plan déclaré (FOREGROUND_SERVICE_LOCATION). La 
+notification persistante de ce service est une exigence du système. Elle n’est pas une alerte 
+sociale. Sur iOS, « Lorsque l’app est active » ne couvre que le premier plan. Le suivi hors 
+écran demande « Toujours » (NSLocationAlwaysAndWhenInUseUsageDescription) et le 
+mode location dans UIBackgroundModes.  
+Les notifications sociales sont optionnelles. Elles sont filtrées par les préférences (match, 
+message, like) et affichées dans l’application (notification locale, RM -NOTIF-02). Sur 
+Android 13 et plus, l’affichage demande POST_NOTIFICATIONS. Le jeton d’appareil est un 
+identifiant d’installation, pas un jeton FCM ou APNs. Le plist iOS déclare aussi remote -
+notification, mais le produit n’envoie pas de push distant.  
+Les photos passent par la galerie ou la caméra (NSPhotoLibraryUsageDescription, 
+NSCameraUsageDescription, CAMERA / READ_MEDIA_IMAGES côté Android). Le 
+serveur contrôle ensuite les magic bytes (JPEG, PNG, WebP, 5 Mo). 
+Spotify s’ouvre par OAuth dans le navigateur (PKCE). Ce n’est pas une permission de 
+localisation. 
+
+--- page 78 ---
+Vibely - Travail de Fin d'Études  
+78 
+Chapitre VII : Futures possibilités de développement  
+Le TFE s’arrête à un produit utilisable en démo. Les suites ci -dessous sont des pistes. Je 
+ne les présente pas comme déjà réalisées. 
+7.1 Modération et signalement 
+Il n’y a ni signalement de profil ou de message, ni file de traitement, ni back -office. 
+Unmatch et blocage du chat après rupture ne remplacent pas une modération. Avant une mise 
+en store, le premier ajout utile serait un signalement (profil, photo, message) et une interface 
+pour traiter les cas. 
+7.2 Qualité du GPS en intérieur 
+Le suivi en arrière -plan (6.3) enregistre encore des pings hors écran. Il n’améliore pas la 
+précision. En intérieur (métro, bâtiments, campus souterrain), le GPS dérive souvent de plus 
+de 120 m. Un faux croisement peut alors être créé entre deux personnes qui ne se sont pas 
+réellement croisées. 
+Aujourd’hui, ni le client ni le serveur ne jettent un fix trop imprécis. Une suite possible 
+serait d’ignorer les positions dont l’incertitude dépasse le rayon, ou de lisser quelques points 
+successifs avant le POST /auth/me/location. Cela réduirait une partie des faux positifs. Ça ne 
+transforme pas le GPS indoor en mesure fiable. 
+7.3 Notifications natives et App Store iOS 
+Les likes, matchs et messages arrivent déjà par SignalR, puis s’affichent en notification 
+locale, avec les préférences et RM -NOTIF-02. Ça suppose que le processus Flutter tourne 
+encore et que le hub est connecté. Une fois l’application tuée, plus rien n’est délivré. 
+DeviceTokens n’est pas un jeton FCM ou APNs. C’est un UUID d’installation, enregistré 
+par POST /auth/device-tokens. Le serveur a déjà le crochet (IPushNotificationSender). 
+L’implémentation actuelle est un no -op. Elle journalise et n’envoie rien. Le plist iOS déclare 
+remote-notification pour plus tard. Il n’y a ni Firebase, ni badge d’icône hors process. 
+La suite réelle, c’est brancher FCM (Android) et APNs (iOS) sur ce crochet, avec des 
+vrais jetons à la place de l’UUID. Ce n’est pas de l’analyse métier. C’est de l’exploitation 
+
+--- page 79 ---
+Vibely - Travail de Fin d'Études  
+79 
+(comptes développeur, certificats, revue Apple). La publication App Store n’est pas faite. Le 
+GPS « Toujours » et les photos devront d’ailleurs être justifiés dans la fiche store. Le TFE 
+s’arrête à la démo hors store. 
+7.4 Mot de passe oublié  
+Il n’y a ni écran, ni route, ni e -mail de récupération. Un mot de passe oublié ne se corrige 
+pas dans l’app. Se réinscrire avec la même adresse échoue (409, e -mail unique). En démo, on 
+crée un autre compte, ou on remet le hash en base hors application. Ce flux manquerait dès 
+qu’un vrai utilisateur perd son mot de passe. 
+7.5 Web 
+Flutter web n’est pas une cible du produit. Découvrir s’appuie sur le GPS du téléphone, le 
+suivi hors écran (6.3) et les permissions natives. Un navigateur ne remplace pas ça. 
+Néanmoins une version Web pour gérer son profil ou simplement accéder à ses matchs et 
+ses conversations peut être envisagée. 
+
+--- page 80 ---
+Vibely - Travail de Fin d'Études  
+80 
+Chapitre VIII : Conclusion  
+J’ai conçu et réalisé «  Vibely », une application mobile de rencontres fondée sur le 
+croisement géographique réel et l’affinité musicale. Contrairement aux applications reposant 
+sur un rayon de recherche choisi par l’utilisateur, Vibely propose des profils à partir de 
+croisements effectivement détectés. Le projet a été formalisé à travers des cas d’utilisation, 
+des règles métier et des diagrammes UML, puis implémenté au moyen d’une API en couches, 
+d’une base de données SQL Server, d’un client Flutter et d’un système d’abonnement Plus 
+intégré à Stripe. 
+Les principales difficultés rencontrées concernaient la gestion de l’éligibilité des 
+interactions et des contraintes liées à la géolocalisation. Le système prend notamment en 
+compte la durée de visibilité d’un croisement, la fraîcheur de la position GPS, la distance 
+entre utilisateurs, les quotas du compte Free et la liaison obligatoire avec Spotify pour accéder 
+à la découverte des profils. 
+Le projet présente également plusieurs axes d’amélioration. La modération, la 
+récupération de mot de passe, la qualité des positions GPS en intérieur, l’affinement du 
+scoring musical et l’intégration des notifications natives restent à développer. Le suivi de 
+localisation en arrière -plan permet déjà d’enregistrer les croisements sans maintenir 
+l’application ouverte, conformément au fonctionnement prévu. 
+Ainsi, ce TFE a permis de développer une application fonctionnelle couvrant l’ensemble 
+du parcours principal, de l’inscription jusqu’au croisement, au like, au match, à la 
+conversation et à l’abonnement Plus. Le projet atteint ainsi les objectifs définis pour le 
+périmètre du TFE, tout en laissant des perspectives d’évolution pour une version destinée à 
+une utilisation à plus grande échelle. 
+
+--- page 81 ---
+Vibely - Travail de Fin d'Études  
+81 
+Bibliographie 
+SPOTIFY. Spotify for Developers - Web API Reference. [En ligne]. Spotify. 
+https://developer.spotify.com/documentation/web-api [Consulté le 8 octobre 2025]. 
+SPOTIFY. Authorization Code Flow with PKCE. [En ligne]. Spotify. 
+https://developer.spotify.com/documentation/web-api/tutorials/code-pkce-flow [Consulté le 9 
+octobre 2025]. 
+SAKIMURA, N. ; BRADLEY, J. ; AGARWAL, N. Proof Key for Code Exchange by OAuth 
+Public Clients. RFC 7636. IETF, 2015. [En ligne]. 
+https://datatracker.ietf.org/doc/html/rfc7636 [Consulté le 9 octobre 2025]. 
+MICROSOFT. Overview of ASP.NET Core. [En ligne]. Microsoft Learn. 
+https://learn.microsoft.com/fr-fr/aspnet/core/ [Consulté le 11 novembre 2025]. 
+MICROSOFT. Entity Framework Core. [En ligne]. Microsoft Learn. 
+https://learn.microsoft.com/fr-fr/ef/core/ [Consulté le 11 novembre 2025]. 
+MICROSOFT. Vue d’ensemble d’ASP.NET Core SignalR. [En ligne]. Microsoft Learn. 
+https://learn.microsoft.com/fr-fr/aspnet/core/signalr/introduction [Consulté le 12 novembre 
+2025]. 
+MICROSOFT. Qu’est-ce que SQL Server ? [En ligne]. Microsoft Learn. 
+https://learn.microsoft.com/fr-fr/sql/sql-server/what-is-sql-server [Consulté le 12 novembre 
+2025]. 
+BCRYPT.NET-NEXT. BCrypt.Net -Next (package NuGet). [En ligne]. 
+https://www.nuget.org/packages/BCrypt.Net-Next [Consulté le 13 novembre 2025]. 
+JONES, M. ; BRADLEY, J. ; SAKIMURA, N. JSON Web Token (JWT). RFC 7519. IETF, 
+2015. [En ligne]. https://datatracker.ietf.org/doc/html/rfc7519 [Consulté le 13 novembre 
+2025]. 
+MICROSOFT. Configure JWT bearer authentication in ASP.NET Core. [En ligne]. Microsoft 
+Learn. https://learn.microsoft.com/fr-fr/aspnet/core/security/authentication/configure-jwt-
+bearer-authentication [Consulté le 13 novembre 2025]. 
+ 
+
+--- page 82 ---
+Vibely - Travail de Fin d'Études  
+82 
+RIVERPOD. Riverpod Documentation: Reactive Caching and Data -fetching. [En ligne]. 
+https://riverpod.dev/ [Consulté le 24 novembre 2025]. 
+GEOLOCATOR. geolocator (plugin Flutter). [En ligne]. Pub.dev. 
+https://pub.dev/packages/geolocator [Consulté le 12 mars 2026]. 
+CNIL. Géolocalisation et applications mobiles : quelles règles pour protéger les données des 
+utilisateurs ? [En ligne]. CNIL, 2025. https://www.cnil.fr/fr/geolocalisation-applications-
+mobiles-quelles-regles [Consulté le 15 juillet 2026]. 
+CNIL. Recommandation relative aux applications mobiles (version modifiée). [En ligne]. 
+CNIL, avril 2025. https://www.cnil.fr/sites/default/files/2025-04/recommandation-
+applications-mobiles-modifiee.pdf [Consulté le 15 juillet 2026]. 
+FLUTTER. Flutter documentation. [En ligne]. Google. https://docs.flutter.dev/ [Consulté le 
+17 juillet 2026]. 
+STRIPE. Stripe Documentation - Checkout. [En ligne]. Stripe. 
+https://docs.stripe.com/checkout [Consulté le 2 août 2026]. 
+STRIPE. Stripe Documentation - Webhooks. [En ligne]. Stripe. 
+https://docs.stripe.com/webhooks [Consulté le 2 août 2026]. 
+STRIPE. Integrate the customer portal. [En ligne]. Stripe. https://docs.stripe.com/customer-
+management/integrate-customer-portal [Consulté le 3 août 2026] 
+
+--- page 83 ---
+Vibely - Travail de Fin d'Études  
+83 
+Annexes 
+Annexe I : Glossaire 
+Les termes suivants reviennent dans le mémoire. Ils désignent le produit tel qu’il est 
+implémenté, pas un jargon générique de dating app.  
+ 
+Croisement : Co-présence GPS d’environ 120 m, avec un dernier fix de moins de 45 
+minutes pour chaque personne. La paire est rangée UserAId < UserBId. Un croisement reste 
+visible dans Découvrir jusqu’à 7 jours. 
+Découvrir : Liste des profils issus de ces croisements, classés par récence, puis affinité, 
+puis distance. Un compte Spotify lié est obligatoire pour parcourir l’onglet. 
+Device token : Identifiant d’installation (UUID) enregistré dans DeviceTokens. Ce n’est 
+pas un jeton FCM ou APNs. 
+Instantané musical : Copie serveur des goûts Spotify (SpotifyMusicSnapshotJson) au 
+moment du connect ou du sync. C’est la seule source du profil musical. Il n’y a plus de genres 
+saisis à la main. 
+Jaccard : Indice d’intersection sur union, entre 0 et 1. Le score vibe vaut 60 % Jaccard 
+des genres plus 40 % Jaccard des artistes, ramené sur 100. 
+JWT : Jeton d’accès signé, valable 60 minutes, envoyé en Authorization: Bearer. Le 
+claim av suit AuthVersion. Un logout incrémente cette version et invalide les JWT encore en 
+circulation. 
+Match : Likes réciproques. La ligne Matches passe à IsActive = false en cas d’unmatch. 
+Sans match actif, le chat est refusé. 
+Pass : Refus d’un profil. Il sort de Découvrir jusqu’à un croisement plus récent. Un like 
+peut remplacer un pass. 
+Plus : Abonnement Stripe. Likes illimités, rewind du dernier pass, liste de qui a liké. 
+L’état « actif » vient de EntitlementService, pas d’un rôle JWT. 
+Refresh token  : Jeton persisté sous forme de hash, valable 30 jours, pour renouveler le 
+JWT sans mot de passe. Chaque usage le consomme et en émet un nouveau. 
+
+--- page 84 ---
+Vibely - Travail de Fin d'Études  
+84 
+Vibe (score)  : Pourcentage 0 –100 affiché sur la carte Découvrir. Distinct de 
+VibeDescription, la phrase d’accroche du profil. 
+Webhook Stripe : Appel HTTPS signé de Stripe vers POST /billing/webhook. C’est lui 
+(ou POST /billing/sync) qui active Plus, pas le simple ouverture de Checkout.  
+Annexe II : Matrice exigences / cas d'utilisation 
+Le tableau suivant reprend, de façon condensée, les lignes « Exigences liées » des fiches 
+UC du chapitre II. Ce n’est pas un nouvel inventaire. Les codes RM -* y figurent lorsqu’ils 
+contraignent le même cas que l’exigence fonctionnelle. 
+Tableau 24 - Correspondance exigences et UC  
+UC Intitulé Exigences  
+UC-01 S’inscrire EF-AUTH-001, ENF -002 
+UC-02 Se connecter  EF-AUTH-002 
+UC-03 Rafraîchir la session  EF-AUTH-003, RM -AUTH-01 
+UC-04 Se déconnecter  EF-AUTH-004, RM -AUTH-02 
+UC-05 Mettre à jour le profil  EF-PROF-001, EF -PROF-004 
+UC-06 Connecter Spotify  EF-MUS-001, EF -MUS-003, ENF -003, RM -MUS-03 
+UC-07 Synchroniser le profil 
+musical EF-MUS-002, RM -MUS-01 
+UC-08 Écouter un extrait de titre  EF-MUS-004 
+UC-09 Partager sa position  EF-DISC-001, EF -PROF-003, RM -DISC-01, RM -
+DISC-02, RM -DISC-04 
+UC-10 Voir les profils croisés  
+EF-DISC-002, EF -DISC-003, EF -MUS-005, RM -
+DISC-03, RM -DISC-05, RM -DISC-06, RM -DISC-07, 
+RM-MUS-02 
+UC-11 Liker un profil EF-INT-001, EF -INT-003, EF -INT-008, RM -INT-01, 
+RM-INT-02, RM -INT-03, RM -INT-06, RM -DISC-07 
+UC-12 Passer un profil EF-INT-002, RM -INT-06, RM -DISC-07 
+UC-13 Annuler le dernier pass  EF-INT-006, RM -INT-04 
+UC-14 Voir qui a liké  EF-INT-007, RM -INT-04 
+UC-15 Consulter ses matchs  EF-INT-004 
+UC-16 Consulter le profil d’un 
+match  EF-INT-004 
+UC-17 Rompre un match  EF-INT-005, RM -INT-05 
+UC-18 Discuter EF-CHAT-001 à EF -CHAT-010, EF -NOTIF-001 à 
+EF-NOTIF-004 
+
+--- page 85 ---
+Vibely - Travail de Fin d'Études  
+85 
+UC Intitulé Exigences  
+UC-19 Gérer ses photos  EF-PROF-002, ENF -006, ENF-010 
+UC-20 Consulter plans et privilèges  EF-BILL-001, EF -BILL-002 
+UC-21 Souscrire Vibely Plus  EF-BILL-003, EF -BILL-004, EF -BILL-006, RM -
+BILL-01, RM-BILL-03, RM-BILL-04, RM -BILL-05 
+UC-22 Gérer ou résilier 
+l’abonnement Plus  EF-BILL-005, EF -BILL-006, RM -BILL-02 
+UC-23 Configurer les préférences de 
+notification  EF-NOTIF-001, EF -NOTIF-002, ENF -001 
+UC-24 Recevoir une notification in -
+app  
+EF-NOTIF-003, EF -NOTIF-004, RM -NOTIF-01, 
+RM-NOTIF-02 
+ 
+Quelques exigences traversent plusieurs cas. EF -INT-004 couvre UC -15 et UC -16. RM-
+DISC-07 et RM -INT-06 lient like, pass et Découvrir. EF -NOTIF-001 à EF -NOTIF-004 
+apparaissent à la fois sur le chat (UC -18) et sur les alertes (UC -23, UC -24), parce que le 
+message déclenche aussi une notification locale. 
+RM-MUS-01, rattaché à UC -07, désigne l’instantané Spotify comme seule source du 
+profil musical. RM -DISC-06, rattaché à UC -10, exige cet instantané et 18 ans révolus pour 
+qu’un profil apparaisse dans Découvrir. 
+Annexe III : Droits Vibely Plus 
+Vibely Plus est l’abonnement payant, encaissé par Stripe. Il n’est pas un rôle porté par le 
+JWT. EntitlementService relit l’abonnement en base à chaque like, à chaque retour arrière et à 
+chaque consultation des likes reçus. 
+Plus est considéré actif lorsque le plan est  plus, le statut est  active et ExpiresAtUtc n’est 
+pas dépassé (RM-BILL-01). Sinon le compte est Free (RM -BILL-02). Un abonnement résilié 
+reste Plus jusqu’à la fin de la période déjà payée. 
+Trois droits seulement, tous listés dans SubscriptionPlans.PlusFeatures. 
+Likes illimités (unlimitedLikes).  Un compte Free a droit à 10 likes par jour UTC. Au -
+delà, le like est refusé en 402. Plus n’a pas de quota. L’éligibilité du profil (croisement récent 
+ou match actif) reste obligatoire dans les deux cas. 
+Voir qui a liké (seeWhoLikedYou).  Plus peut lister les likes reçus. Free voit une offre 
+d’abonnement. L’API refuse aussi en 402. 
+
+--- page 86 ---
+Vibely - Travail de Fin d'Études  
+86 
+Annuler le dernier pass (rewindPass).  Plus peut retirer son dernier pass. Le profil peut 
+réapparaître dans Découvrir s’il reste un croisement visible. Un compte Free qui tente l’action 
+est refusé en 402. Il n’y a pas de file de passes à remonter. Seul le dernier compte. 
+Un 402 signifie donc « fonctionnalité payante ou quota atteint », pas une interdiction 
+métier. Un like sans croisement reste un 422, Plus ou Free. 
+Plus ne change pas le rayon de croisement, le score Jaccard, le quota de photos, ni l’accès 
+au chat. Ces règles sont les mêmes pour tout le monde. 
+Annexe IV : Catalogue des routes (OpenAPI / Minimal APIs) 
+L’API est décrite par OpenAPI (AddVibelyOpenApi dans Program.cs). En 
+développement, Scalar sert de lecteur. Les endpoints sont des Minimal APIs, un fichier par 
+domaine. JSON en camelCase. Pas de session serveur. Sauf mention contraire, chaque appel 
+authentifié porte un Bearer JWT. 
+Les routes anonymes sont POST /auth/register, POST /auth/login, POST /auth/refresh, 
+GET /billing/plans et POST /billing/webhook. Le webhook n’utilise pas de JWT. Il est 
+authentifié par l’en-tête Stripe-Signature. Register, login et refresh sont bridés par la politique 
+de rate limiting auth. 
+Le hub SignalR /hubs/chat n’est pas une route REST. Il exige aussi un JWT. Les routes 
+/dev/seed* n’existent qu’en environnement Development, derrière X -Vibely-Dev-Key. Elles 
+ne font pas partie du contrat produit.  
+Auth 
+ 
+ 
+
+
+--- page 87 ---
+Vibely - Travail de Fin d'Études  
+87 
+Billing 
+ 
+Discovery 
+ 
+Interactions 
+ 
+Chat 
+ 
+Dev 
+ 
+  
+
+
+--- page 88 ---
+Vibely - Travail de Fin d'Études  
+88 
+Annexe V : Photo de profil  
+Cette annexe complète le UC -19 et le handler décrit en 5.4. La figure 16 (chapitre V) 
+donne la séquence. Ici, seules les règles persistées dans le code. 
+Ajout. POST /auth/me/photos, JWT, fichier multipart. L’ordre est le suivant. Quota de 6 
+photos par compte. Taille au plus 5 Mo. Lecture des magic bytes (ImageContentSniffer). 
+Écriture du fichier sur disque, hors SQL. INSERT dans UserPhotos (l’URL, pas le binaire). Si 
+l’écriture SQL échoue, le fichier disque est retiré pour ne pas laisser d’orphelin. 
+Le Content -Type déclaré par le client n’est pas une preuve. Seuls un JPEG (FF D8 FF), 
+un PNG (89 50 4E 47…) ou un WebP (RIFF … WEBP) passent. Un PDF renommé .jpg est 
+refusé. 
+La première photo du compte devient principale (IsPrimary et Users.AvatarUrl). Les 
+suivantes s’ajoutent sans changer l’avatar, jusqu’à POST /auth/me/photos/{photoId}/primary. 
+Codes HTTP. Fichier manquant ou trop lourd, 400. Quota déjà plein ou fichier qui n’est 
+pas une image réelle, 422. Succès, 200. 
+Lecture. GET /media/profile -photos/{userId}/{fileName} exige un JWT. Seuls le 
+propriétaire, un match actif ou un partenaire de croisement encore visible (7 jours) voient le 
+fichier. Tout le reste, y compris un fichier présent sur disque mais absent de UserPhotos, 
+répond 404. Il n’y a pas de dossier /uploads anonyme. 
+Suppression. DELETE /auth/me/photos/{photoId} retire la ligne et le fichier. Si c’était la 
+photo principale, la suivante restante prend sa place. S’il n’en reste aucune, AvatarUrl est 
+vidé. 
+Les photos de chat (POST /chat/messages/media) réutilisent le même sniffer et la même 
+limite de 5 Mo. Le contrôle d’accès est alors la participation à la conversation, pas le 
+croisement. 
+Annexe VI : Arborescence repo 
+Le dépôt est un monorepo. La racine contient l’API .NET (Vibely.Backend) et 
+l’application Flutter (Vibely.Frontend). L’arbre ci -dessous omet bin, obj, build, les logs et les 
+caches. Les projets backend sont déjà nommés au tableau 23. 
+  
+
+--- page 89 ---
+Vibely - Travail de Fin d'Études  
+89 
+ 
+Vibely.Api expose les Minimal APIs.  Vibely.Application concentre les règles 
+(croisements, likes, Plus).  Vibely.Infrastructure parle à SQL Server et aux API externes. 
+Flutter suit presentation / domain / data. Le GPS d’arrière -plan vit dans  lib/core/location, pas 
+dans un worker séparé. 
+Les routes /dev/seed* existent dans  Endpoints/Dev, uniquement en Development. Elles 
+ne font pas partie du produit livré. 

@@ -1,0 +1,311 @@
+<div
+  class="matrix"
+  [class.matrix--static]="reducedMotion()"
+  [class.matrix--lv5]="clicker.isUnlocked('core-cyan')"
+  [class.matrix--deploy]="clicker.isUnlocked('deploy-theme')"
+  [class.matrix--pulse]="corePulse()"
+  [class.matrix--boss]="clicker.isBoss()"
+  [class.matrix--hit]="mobHit()"
+  [class.matrix--raid]="!!clicker.activeRaid()"
+>
+  <canvas #rainCanvas class="matrix__rain" aria-hidden="true"></canvas>
+
+  @if (clicker.levelUpBurst(); as burst) {
+    <div class="matrix__levelup" role="status" aria-live="polite" [attr.data-burst]="burst.id">
+      <span class="matrix__levelup-ring" aria-hidden="true"></span>
+      <div class="matrix__levelup-copy">
+        <span class="matrix__levelup-tag">{{ burst.kind === 'boss' ? 'BOSS DOWN' : 'LEVEL UP' }}</span>
+        <span class="matrix__levelup-lv">
+          @if (burst.kind === 'boss') {
+            Zone {{ burst.level }}
+          } @else {
+            Lv. {{ burst.level }}
+          }
+        </span>
+        <span class="matrix__levelup-title">{{ burst.title }}</span>
+      </div>
+    </div>
+  }
+
+  <div class="matrix__shell">
+    <header class="matrix__chrome">
+      <div class="matrix__chrome-left">
+        <span class="matrix__traffic" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="matrix__file">{{ clicker.appTitle() }}</span>
+      </div>
+      <div class="matrix__chrome-right">
+        <span class="matrix__badge">Hero {{ clicker.heroLevel() }}</span>
+        <span class="matrix__badge matrix__badge--zone">Zone {{ clicker.zone() }}</span>
+        @if (clicker.killStreak() > 1) {
+          <span class="matrix__badge matrix__badge--streak">×{{ clicker.killStreak() }}</span>
+        }
+        <span class="matrix__live" aria-hidden="true">LIVE</span>
+      </div>
+      <div
+        class="matrix__xp"
+        role="progressbar"
+        [attr.aria-valuenow]="clicker.heroXpProgress()"
+        aria-valuemin="0"
+        aria-valuemax="1"
+        [attr.aria-label]="'Progression niveau héro'"
+      >
+        <span class="matrix__xp-fill" [style.--xp]="clicker.heroXpProgress()"></span>
+      </div>
+    </header>
+
+    <div class="matrix__raid-slot">
+      @if (clicker.activeRaid(); as raid) {
+        <button
+          type="button"
+          class="matrix__raid"
+          (click)="onRaidBannerClick($event)"
+          [attr.aria-label]="'Aller chasser ' + raid.name + ' sur ' + clicker.raidSectionLabel()"
+        >
+          <span class="matrix__raid-tag">INTRUSION</span>
+          <span class="matrix__raid-copy">
+            {{ raid.name }} · {{ clicker.raidSectionLabel() }}
+          </span>
+          <span class="matrix__raid-timer">{{ clicker.raidSecondsLeft() }}s</span>
+          <span class="matrix__raid-go">Y aller</span>
+        </button>
+      }
+    </div>
+
+    <div class="matrix__body">
+      <section class="matrix__arena" aria-label="Combat">
+        <div class="matrix__target" [class.is-boss]="clicker.isBoss()">
+          <h3 class="matrix__target-name">{{ clicker.monsterName() }}</h3>
+          <div
+            class="matrix__hp"
+            role="progressbar"
+            [attr.aria-valuenow]="clicker.monsterHp()"
+            [attr.aria-valuemin]="0"
+            [attr.aria-valuemax]="clicker.monsterMaxHp()"
+            [attr.aria-valuetext]="
+              clicker.formatHp(clicker.monsterHp()) +
+              ' sur ' +
+              clicker.formatHp(clicker.monsterMaxHp()) +
+              ' points de vie'
+            "
+            aria-label="Points de vie du monstre"
+          >
+            <span class="matrix__hp-fill" [style.--hp]="clicker.monsterHpRatio()"></span>
+          </div>
+          <p class="matrix__hp-meta">
+            <span>{{ clicker.formatHp(clicker.monsterHp()) }}</span>
+            <span aria-hidden="true">/</span>
+            <span>{{ clicker.formatHp(clicker.monsterMaxHp()) }}</span>
+          </p>
+        </div>
+
+        <div class="matrix__strike">
+          @if (clicker.isUnlocked('combo-meter') && clicker.combo() > 1) {
+            <p class="matrix__combo" aria-live="polite">
+              combo ×{{ clicker.combo() }}
+              <span class="matrix__combo-mult">{{ clicker.formatRate(clicker.comboMultiplier()) }}×</span>
+            </p>
+          }
+
+          <button
+            type="button"
+            class="matrix__core"
+            [class.matrix__core--code]="clicker.isUnlocked('core-code')"
+            (click)="onCoreClick($event)"
+            aria-label="Attaquer le bug — clique pour infliger des dégâts"
+          >
+            <span class="matrix__core-glow" aria-hidden="true"></span>
+            <span class="matrix__core-glyph" aria-hidden="true">{{ clicker.coreGlyph() }}</span>
+            <span class="matrix__core-hint">tap</span>
+          </button>
+
+          @for (particle of particles(); track particle.id) {
+            <span
+              class="matrix__particle"
+              [class.matrix__particle--crit]="particle.crit"
+              [style.left.px]="particle.x"
+              [style.top.px]="particle.y"
+              [style.--tx.px]="particle.tx"
+              [style.--ty.px]="particle.ty"
+              aria-hidden="true"
+            >
+              @if (particle.crit) {
+                CRIT
+              }
+              −{{ particle.amount }}
+            </span>
+          }
+        </div>
+      </section>
+
+      <section class="matrix__economy" aria-label="Ressources">
+        <div class="matrix__gold" aria-live="polite">
+          <span class="matrix__gold-val">{{ clicker.formatCount(clicker.gold()) }}</span>
+          <span class="matrix__gold-label">gold</span>
+          @if (clicker.lastKill(); as kill) {
+            <span class="matrix__gold-pop">
+              +{{ clicker.formatCount(kill.gold) }}g · +{{ clicker.formatCount(kill.xp) }}xp
+            </span>
+          }
+        </div>
+        <dl class="matrix__rates">
+          <div>
+            <dt>auto</dt>
+            <dd>{{ clicker.formatRate(clicker.dps()) }}</dd>
+          </div>
+          <div [class.is-dim]="!clicker.isUnlocked('click-stat')">
+            <dt>clic</dt>
+            <dd>
+              @if (clicker.isUnlocked('click-stat')) {
+                {{ clicker.formatRate(clicker.clickDamage()) }}
+              } @else {
+                —
+              }
+            </dd>
+          </div>
+          <div [class.is-dim]="clicker.critChanceBonus() <= 0">
+            <dt>crit%</dt>
+            <dd>
+              @if (clicker.critChanceBonus() > 0) {
+                {{ critChanceLabel() }}
+              } @else {
+                —
+              }
+            </dd>
+          </div>
+        </dl>
+      </section>
+
+      <section
+        class="matrix__market"
+        [attr.aria-label]="showingDevs() ? 'Équipe de développeurs' : 'Pouvoirs'"
+      >
+        <div class="matrix__market-bar">
+          <h3 class="matrix__market-title">{{ shopHeading() }}</h3>
+          <div
+            class="matrix__tabs"
+            role="tablist"
+            aria-label="Pouvoirs ou équipe"
+            (keydown)="onShopTabKey($event)"
+          >
+            <button
+              type="button"
+              class="matrix__tab"
+              role="tab"
+              id="matrix-shop-tab-click"
+              [class.is-active]="!showingDevs()"
+              [attr.aria-selected]="!showingDevs()"
+              [attr.tabindex]="!showingDevs() ? 0 : -1"
+              [disabled]="clicker.clickUpgrades().length === 0"
+              aria-controls="matrix-shop-panel"
+              (click)="setShopTab('click', $event)"
+            >
+              Pouvoirs
+            </button>
+            <button
+              type="button"
+              class="matrix__tab"
+              role="tab"
+              id="matrix-shop-tab-passive"
+              [class.is-active]="showingDevs()"
+              [attr.aria-selected]="showingDevs()"
+              [attr.tabindex]="showingDevs() ? 0 : -1"
+              [disabled]="clicker.passiveUpgrades().length === 0"
+              aria-controls="matrix-shop-panel"
+              (click)="setShopTab('passive', $event)"
+            >
+              Équipe
+            </button>
+          </div>
+        </div>
+
+        <ul
+          class="matrix__grid"
+          id="matrix-shop-panel"
+          role="tabpanel"
+          [attr.aria-labelledby]="
+            showingDevs() ? 'matrix-shop-tab-passive' : 'matrix-shop-tab-click'
+          "
+        >
+          @for (upgrade of shopSlots(); track $index) {
+            <li>
+              @if (upgrade; as item) {
+                <button
+                  type="button"
+                  class="matrix__item"
+                  [class.matrix__item--power]="item.kind === 'click'"
+                  [class.matrix__item--dev]="!!item.sprite"
+                  [class.is-owned]="clicker.ownedCount(item.id) > 0"
+                  [class.is-ready]="clicker.canAfford(item.id)"
+                  [class.is-bought]="justBoughtId() === item.id"
+                  [disabled]="!clicker.canAfford(item.id)"
+                  [attr.aria-label]="upgradeAriaLabel(item)"
+                  (click)="buyUpgrade(item.id, $event)"
+                >
+                  @if (item.sprite; as spriteId) {
+                    <span class="pix" [attr.data-dev]="spriteId" aria-hidden="true">
+                      @for (row of spriteRows(spriteId); track $index) {
+                        <span class="pix__row">
+                          @for (cell of row; track $index) {
+                            <i [style.background]="pixColor(spriteId, cell)"></i>
+                          }
+                        </span>
+                      }
+                    </span>
+                  } @else {
+                    <span class="matrix__item-glyph" aria-hidden="true">{{ item.glyph }}</span>
+                  }
+
+                  <span class="matrix__item-main">
+                    <span class="matrix__item-top">
+                      <span class="matrix__item-name">
+                        {{ item.label }}
+                        @if (item.role) {
+                          <span class="matrix__item-role">{{ item.role }}</span>
+                        }
+                      </span>
+                      @if (clicker.ownedCount(item.id) > 0) {
+                        <span class="matrix__item-lv">{{ clicker.ownedCount(item.id) }}</span>
+                      }
+                    </span>
+                    <span class="matrix__item-effect">{{ clicker.upgradeEffect(item) }}</span>
+                    @if (clicker.upgradePassive(item); as passive) {
+                      <span class="matrix__item-passive">{{ passive }}</span>
+                    }
+                  </span>
+
+                  <span class="matrix__item-buy">
+                    @if (clicker.canAfford(item.id)) {
+                      <span class="matrix__item-price">
+                        {{ clicker.formatCount(clicker.upgradeCost(item.id)) }}
+                        <span>g</span>
+                      </span>
+                    } @else {
+                      <span class="matrix__item-need"
+                        >−{{ clicker.formatCount(clicker.goldShortfall(item.id)) }}</span
+                      >
+                    }
+                    <span
+                      class="matrix__item-meter"
+                      aria-hidden="true"
+                      [style.--afford]="clicker.affordProgress(item.id)"
+                    ></span>
+                  </span>
+                </button>
+              } @else {
+                <span class="matrix__item matrix__item--ghost" aria-hidden="true">
+                  <span class="matrix__item-glyph">···</span>
+                  <span class="matrix__item-main">
+                    <span class="matrix__item-top">
+                      <span class="matrix__item-name">Locked</span>
+                    </span>
+                    <span class="matrix__item-effect">bientôt</span>
+                  </span>
+                </span>
+              }
+            </li>
+          }
+        </ul>
+      </section>
+    </div>
+  </div>
+</div>

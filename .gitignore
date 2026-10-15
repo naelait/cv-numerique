@@ -1,0 +1,72 @@
+# Compiled output
+/dist
+/tmp
+/out-tsc
+/bazel-out
+/server/dist
+
+# Dependencies
+/node_modules
+/server/node_modules
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+
+# Local knowledge binaries (keep .md / .txt; PDF synced to public/ via scripts)
+/knowledge/*.pdf
+
+# Graphify generated graph / wiki
+/graphify-out/
+
+# Cursor / agent tooling (reinstallable)
+.cursor/*
+!.cursor/hooks.json
+.agents/
+skills-lock.json
+
+# IDEs and editors
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+*.swp
+
+# Visual Studio Code / Cursor
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/mcp.json
+.history/*
+
+# Angular / build cache
+/.angular/
+.sass-cache/
+/connect.lock
+/coverage
+/libpeerconnection.log
+testem.log
+/typings
+__screenshots__/
+
+# System files
+.DS_Store
+Thumbs.db
+Desktop.ini
+*~

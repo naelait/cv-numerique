@@ -1,0 +1,165 @@
+<div class="persona" #rootEl>
+  <button
+    #toggleEl
+    type="button"
+    class="persona__toggle"
+    [class.is-open]="panelOpen()"
+    [class.is-live]="health()?.ok"
+    [attr.aria-expanded]="panelOpen()"
+    aria-controls="persona-panel"
+    aria-haspopup="dialog"
+    (click)="togglePanel($event)"
+  >
+    <span class="persona__toggle-kw">async</span>
+    <span class="persona__toggle-fn">Ask()</span>
+    <span class="persona__toggle-status" [attr.data-state]="statusLabel()" aria-hidden="true"></span>
+    <span class="sr-only">{{ statusLabel() === 'live' ? 'Persona en ligne' : 'Persona hors ligne' }}</span>
+  </button>
+
+  @if (panelOpen()) {
+    <section
+      id="persona-panel"
+      class="persona__panel"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="persona-title"
+    >
+      <header class="persona__head">
+        <div class="persona__head-main">
+          <span class="persona__traffic" aria-hidden="true"><i></i><i></i><i></i></span>
+          <div class="persona__titles">
+            <h2 id="persona-title" class="persona__title">nael.Ask()</h2>
+            <p class="persona__subtitle">
+              <span class="persona__model" [class.is-live]="health()?.ok">
+                {{ health()?.ok ? health()?.modelName : 'offline' }}
+              </span>
+              @if (hasHistory()) {
+                <span class="persona__meta">{{ messageCount() }} msg</span>
+              }
+            </p>
+          </div>
+        </div>
+        <div class="persona__head-actions">
+          <button
+            type="button"
+            class="persona__icon-btn"
+            (click)="clearChat($event)"
+            [disabled]="!hasHistory()"
+            aria-label="Effacer la conversation"
+            title="Clear"
+          >
+            <span aria-hidden="true">⌫</span>
+          </button>
+          <button
+            type="button"
+            class="persona__icon-btn"
+            (click)="closePanel($event)"
+            aria-label="Fermer le chat"
+            title="Esc"
+          >
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+      </header>
+
+      <div
+        class="persona__body"
+        #messagesEl
+        tabindex="-1"
+        role="log"
+        aria-live="polite"
+        aria-relevant="additions"
+        aria-label="Conversation avec Naël"
+      >
+        @if (messages().length === 0) {
+          <div class="persona__intro">
+            <p class="persona__boot">
+              <span class="persona__boot-prompt">nael ›</span>
+              Persona prêt. Pose une question sur mon parcours, ma stack ou ma dispo.
+            </p>
+            @if (!health()?.ok) {
+              <p class="persona__warn" role="alert">
+                Ollama offline. Lance <code>ollama serve</code>,
+                <code>ollama pull qwen2.5:14b</code>, puis <code>npm run chat</code>.
+              </p>
+            } @else {
+              <ul class="persona__suggestions" aria-label="Questions suggérées">
+                @for (q of suggestions; track q) {
+                  <li>
+                    <button type="button" (click)="askSuggestion(q, $event)" [disabled]="loading()">
+                      <span class="persona__suggest-prompt" aria-hidden="true">›</span>
+                      {{ q }}
+                    </button>
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+        } @else {
+          @if (resumed()) {
+            <p class="persona__resume" role="status">Session reprise — {{ messageCount() }} messages</p>
+          }
+          @for (msg of messages(); track $index) {
+            <article
+              class="persona__line"
+              [class.is-user]="msg.role === 'user'"
+              [class.is-bot]="msg.role === 'assistant'"
+            >
+              <span class="persona__who" aria-hidden="true">{{
+                msg.role === 'user' ? 'guest ›' : 'nael ›'
+              }}</span>
+              <p>
+                <span class="sr-only">{{ msg.role === 'user' ? 'Vous : ' : 'Naël : ' }}</span>
+                {{ msg.content }}
+              </p>
+            </article>
+          }
+        }
+
+        @if (loading()) {
+          <p class="persona__typing" aria-live="polite">
+            <span class="persona__who" aria-hidden="true">nael ›</span>
+            <span class="persona__cursor" aria-hidden="true"></span>
+            <span class="sr-only">Réflexion en cours</span>
+          </p>
+        }
+
+        @if (error(); as err) {
+          <p class="persona__error" role="alert">{{ err }}</p>
+        }
+      </div>
+
+      <form class="persona__form" (submit)="send($event)">
+        <label class="persona__composer">
+          <span class="persona__prompt" aria-hidden="true">›</span>
+          <input
+            #inputEl
+            type="text"
+            name="persona-message"
+            autocomplete="off"
+            spellcheck="true"
+            enterkeyhint="send"
+            [value]="input()"
+            [attr.readonly]="loading() ? true : null"
+            [disabled]="!health()?.ok"
+            [attr.aria-busy]="loading()"
+            [attr.aria-invalid]="error() ? true : null"
+            placeholder="Ask(question)…"
+            aria-label="Message à Naël"
+            (input)="onInput($event)"
+            (keydown)="onComposerKey($event)"
+          />
+        </label>
+        <button
+          type="submit"
+          class="persona__send"
+          [disabled]="loading() || !input().trim() || !health()?.ok"
+          [attr.aria-busy]="loading()"
+        >
+          <span class="persona__send-key" aria-hidden="true">↵</span>
+          run
+        </button>
+      </form>
+    </section>
+  }
+</div>

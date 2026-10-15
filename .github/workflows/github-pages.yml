@@ -1,3 +1,7 @@
+# Déploiement GitHub Pages (build static sans chat).
+# OBLIGATOIRE une fois : Settings → Pages → Source = « GitHub Actions »
+# https://github.com/naelait/cv-numerique/settings/pages
+
 name: GitHub Pages
 
 on:

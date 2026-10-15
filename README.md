@@ -65,8 +65,13 @@ docker compose exec ollama ollama pull qwen2.5:14b
 
 À chaque push sur `main`, le workflow [`.github/workflows/github-pages.yml`](.github/workflows/github-pages.yml) build `npm run build:static` et publie le site.
 
-1. Sur GitHub : **Settings → Pages → Build and deployment → Source : GitHub Actions**.
-2. Après le premier workflow vert : **https://naelait.github.io/cv-numerique/**
+**Activation (sinon 404 sur le site)** — une seule fois :
+
+1. Ouvre [Settings → Pages](https://github.com/naelait/cv-numerique/settings/pages).
+2. **Build and deployment → Source** : choisis **GitHub Actions** (pas « Deploy from a branch »).
+3. Onglet [Actions](https://github.com/naelait/cv-numerique/actions/workflows/github-pages.yml) → workflow **GitHub Pages** → **Run workflow** (ou « Re-run all jobs » sur le dernier run).
+
+Quand le job **deploy** est vert : **https://naelait.github.io/cv-numerique/**
 
 Le build static utilise `baseHref: /cv-numerique/` (nom du repo). Domaine perso plus tard : adapter `baseHref` dans `angular.json` (`configuration.static`).
 

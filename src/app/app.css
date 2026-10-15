@@ -831,7 +831,7 @@
 
 .stage__view.is-active .view-head,
 .stage__view.is-active .hero-layout > *,
-.stage__view.is-active .hero > *:not(.deck-hint),
+.stage__view.is-active .hero > *,
 .stage__view.is-active .about,
 .stage__view.is-active .xp,
 .stage__view.is-active .craft-layout,
@@ -1084,58 +1084,6 @@
   flex-wrap: wrap;
   gap: 0.65rem;
   margin-top: 0.25rem;
-}
-
-.deck-hint {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem 0.75rem;
-  margin: 0.15rem 0 0;
-  padding: 0.55rem 0.75rem;
-  max-width: 28rem;
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.04em;
-  color: var(--ink-muted);
-  border: 1px dashed var(--line-strong);
-  border-radius: 0.35rem;
-  background: color-mix(in oklab, var(--bg-field) 80%, transparent);
-}
-
-.deck-hint__tag {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.12rem 0.4rem;
-  margin-right: 0.35rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: var(--bg);
-  background: var(--accent);
-  border-radius: 0.2rem;
-}
-
-.deck-hint__mobile {
-  display: none;
-}
-
-.deck-hint__dismiss {
-  min-height: var(--touch-min);
-  min-width: var(--touch-min);
-  padding: 0.35rem 0.75rem;
-  font-family: var(--font-mono);
-  font-size: 0.58rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--accent);
-  border: 1px solid color-mix(in oklab, var(--accent) 40%, transparent);
-  border-radius: 0.25rem;
-}
-
-.deck-hint__dismiss:focus-visible {
-  outline: 2px solid var(--focus);
-  outline-offset: 2px;
 }
 
 /* ——— Buttons ——— */
@@ -2711,8 +2659,7 @@
   .hero__trail--desk,
   .hero__lede--desk,
   .hero__stack--desk,
-  .hero__mail--desk,
-  .deck-hint {
+  .hero__mail--desk {
     display: none;
   }
 

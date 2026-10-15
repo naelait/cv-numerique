@@ -146,8 +146,6 @@ export class App {
 
   protected readonly clock = signal(this.formatClock());
 
-  protected readonly showDeckHint = signal(true);
-
   protected readonly leavingSection = signal<SectionId | null>(null);
 
   protected readonly stepPulse = signal(false);
@@ -303,8 +301,6 @@ export class App {
       const clockId = window.setInterval(() => this.clock.set(this.formatClock()), 1000);
 
       window.setTimeout(() => this.introDone.set(true), this.reducedMotion() ? 0 : 600);
-
-      if (mq.matches) this.showDeckHint.set(false);
 
 
 
@@ -668,11 +664,6 @@ export class App {
 
 
 
-  protected dismissDeckHint(event?: Event): void {
-    event?.preventDefault();
-    this.showDeckHint.set(false);
-  }
-
   protected phoneHref(): string {
 
     return `tel:${this.data.telephoneTel}`;
@@ -997,8 +988,6 @@ export class App {
 
       this.applySectionProgress('work');
 
-      this.showDeckHint.set(false);
-
       this.beginSectionTransition(prevSection);
 
       this.pulseStep();
@@ -1036,8 +1025,6 @@ export class App {
     this.activeSection.set(sectionId);
 
     this.applySectionProgress(sectionId);
-
-    this.showDeckHint.set(false);
 
     this.beginSectionTransition(prevSection);
 

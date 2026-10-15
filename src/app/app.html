@@ -241,14 +241,6 @@
               <a class="btn btn--primary" href="#about" (click)="scrollTo('about', $event)">Voir le profil</a>
               <a class="btn btn--ghost hero__mail--desk" [href]="'mailto:' + data.email">Écrire un mail</a>
             </div>
-            @if (showDeckHint()) {
-              <p class="deck-hint" role="note">
-                <span class="deck-hint__tag">nael.run()</span>
-                <span class="deck-hint__desk">F10 step · F5 continue · tape <code>help</code> dans le terminal</span>
-                <span class="deck-hint__mobile">Glisse pour changer de page</span>
-                <button type="button" class="deck-hint__dismiss" (click)="dismissDeckHint($event)">OK</button>
-              </p>
-            }
           </div>
 
           <div class="hero__play">

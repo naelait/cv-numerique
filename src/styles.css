@@ -30,7 +30,7 @@
   --traffic-green: #28c840;
   --danger: #f85149;
   --hp-red: #e85d5d;
-  --rail-width: clamp(12.5rem, 17vw, 16rem);
+  --rail-width: clamp(13rem, 14vw, 20rem);
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --header-height: calc(clamp(3.25rem, 7vh, 4rem) + var(--safe-top));

@@ -7,11 +7,12 @@ const STORAGE_KEY_V1 = 'nael.matrix-clicks.v1';
 const TICK_MS = 100;
 const PERSIST_EVERY_MS = 1000;
 const COMBO_WINDOW_MS = 1600;
+const COMBO_WINDOW_RANK_MS = 2200;
 const MAX_COMBO = 28;
 const CRIT_COMBO_MIN = 4;
 const CRIT_CHANCE = 0.14;
 const CRIT_MULT = 2.25;
-const RAID_MIN_ZONE = 2;
+const RAID_MIN_ZONE = 6;
 const RAID_TTL_MS = 75_000;
 const RAID_COOLDOWN_MS = 28_000;
 const RAID_SECTIONS = ['about', 'work', 'craft', 'projects', 'education', 'contact'] as const;
@@ -84,13 +85,13 @@ export interface RaidHitResult {
 }
 
 export const CLICKER_MILESTONES: ClickerMilestone[] = [
-  { heroLevel: 2, title: 'Junior committer', unlockId: 'click-stat' },
-  { heroLevel: 3, title: 'Click shop online', unlockId: 'click-shop' },
-  { heroLevel: 4, title: 'Rain surge', unlockId: 'rain-boost' },
-  { heroLevel: 5, title: 'Cyan overload', unlockId: 'core-cyan' },
-  { heroLevel: 6, title: 'Combo mode', unlockId: 'combo-meter' },
-  { heroLevel: 7, title: 'Full-stack core', unlockId: 'core-code' },
-  { heroLevel: 8, title: 'Senior dev', unlockId: 'click-tier2' },
+  { heroLevel: 2, title: 'Sam rejoint l’équipe', unlockId: 'click-stat' },
+  { heroLevel: 3, title: 'Pouvoirs de clic', unlockId: 'click-shop' },
+  { heroLevel: 4, title: 'La pluie accélère', unlockId: 'rain-boost' },
+  { heroLevel: 5, title: 'Surcharge cyan', unlockId: 'core-cyan' },
+  { heroLevel: 6, title: 'Fenêtre de combo allongée', unlockId: 'combo-meter' },
+  { heroLevel: 7, title: 'Noyau full-stack', unlockId: 'core-code' },
+  { heroLevel: 8, title: 'Pouvoirs senior', unlockId: 'click-tier2' },
   { heroLevel: 10, title: 'deploy.exe', unlockId: 'deploy-theme' },
 ];
 
@@ -149,7 +150,7 @@ export const CLICKER_UPGRADES: ClickerUpgradeDef[] = [
     kind: 'passive',
     cps: 0.15,
     critChance: 0.015,
-    baseCost: 12,
+    baseCost: 8,
     growth: 1.14,
     unlockHeroLevel: 1,
   },
@@ -250,6 +251,8 @@ export class MatrixClickerService {
   readonly raidAlert = signal<string | null>(null);
   readonly lastRaidLoot = signal<{ gold: number; xp: number; sectionId: RaidSectionId } | null>(null);
   readonly killStreak = signal(0);
+  /** Bumps when the run is wiped, so the coach can start over. */
+  readonly session = signal(0);
 
   readonly heroLevel = computed(() => heroLevelFromXp(this.heroXp()));
   readonly monsterMaxHp = computed(() => maxHpForZone(this.zone()));
@@ -373,6 +376,39 @@ export class MatrixClickerService {
   );
 
   readonly shopUpgrades = computed(() => [...this.clickUpgrades(), ...this.passiveUpgrades()]);
+
+  readonly hiredAny = computed(() => Object.values(this.owned()).some((count) => count > 0));
+
+  readonly zonesUntilBoss = computed(() => {
+    const zone = this.zone();
+    if (zone % 10 === 0) return 0;
+    return 10 - (zone % 10);
+  });
+
+  /** One next step, shown when no raid and the coach is done. */
+  readonly objective = computed(() => {
+    if ((this.owned()['npm'] ?? 0) <= 0 && this.heroLevel() >= 1) {
+      if (this.canAfford('npm')) {
+        return { kicker: 'À faire', text: 'Recrute Léa. Elle attaque toute seule.' };
+      }
+      const need = this.formatCount(this.goldShortfall('npm'));
+      return { kicker: 'Objectif', text: `Encore ${need} or pour recruter Léa.` };
+    }
+
+    const ready = this.shopUpgrades().find((upgrade) => this.canAfford(upgrade.id));
+    if (ready) {
+      return { kicker: 'Achat', text: `${ready.label} est à portée.` };
+    }
+
+    const next = CLICKER_MILESTONES.find((milestone) => milestone.heroLevel > this.heroLevel());
+    if (next) {
+      return { kicker: `Niveau ${next.heroLevel}`, text: next.title };
+    }
+
+    const until = this.zonesUntilBoss();
+    if (until === 0) return { kicker: 'Boss', text: 'Il encaisse beaucoup plus.' };
+    return { kicker: 'Suite', text: `Boss dans ${until} zones.` };
+  });
 
   readonly commits = this.gold;
   readonly clickPower = this.clickDamage;
@@ -542,24 +578,24 @@ export class MatrixClickerService {
   }
 
   upgradeEffect(upgrade: ClickerUpgradeDef): string {
-    if (upgrade.kind === 'click') return `+${upgrade.clickPower ?? 0} dmg / clic`;
-    return `+${this.formatRate(upgrade.cps ?? 0)} auto`;
+    if (upgrade.kind === 'click') return `+${upgrade.clickPower ?? 0} / clic`;
+    return `+${this.formatRate(upgrade.cps ?? 0)}/s`;
   }
 
   /** Secondary passive line for developers. */
   upgradePassive(upgrade: ClickerUpgradeDef): string | null {
     const parts: string[] = [];
     if (upgrade.critChance) {
-      parts.push(`+${(upgrade.critChance * 100).toFixed(1)}% chance crit`);
+      parts.push(`+${(upgrade.critChance * 100).toFixed(1)}% crit`);
     }
     if (upgrade.critDamage) {
       parts.push(`+${Math.round(upgrade.critDamage * 100)}% dégâts crit`);
     }
     if (upgrade.raidSpawn) {
-      parts.push(`+${Math.round(upgrade.raidSpawn * 100)}% invasions`);
+      parts.push(`+${Math.round(upgrade.raidSpawn * 100)}% raids`);
     }
     if (upgrade.goldFind) {
-      parts.push(`+${Math.round(upgrade.goldFind * 100)}% gold`);
+      parts.push(`+${Math.round(upgrade.goldFind * 100)}% or`);
     }
     return parts.length ? parts.join(' · ') : null;
   }
@@ -582,6 +618,32 @@ export class MatrixClickerService {
     const count = this.combo();
     if (count <= 1) return 1;
     return 1 + (count - 1) * 0.07;
+  }
+
+  /** Combo chain window. Rank 6 keeps the chain alive longer. */
+  comboWindowMs(): number {
+    return this.isUnlocked('combo-meter') ? COMBO_WINDOW_RANK_MS : COMBO_WINDOW_MS;
+  }
+
+  /** Crit chance from the team plus the current combo. */
+  critChance(): number {
+    const fromDevs = this.critChanceBonus();
+    const fromCombo =
+      this.combo() >= CRIT_COMBO_MIN
+        ? CRIT_CHANCE + Math.min(0.12, this.combo() * 0.004)
+        : 0;
+    return Math.min(0.72, fromDevs + fromCombo);
+  }
+
+  /** Upgrades still hidden, nearest unlock first. */
+  nextLocked(kind: UpgradeKind): { label: string; glyph: string; detail: string }[] {
+    return CLICKER_UPGRADES.filter((upgrade) => upgrade.kind === kind && !this.isUpgradeVisible(upgrade))
+      .sort((a, b) => a.unlockHeroLevel - b.unlockHeroLevel || a.baseCost - b.baseCost)
+      .map((upgrade) => ({
+        label: upgrade.label,
+        glyph: upgrade.glyph,
+        detail: `niveau ${upgrade.unlockHeroLevel}`,
+      }));
   }
 
   formatCount(value: number): string {
@@ -657,10 +719,12 @@ export class MatrixClickerService {
       localStorage.removeItem('naiel.matrix-clicks.v3');
       localStorage.removeItem('naiel.matrix-clicks.v2');
       localStorage.removeItem('naiel.matrix-clicks.v1');
+      localStorage.removeItem('nael.matrix-coach.v1');
     } catch {
       /* ignore */
     }
     this.persist();
+    this.session.update((n) => n + 1);
   }
 
   private isUpgradeVisible(def: ClickerUpgradeDef): boolean {
@@ -672,12 +736,7 @@ export class MatrixClickerService {
   }
 
   private rollCrit(): boolean {
-    const fromDevs = this.critChanceBonus();
-    const fromCombo =
-      this.combo() >= CRIT_COMBO_MIN
-        ? CRIT_CHANCE + Math.min(0.12, this.combo() * 0.004)
-        : 0;
-    const chance = Math.min(0.72, fromDevs + fromCombo);
+    const chance = this.critChance();
     if (chance <= 0) return false;
     return Math.random() < chance;
   }
@@ -725,6 +784,8 @@ export class MatrixClickerService {
   private maybeSpawnRaid(zone: number): void {
     if (this.activeRaid()) return;
     if (zone < RAID_MIN_ZONE) return;
+    const hired = Object.values(this.owned()).some((count) => count > 0);
+    if (!hired && zone < 10) return;
     const now = Date.now();
     const spawnBonus = this.raidSpawnBonus();
     const cooldown = RAID_COOLDOWN_MS / (1 + spawnBonus);
@@ -766,7 +827,7 @@ export class MatrixClickerService {
     this.lastRaidAt = now;
 
     const label = RAID_SECTION_LABELS[sectionId];
-    const msg = `ALERTE — Un ennemi est apparu sur ${label}`;
+    const msg = `${name} a fui vers ${label}. Va le finir avant qu'il disparaisse.`;
     this.raidAlert.set(msg);
     if (this.raidAlertTimer) clearTimeout(this.raidAlertTimer);
     this.raidAlertTimer = setTimeout(() => {
@@ -793,7 +854,8 @@ export class MatrixClickerService {
 
   private registerCombo(): number {
     const now = performance.now();
-    if (now - this.lastClickAt <= COMBO_WINDOW_MS) {
+    const windowMs = this.comboWindowMs();
+    if (now - this.lastClickAt <= windowMs) {
       this.combo.update((c) => Math.min(c + 1, MAX_COMBO));
     } else {
       this.combo.set(1);
@@ -803,7 +865,7 @@ export class MatrixClickerService {
     if (this.comboDecayTimer) clearTimeout(this.comboDecayTimer);
     this.comboDecayTimer = setTimeout(() => {
       this.ngZone.run(() => this.combo.set(0));
-    }, COMBO_WINDOW_MS);
+    }, windowMs);
 
     return this.comboMultiplier();
   }
@@ -964,6 +1026,7 @@ export class MatrixClickerService {
 /** Softer early curve; still ramps hard mid-late. */
 export function maxHpForZone(zone: number): number {
   const z = Math.max(1, zone);
+  if (z === 1) return 8;
   const base = 12 * Math.pow(1.38, z - 1);
   const bossMult = z % 10 === 0 ? 4.2 : 1;
   return Math.max(6, Math.floor(base * bossMult));

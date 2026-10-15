@@ -26,6 +26,14 @@ interface ClickParticle {
 }
 
 type ShopTab = 'click' | 'passive';
+type CoachStep = 'hit' | 'hire' | 'chain';
+
+const COACH_KEY = 'nael.matrix-coach.v1';
+
+type ShopCell =
+  | { kind: 'item'; item: ClickerUpgradeDef }
+  | { kind: 'soon'; label: string; glyph: string; detail: string }
+  | { kind: 'empty' };
 
 @Component({
   selector: 'app-matrix-clicker',
@@ -49,6 +57,9 @@ export class MatrixClicker {
   protected readonly mobHit = signal(false);
   protected readonly shopTab = signal<ShopTab>('click');
   protected readonly justBoughtId = signal<string | null>(null);
+  protected readonly coach = signal<CoachStep | null>(null);
+  protected readonly comboLive = signal(false);
+  protected readonly coreCrit = signal(false);
 
   protected readonly showShopTabs = computed(
     () =>
@@ -76,9 +87,16 @@ export class MatrixClicker {
   });
 
   /** Always 4 slots so the phone height never jumps with unlocks. */
-  protected readonly shopSlots = computed(() => {
-    const slots: (ClickerUpgradeDef | null)[] = this.visibleShopUpgrades().slice(0, 4);
-    while (slots.length < 4) slots.push(null);
+  protected readonly shopSlots = computed((): ShopCell[] => {
+    const kind = this.showingDevs() ? 'passive' : 'click';
+    const slots: ShopCell[] = this.visibleShopUpgrades()
+      .slice(0, 4)
+      .map((item) => ({ kind: 'item' as const, item }));
+    for (const soon of this.clicker.nextLocked(kind)) {
+      if (slots.length >= 4) break;
+      slots.push({ kind: 'soon', ...soon });
+    }
+    while (slots.length < 4) slots.push({ kind: 'empty' });
     return slots;
   });
 
@@ -88,11 +106,28 @@ export class MatrixClicker {
   });
 
   protected critChanceLabel(): string {
-    const pct = this.clicker.critChanceBonus() * 100;
+    const pct = this.clicker.critChance() * 100;
+    if (pct <= 0) return '0';
     return pct >= 10 ? pct.toFixed(0) : pct.toFixed(1);
   }
 
+  protected coachCopy(): string {
+    switch (this.coach()) {
+      case 'hit':
+        return 'Clique le noyau pour frapper le bug.';
+      case 'hire':
+        return 'Dépense l’or sur Léa. Elle continue d’attaquer.';
+      case 'chain':
+        return 'Enchaîne les clics tant que l’anneau est plein. Les dégâts montent.';
+      default:
+        return '';
+    }
+  }
+
   private rain: MatrixRain | null = null;
+  private comboFrame = 0;
+  private chainReady = false;
+  private critTimer: ReturnType<typeof setTimeout> | null = null;
   private particleId = 0;
   private buyFlashTimer: ReturnType<typeof setTimeout> | null = null;
   private resizeObserver: ResizeObserver | null = null;
@@ -100,6 +135,29 @@ export class MatrixClicker {
   private onMotionChange: ((event: MediaQueryListEvent) => void) | null = null;
 
   constructor() {
+    this.coach.set(this.readCoach());
+
+    effect(() => {
+      if (this.clicker.session() === 0) return;
+      this.chainReady = false;
+      this.coach.set('hit');
+    });
+
+    effect(() => {
+      const step = this.coach();
+      if (!step) return;
+      if (step === 'hit' && this.clicker.zone() > 1) this.setCoach('hire');
+      if ((step === 'hit' || step === 'hire') && this.clicker.hiredAny()) this.setCoach('chain');
+      if (step !== 'chain') return;
+      const combo = this.clicker.combo();
+      if (combo === 0) this.chainReady = true;
+      if (this.chainReady && combo >= 4) this.finishCoach();
+    });
+
+    effect(() => {
+      if (this.clicker.combo() === 0) this.comboLive.set(false);
+    });
+
     effect(() => {
       const active = this.active();
       this.reducedMotion();
@@ -142,6 +200,8 @@ export class MatrixClicker {
       this.rain?.stop();
       this.resizeObserver?.disconnect();
       if (this.buyFlashTimer) clearTimeout(this.buyFlashTimer);
+      if (this.critTimer) clearTimeout(this.critTimer);
+      cancelAnimationFrame(this.comboFrame);
       if (this.motionQuery && this.onMotionChange) {
         this.motionQuery.removeEventListener('change', this.onMotionChange);
       }
@@ -180,10 +240,12 @@ export class MatrixClicker {
     event.stopPropagation();
     const result = this.clicker.click();
     this.spawnParticle(event, result.damage, result.crit);
-    if (!this.reducedMotion()) {
-      this.mobHit.set(true);
-      window.setTimeout(() => this.mobHit.set(false), result.crit ? 180 : 120);
-    }
+    this.armStrike(result.crit);
+  }
+
+  protected skipCoach(event: Event): void {
+    event.stopPropagation();
+    this.finishCoach();
   }
 
   protected onRaidBannerClick(event: Event): void {
@@ -204,11 +266,12 @@ export class MatrixClicker {
     const cost = this.clicker.formatCount(this.clicker.upgradeCost(upgrade.id));
     const owned = this.clicker.ownedCount(upgrade.id);
     const role = upgrade.role ? ` (${upgrade.role})` : '';
+    const verb = upgrade.kind === 'passive' ? 'Recruter' : 'Acheter';
     if (this.clicker.canAfford(upgrade.id)) {
-      return `Recruter ${upgrade.label}${role} pour ${cost} gold${owned ? `, niveau ${owned}` : ''}`;
+      return `${verb} ${upgrade.label}${role} pour ${cost} or${owned ? `, niveau ${owned}` : ''}`;
     }
     const need = this.clicker.formatCount(this.clicker.goldShortfall(upgrade.id));
-    return `${upgrade.label}${role} — encore ${need} gold nécessaires`;
+    return `${upgrade.label}${role} — encore ${need} or`;
   }
 
   protected spriteRows(id: DevSpriteId): number[][] {
@@ -252,6 +315,51 @@ export class MatrixClicker {
     this.rain.stop();
   }
 
+  private readCoach(): CoachStep | null {
+    try {
+      if (localStorage.getItem(COACH_KEY) === 'done') return null;
+    } catch {
+      return 'hit';
+    }
+    if (this.clicker.hiredAny() || this.clicker.heroLevel() >= 4 || this.clicker.zone() >= 6) {
+      return null;
+    }
+    if (this.clicker.zone() > 1 || this.clicker.gold() > 0) return 'hire';
+    return 'hit';
+  }
+
+  private setCoach(step: CoachStep): void {
+    if (this.coach() === step) return;
+    if (step === 'chain') this.chainReady = false;
+    this.coach.set(step);
+  }
+
+  private finishCoach(): void {
+    if (this.coach() === null) return;
+    this.coach.set(null);
+    try {
+      localStorage.setItem(COACH_KEY, 'done');
+    } catch {
+      /* ignore quota */
+    }
+  }
+
+  private armStrike(crit: boolean): void {
+    if (this.reducedMotion()) return;
+    this.mobHit.set(true);
+    window.setTimeout(() => this.mobHit.set(false), crit ? 180 : 120);
+    if (crit) {
+      this.coreCrit.set(true);
+      if (this.critTimer) clearTimeout(this.critTimer);
+      this.critTimer = setTimeout(() => this.coreCrit.set(false), 180);
+    }
+    this.comboLive.set(false);
+    cancelAnimationFrame(this.comboFrame);
+    this.comboFrame = requestAnimationFrame(() => {
+      this.comboFrame = requestAnimationFrame(() => this.comboLive.set(true));
+    });
+  }
+
   private spawnParticle(event: MouseEvent, amount: number, crit = false): void {
     const core = event.currentTarget as HTMLElement;
     const strike = core.closest('.matrix__strike');
@@ -262,7 +370,7 @@ export class MatrixClicker {
     const cx = coreRect.left + coreRect.width / 2 - strikeRect.left;
     const cy = coreRect.top + coreRect.height / 2 - strikeRect.top;
 
-    const angle = Math.random() * Math.PI * 2;
+    const angle = -Math.PI / 2 + (Math.random() - 0.5) * 1.15;
     const ring = coreRect.width * (0.48 + Math.random() * 0.28);
     const x = cx + Math.cos(angle) * ring;
     const y = cy + Math.sin(angle) * ring;

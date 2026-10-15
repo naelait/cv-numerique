@@ -919,6 +919,9 @@
   flex: 1 1 auto;
   min-height: 0;
   width: 100%;
+  overflow: hidden;
+  container-type: size;
+  container-name: hero;
 }
 
 .stage__scroll--fit .view-head--compact {
@@ -927,7 +930,8 @@
 }
 
 .view-head {
-  max-width: 52ch;
+  width: 100%;
+  max-width: none;
   margin-bottom: clamp(1.25rem, 3vh, 2rem);
   padding-bottom: 1rem;
   border-bottom: 1px solid var(--line);
@@ -949,24 +953,39 @@
 }
 
 .hero-layout {
+  --phone-zoom: clamp(
+    0.52,
+    min(
+      (100cqh - 0.35rem) / 44.5rem,
+      (100vw - var(--rail-width) - var(--chat-fab-w) - 28rem) / 22.5rem
+    ),
+    1.65
+  );
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(18rem, 22.5rem);
-  gap: clamp(1.5rem, 4vw, 3rem);
+  grid-template-columns: minmax(0, 1fr) max-content;
+  gap: clamp(1.25rem, 3vw, 4.5rem);
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   width: 100%;
-  max-width: min(1180px, 100%);
-  flex: 0 1 auto;
+  max-width: none;
+  flex: 1 1 auto;
   min-height: 0;
-  height: auto;
+  height: 100%;
 }
 
 .hero-layout > .hero__play {
   display: block;
-  width: 100%;
-  max-width: 22.5rem;
+  width: max-content;
+  max-width: none;
+  max-height: 100%;
   min-width: 0;
-  justify-self: center;
+  justify-self: end;
+  margin-right: calc(var(--chat-fab-w) + 0.35rem);
+}
+
+.shell--no-chat .hero-layout > .hero__play,
+.shell--booting .hero-layout > .hero__play {
+  margin-right: 0;
 }
 
 .hero__play-label {
@@ -975,14 +994,15 @@
 
 .hero-layout > .hero__play app-matrix-clicker {
   display: block;
-  width: 100%;
+  width: 22.5rem;
   height: 44.5rem;
+  zoom: var(--phone-zoom);
 }
 
 .hero {
   display: grid;
-  gap: clamp(0.75rem, 2vh, 1.25rem);
-  max-width: min(560px, 100%);
+  gap: clamp(0.75rem, 2vh, 1.5rem);
+  max-width: min(46rem, 100%);
   align-self: center;
 }
 
@@ -1004,7 +1024,7 @@
 .hero__title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(2rem, 6.5vw, 4.2rem);
+  font-size: clamp(2rem, 1.4rem + 3.1vw, 6.25rem);
   font-weight: 800;
   line-height: 0.98;
   letter-spacing: -0.045em;
@@ -1134,10 +1154,12 @@
 /* ——— About ——— */
 .about {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
-  gap: clamp(1.25rem, 3vw, 2.5rem);
-  align-items: start;
-  max-width: min(1080px, 100%);
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: clamp(1.25rem, 3vw, 3rem);
+  align-items: stretch;
+  width: 100%;
+  max-width: none;
+  min-height: 0;
 }
 
 .about__main {
@@ -1148,7 +1170,7 @@
 
 .about__prose p {
   margin: 0 0 1.1rem;
-  max-width: 52ch;
+  max-width: 65ch;
   line-height: 1.65;
   color: color-mix(in oklab, var(--ink) 90%, var(--ink-muted));
 }
@@ -1171,6 +1193,14 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
+  min-height: 0;
+  height: auto;
+  width: min(32rem, 40cqw, calc((100dvh - var(--header-height) - var(--chat-fab-clear) - 9.5rem) * 210 / 297));
+  max-width: none;
+  max-height: 100%;
+  aspect-ratio: 210 / 297;
+  justify-self: end;
+  align-self: center;
   border: 1px solid var(--line);
   border-radius: 0.5rem;
   background: var(--bg-panel);
@@ -1222,7 +1252,8 @@
 
 .about__cv-frame {
   position: relative;
-  aspect-ratio: 210 / 297;
+  flex: 1 1 auto;
+  min-height: 0;
   background: var(--paper);
   overflow: hidden;
 }
@@ -1233,6 +1264,31 @@
   height: 100%;
   border: 0;
   pointer-events: none;
+}
+
+@media (min-width: 901px) {
+  #about > .stage__scroll {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  #about .view-head {
+    flex: 0 0 auto;
+    margin-bottom: clamp(0.65rem, 1.6vh, 1.15rem);
+    padding-bottom: 0.65rem;
+  }
+
+  #about .about {
+    flex: 1 1 auto;
+    min-height: 0;
+    container-type: inline-size;
+  }
+
+  #about .about__main {
+    min-height: 0;
+    align-content: center;
+  }
 }
 
 .about__cv-overlay {
@@ -1304,9 +1360,10 @@
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(210px, 270px) minmax(0, 1fr);
-  gap: clamp(0.85rem, 2vw, 1.35rem);
-  max-width: min(1080px, 100%);
+  grid-template-columns: minmax(14rem, 20rem) minmax(0, 1fr);
+  gap: clamp(0.85rem, 2vw, 1.75rem);
+  width: 100%;
+  max-width: none;
 }
 
 .xp__rail {
@@ -1632,9 +1689,10 @@
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(220px, 300px);
-  gap: clamp(0.85rem, 2vw, 1.35rem);
-  max-width: min(1080px, 100%);
+  grid-template-columns: minmax(0, 1.4fr) minmax(16rem, 24rem);
+  gap: clamp(0.85rem, 2vw, 1.75rem);
+  width: 100%;
+  max-width: none;
 }
 
 .craft-layout .skills__panel {
@@ -1761,9 +1819,10 @@
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(220px, 290px) minmax(0, 1fr);
-  gap: clamp(0.85rem, 2vw, 1.35rem);
-  max-width: min(1080px, 100%);
+  grid-template-columns: minmax(14rem, 22rem) minmax(0, 1fr);
+  gap: clamp(0.85rem, 2vw, 1.75rem);
+  width: 100%;
+  max-width: none;
 }
 
 .proj__rail {
@@ -2091,9 +2150,10 @@
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(210px, 270px) minmax(0, 1fr);
-  gap: clamp(0.85rem, 2vw, 1.35rem);
-  max-width: min(1080px, 100%);
+  grid-template-columns: minmax(14rem, 20rem) minmax(0, 1fr);
+  gap: clamp(0.85rem, 2vw, 1.75rem);
+  width: 100%;
+  max-width: none;
 }
 
 .edu__rail {
@@ -2444,7 +2504,7 @@
 
   .topbar__mail {
     min-width: var(--touch-min);
-    min-height: 2.35rem;
+    min-height: var(--touch-min);
     padding: 0 0.55rem;
     border-radius: 999px;
     font-size: 0.72rem;
@@ -2601,8 +2661,8 @@
     display: flex;
     flex-direction: column;
     justify-content: stretch;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    overflow: hidden;
+    container-type: normal;
   }
 
   .stage__view--hero {
@@ -2620,6 +2680,7 @@
 
   /* Hero: identity strip + clicker fills remaining viewport (no page scroll) */
   .hero-layout {
+    --phone-zoom: 1;
     display: flex;
     flex-direction: column;
     grid-template-columns: none;
@@ -2676,14 +2737,16 @@
     font-size: 0.82rem;
   }
 
-  .hero__play {
+  .hero-layout > .hero__play {
     display: flex;
     flex-direction: column;
     flex: 1 1 auto;
     gap: 0.25rem;
     width: 100%;
-    max-width: none;
+    max-width: 100%;
+    min-width: 0;
     min-height: 0;
+    margin-right: 0;
     padding: 0;
     border: 0;
     border-radius: 0;
@@ -2706,12 +2769,14 @@
     display: block;
     flex: 1 1 auto;
     width: 100%;
-    max-width: none;
-    min-height: clamp(20rem, 58dvh, 34rem);
-    height: clamp(20rem, 58dvh, 34rem);
+    max-width: 100%;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    zoom: 1;
   }
 
-  /* About: denser copy — only this long-form page may scroll */
+  /* About: the PDF preview is hidden, so the copy can scroll if it needs to */
   #about > .stage__scroll {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
@@ -2985,12 +3050,12 @@
   .runtime__dock-tab {
     padding: 0.3rem 0.55rem;
     font-size: 0.72rem;
-    min-height: 2.45rem;
+    min-height: var(--touch-min);
   }
 
   .runtime__dock-step {
-    width: 2.4rem;
-    height: 2.4rem;
+    width: var(--touch-min);
+    height: var(--touch-min);
     font-size: 1.2rem;
   }
 
@@ -3195,6 +3260,123 @@
   0% { transform: scale(1); }
   40% { transform: scale(0.92); }
   100% { transform: scale(1); }
+}
+
+/* Laptop / small desktop: keep the phone beside the copy without crushing the title */
+@media (min-width: 901px) and (max-width: 1180px) {
+  .hero-layout {
+    --phone-zoom: clamp(
+      0.52,
+      min(
+        (100cqh - 0.35rem) / 44.5rem,
+        (100vw - var(--rail-width) - var(--chat-fab-w) - 30rem) / 22.5rem
+      ),
+      0.88
+    );
+    gap: 1rem;
+  }
+
+  .hero__title {
+    font-size: clamp(1.85rem, 3.2vw, 2.75rem);
+  }
+}
+
+/* Tablet portrait and foldable inner screen: two zones, no debugger rail */
+@media (min-width: 700px) and (max-width: 900px) and (min-height: 640px) {
+  .hero-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(15rem, 42%);
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .hero__title {
+    font-size: clamp(1.85rem, 4.2vw, 2.7rem);
+  }
+
+  .hero__trail--desk,
+  .hero__lede--desk {
+    display: block;
+  }
+
+  .hero__stack--desk {
+    display: flex;
+  }
+
+  .hero__mail--desk {
+    display: inline-flex;
+  }
+
+  .hero-layout > .hero__play app-matrix-clicker {
+    height: 100%;
+    max-height: 100%;
+    min-height: 0;
+  }
+}
+
+/* Foldable cover and narrow phones */
+@media (max-width: 380px) {
+  .hero__title {
+    font-size: 1.4rem;
+  }
+
+  .hero__actions {
+    flex-direction: column;
+  }
+
+  .hero__actions .btn {
+    width: 100%;
+  }
+
+  .about__facts {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Phone landscape and short foldable viewports */
+@media (max-width: 900px) and (max-height: 500px) {
+  .hero-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(9rem, 14rem);
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .hero__stamp,
+  .hero__role {
+    display: none;
+  }
+
+  .hero__title {
+    font-size: 1.45rem;
+  }
+
+  .hero-layout > .hero__play {
+    width: 100%;
+    max-width: 14rem;
+    justify-self: end;
+  }
+
+  .hero-layout > .hero__play app-matrix-clicker {
+    width: 100%;
+    min-height: 0;
+    height: min(18rem, calc(100dvh - var(--header-height) - var(--footer-nav) - 1.2rem));
+  }
+
+  .stage__view {
+    padding-top: 0.25rem;
+  }
+}
+
+@media (min-width: 1440px) {
+  .topbar__trace {
+    max-width: min(36rem, 40vw);
+  }
+
+  .hero__lede {
+    max-width: 58ch;
+    font-size: 1.08rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -42,7 +42,7 @@
       <p class="raid-toast__msg">{{ alert }}</p>
       @if (matrixClicker.activeRaid(); as raid) {
         <button type="button" class="raid-toast__go" (click)="huntRaid($event)">
-          Y aller — {{ matrixClicker.sectionLabel(raid.sectionId) }}
+          Chasser sur {{ matrixClicker.sectionLabel(raid.sectionId) }}
         </button>
       }
     </div>
@@ -721,7 +721,7 @@
           >
             <span class="raid-mob__hp-fill" [style.--hp]="matrixClicker.raidHpRatio()"></span>
           </span>
-          <span class="raid-mob__hint">cliquer · {{ matrixClicker.raidSecondsLeft() }}s</span>
+          <span class="raid-mob__hint">Clique pour frapper · {{ matrixClicker.raidSecondsLeft() }}s</span>
         </button>
       </div>
     }
@@ -729,7 +729,7 @@
 
   @if (matrixClicker.lastRaidLoot(); as loot) {
     <p class="raid-loot" role="status">
-      Intrusion clear — +{{ matrixClicker.formatCount(loot.gold) }} gold · +{{ matrixClicker.formatCount(loot.xp) }} xp
+      +{{ matrixClicker.formatCount(loot.gold) }} or · +{{ matrixClicker.formatCount(loot.xp) }} xp
     </p>
   }
 

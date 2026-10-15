@@ -14,7 +14,7 @@
     <div class="matrix__levelup" role="status" aria-live="polite" [attr.data-burst]="burst.id">
       <span class="matrix__levelup-ring" aria-hidden="true"></span>
       <div class="matrix__levelup-copy">
-        <span class="matrix__levelup-tag">{{ burst.kind === 'boss' ? 'BOSS DOWN' : 'LEVEL UP' }}</span>
+        <span class="matrix__levelup-tag">{{ burst.kind === 'boss' ? 'Boss' : 'Niveau' }}</span>
         <span class="matrix__levelup-lv">
           @if (burst.kind === 'boss') {
             Zone {{ burst.level }}
@@ -53,21 +53,31 @@
       </div>
     </header>
 
-    <div class="matrix__raid-slot">
+    <div class="matrix__guide-slot">
       @if (clicker.activeRaid(); as raid) {
         <button
           type="button"
           class="matrix__raid"
           (click)="onRaidBannerClick($event)"
-          [attr.aria-label]="'Aller chasser ' + raid.name + ' sur ' + clicker.raidSectionLabel()"
+          [attr.aria-label]="'Chasser ' + raid.name + ' sur ' + clicker.raidSectionLabel()"
         >
-          <span class="matrix__raid-tag">INTRUSION</span>
+          <span class="matrix__raid-tag">Fuite</span>
           <span class="matrix__raid-copy">
-            {{ raid.name }} · {{ clicker.raidSectionLabel() }}
+            {{ raid.name }} est sur {{ clicker.raidSectionLabel() }}
           </span>
           <span class="matrix__raid-timer">{{ clicker.raidSecondsLeft() }}s</span>
-          <span class="matrix__raid-go">Y aller</span>
+          <span class="matrix__raid-go">Chasser</span>
         </button>
+      } @else if (coach()) {
+        <div class="matrix__coach" role="status">
+          <p>{{ coachCopy() }}</p>
+          <button type="button" (click)="skipCoach($event)">Passer</button>
+        </div>
+      } @else {
+        <p class="matrix__objective">
+          <span>{{ clicker.objective().kicker }}</span>
+          {{ clicker.objective().text }}
+        </p>
       }
     </div>
 
@@ -99,9 +109,9 @@
         </div>
 
         <div class="matrix__strike">
-          @if (clicker.isUnlocked('combo-meter') && clicker.combo() > 1) {
+          @if (clicker.combo() > 1) {
             <p class="matrix__combo" aria-live="polite">
-              combo ×{{ clicker.combo() }}
+              Combo ×{{ clicker.combo() }}
               <span class="matrix__combo-mult">{{ clicker.formatRate(clicker.comboMultiplier()) }}×</span>
             </p>
           }
@@ -110,12 +120,21 @@
             type="button"
             class="matrix__core"
             [class.matrix__core--code]="clicker.isUnlocked('core-code')"
+            [class.matrix__core--crit]="coreCrit()"
             (click)="onCoreClick($event)"
-            aria-label="Attaquer le bug — clique pour infliger des dégâts"
+            aria-label="Attaquer le bug"
           >
+            <span
+              class="matrix__core-timer"
+              [class.is-live]="comboLive()"
+              [style.--window.ms]="clicker.comboWindowMs()"
+              aria-hidden="true"
+            ></span>
             <span class="matrix__core-glow" aria-hidden="true"></span>
             <span class="matrix__core-glyph" aria-hidden="true">{{ clicker.coreGlyph() }}</span>
-            <span class="matrix__core-hint">tap</span>
+            @if (coach() === 'hit') {
+              <span class="matrix__core-hint">clic</span>
+            }
           </button>
 
           @for (particle of particles(); track particle.id) {
@@ -140,37 +159,25 @@
       <section class="matrix__economy" aria-label="Ressources">
         <div class="matrix__gold" aria-live="polite">
           <span class="matrix__gold-val">{{ clicker.formatCount(clicker.gold()) }}</span>
-          <span class="matrix__gold-label">gold</span>
+          <span class="matrix__gold-label">or</span>
           @if (clicker.lastKill(); as kill) {
             <span class="matrix__gold-pop">
-              +{{ clicker.formatCount(kill.gold) }}g · +{{ clicker.formatCount(kill.xp) }}xp
+              +{{ clicker.formatCount(kill.gold) }} or · +{{ clicker.formatCount(kill.xp) }} xp
             </span>
           }
         </div>
         <dl class="matrix__rates">
+          <div [class.is-dim]="clicker.dps() <= 0">
+            <dt>Auto</dt>
+            <dd>{{ clicker.formatRate(clicker.dps()) }}/s</dd>
+          </div>
           <div>
-            <dt>auto</dt>
-            <dd>{{ clicker.formatRate(clicker.dps()) }}</dd>
+            <dt>Clic</dt>
+            <dd>{{ clicker.formatRate(clicker.clickDamage()) }}</dd>
           </div>
-          <div [class.is-dim]="!clicker.isUnlocked('click-stat')">
-            <dt>clic</dt>
-            <dd>
-              @if (clicker.isUnlocked('click-stat')) {
-                {{ clicker.formatRate(clicker.clickDamage()) }}
-              } @else {
-                —
-              }
-            </dd>
-          </div>
-          <div [class.is-dim]="clicker.critChanceBonus() <= 0">
-            <dt>crit%</dt>
-            <dd>
-              @if (clicker.critChanceBonus() > 0) {
-                {{ critChanceLabel() }}
-              } @else {
-                —
-              }
-            </dd>
+          <div [class.is-dim]="clicker.critChance() <= 0">
+            <dt>Crit</dt>
+            <dd>{{ critChanceLabel() }}%</dd>
           </div>
         </dl>
       </section>
@@ -196,10 +203,18 @@
               [attr.aria-selected]="!showingDevs()"
               [attr.tabindex]="!showingDevs() ? 0 : -1"
               [disabled]="clicker.clickUpgrades().length === 0"
+              [attr.aria-label]="
+                clicker.clickUpgrades().length === 0
+                  ? 'Pouvoirs, disponibles au niveau 3'
+                  : 'Pouvoirs'
+              "
               aria-controls="matrix-shop-panel"
               (click)="setShopTab('click', $event)"
             >
               Pouvoirs
+              @if (clicker.clickUpgrades().length === 0) {
+                <span class="matrix__tab-lock">niveau 3</span>
+              }
             </button>
             <button
               type="button"
@@ -226,22 +241,22 @@
             showingDevs() ? 'matrix-shop-tab-passive' : 'matrix-shop-tab-click'
           "
         >
-          @for (upgrade of shopSlots(); track $index) {
+          @for (slot of shopSlots(); track $index) {
             <li>
-              @if (upgrade; as item) {
+              @if (slot.kind === 'item') {
                 <button
                   type="button"
                   class="matrix__item"
-                  [class.matrix__item--power]="item.kind === 'click'"
-                  [class.matrix__item--dev]="!!item.sprite"
-                  [class.is-owned]="clicker.ownedCount(item.id) > 0"
-                  [class.is-ready]="clicker.canAfford(item.id)"
-                  [class.is-bought]="justBoughtId() === item.id"
-                  [disabled]="!clicker.canAfford(item.id)"
-                  [attr.aria-label]="upgradeAriaLabel(item)"
-                  (click)="buyUpgrade(item.id, $event)"
+                  [class.matrix__item--power]="slot.item.kind === 'click'"
+                  [class.matrix__item--dev]="!!slot.item.sprite"
+                  [class.is-owned]="clicker.ownedCount(slot.item.id) > 0"
+                  [class.is-ready]="clicker.canAfford(slot.item.id)"
+                  [class.is-bought]="justBoughtId() === slot.item.id"
+                  [disabled]="!clicker.canAfford(slot.item.id)"
+                  [attr.aria-label]="upgradeAriaLabel(slot.item)"
+                  (click)="buyUpgrade(slot.item.id, $event)"
                 >
-                  @if (item.sprite; as spriteId) {
+                  @if (slot.item.sprite; as spriteId) {
                     <span class="pix" [attr.data-dev]="spriteId" aria-hidden="true">
                       @for (row of spriteRows(spriteId); track $index) {
                         <span class="pix__row">
@@ -252,55 +267,47 @@
                       }
                     </span>
                   } @else {
-                    <span class="matrix__item-glyph" aria-hidden="true">{{ item.glyph }}</span>
+                    <span class="matrix__item-glyph" aria-hidden="true">{{ slot.item.glyph }}</span>
                   }
 
                   <span class="matrix__item-main">
                     <span class="matrix__item-top">
-                      <span class="matrix__item-name">
-                        {{ item.label }}
-                        @if (item.role) {
-                          <span class="matrix__item-role">{{ item.role }}</span>
-                        }
-                      </span>
-                      @if (clicker.ownedCount(item.id) > 0) {
-                        <span class="matrix__item-lv">{{ clicker.ownedCount(item.id) }}</span>
+                      <span class="matrix__item-name">{{ slot.item.label }}</span>
+                      @if (clicker.ownedCount(slot.item.id) > 0) {
+                        <span class="matrix__item-lv">{{ clicker.ownedCount(slot.item.id) }}</span>
                       }
                     </span>
-                    <span class="matrix__item-effect">{{ clicker.upgradeEffect(item) }}</span>
-                    @if (clicker.upgradePassive(item); as passive) {
+                    <span class="matrix__item-effect">{{ clicker.upgradeEffect(slot.item) }}</span>
+                    @if (clicker.upgradePassive(slot.item); as passive) {
                       <span class="matrix__item-passive">{{ passive }}</span>
                     }
                   </span>
 
                   <span class="matrix__item-buy">
-                    @if (clicker.canAfford(item.id)) {
-                      <span class="matrix__item-price">
-                        {{ clicker.formatCount(clicker.upgradeCost(item.id)) }}
-                        <span>g</span>
-                      </span>
-                    } @else {
-                      <span class="matrix__item-need"
-                        >−{{ clicker.formatCount(clicker.goldShortfall(item.id)) }}</span
-                      >
-                    }
+                    <span
+                      class="matrix__item-price"
+                      [class.is-short]="!clicker.canAfford(slot.item.id)"
+                    >
+                      {{ clicker.formatCount(clicker.upgradeCost(slot.item.id)) }}
+                      <span>or</span>
+                    </span>
                     <span
                       class="matrix__item-meter"
                       aria-hidden="true"
-                      [style.--afford]="clicker.affordProgress(item.id)"
+                      [style.--afford]="clicker.affordProgress(slot.item.id)"
                     ></span>
                   </span>
                 </button>
-              } @else {
-                <span class="matrix__item matrix__item--ghost" aria-hidden="true">
-                  <span class="matrix__item-glyph">···</span>
+              } @else if (slot.kind === 'soon') {
+                <span class="matrix__item matrix__item--ghost">
+                  <span class="matrix__item-glyph" aria-hidden="true">{{ slot.glyph }}</span>
                   <span class="matrix__item-main">
-                    <span class="matrix__item-top">
-                      <span class="matrix__item-name">Locked</span>
-                    </span>
-                    <span class="matrix__item-effect">bientôt</span>
+                    <span class="matrix__item-name">{{ slot.label }}</span>
+                    <span class="matrix__item-effect">{{ slot.detail }}</span>
                   </span>
                 </span>
+              } @else {
+                <span class="matrix__item matrix__item--ghost matrix__item--empty" aria-hidden="true"></span>
               }
             </li>
           }
